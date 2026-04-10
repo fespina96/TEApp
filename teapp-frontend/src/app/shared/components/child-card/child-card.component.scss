@@ -1,0 +1,106 @@
+.child-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 20px 20px;
+  text-align: center;
+  cursor: default;
+
+  .avatar-wrapper {
+    position: relative;
+    width: 80px;
+    height: 80px;
+
+    &:hover .avatar-camera-btn { opacity: 1; }
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    border: 3px solid rgba(255,255,255,0.6);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .avatar-camera-btn {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: var(--color-teal);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+
+    mat-icon { font-size: 14px; height: 14px; width: 14px; }
+  }
+
+  .info {
+    .child-name {
+      margin: 0 0 4px;
+      font-size: 1.15rem;
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+    }
+
+    .child-age {
+      margin: 0 0 6px;
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    .child-notes {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    .btn-agenda {
+      background: var(--color-sky-blue) !important;
+      color: var(--color-text-primary) !important;
+      border-radius: var(--radius-md);
+      font-weight: var(--font-weight-medium);
+      font-size: 0.85rem;
+      display: inline-flex !important;
+      align-items: center !important;
+    }
+
+    button {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+  }
+}

@@ -1,0 +1,46 @@
+<article class="child-card card-autism">
+  <!-- Avatar circular con foto o inicial -->
+  <div class="avatar-wrapper">
+    <div class="avatar" [style.background-color]="child.avatarColor">
+      <img *ngIf="child.avatarBase64" [src]="child.avatarBase64" class="avatar-img" alt="foto">
+      <span *ngIf="!child.avatarBase64">{{ avatarLetter }}</span>
+    </div>
+    <button class="avatar-camera-btn" type="button"
+            (click)="editAvatar.emit(child)"
+            [matTooltip]="'Cambiar foto de ' + child.name">
+      <mat-icon>photo_camera</mat-icon>
+    </button>
+  </div>
+
+  <!-- Información del niño -->
+  <div class="info">
+    <h3 class="child-name">{{ child.name }}</h3>
+    <p class="child-age">{{ age }} años</p>
+    <p class="child-notes" *ngIf="child.notes">{{ child.notes }}</p>
+  </div>
+
+  <!-- Acciones -->
+  <div class="actions">
+    <a mat-flat-button color="primary"
+       [routerLink]="['/app/children', child.id, 'agenda']"
+       class="btn-agenda"
+       [attr.aria-label]="'Ver agenda de ' + child.name">
+      <mat-icon>calendar_month</mat-icon>
+      Ver agenda
+    </a>
+
+    <button mat-icon-button
+            (click)="edit.emit(child)"
+            [matTooltip]="'Editar perfil de ' + child.name"
+            [attr.aria-label]="'Editar perfil de ' + child.name">
+      <mat-icon>edit</mat-icon>
+    </button>
+
+    <button mat-icon-button color="warn"
+            (click)="delete.emit(child)"
+            [matTooltip]="'Eliminar perfil de ' + child.name"
+            [attr.aria-label]="'Eliminar perfil de ' + child.name">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</article>

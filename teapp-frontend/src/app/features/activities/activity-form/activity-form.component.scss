@@ -1,0 +1,33 @@
+.activity-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 8px;
+}
+
+.full-width { width: 100%; }
+
+.pausable-row {
+  margin: -4px 0 8px;
+}
+
+.chip-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #343A40;
+  margin: 8px 0 4px;
+  transition: background-color 0.3s ease;
+
+  mat-icon { font-size: 18px; }
+}
+
+.btn-save {
+  background: var(--color-sky-blue) !important;
+  color: var(--color-text-primary) !important;
+  border-radius: var(--radius-md) !important;
+}

@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn test-compile:*)",
+      "Bash(mvn test:*)",
+      "Bash(mvn compile:*)",
+      "WebFetch(domain:api.arasaac.org)",
+      "Bash(curl -s \"https://api.arasaac.org/v1/pictograms/es/search/cepillarse%20dientes\")",
+      "Bash(python3 -c \"import sys,json; data=json.load\\(sys.stdin\\); [print\\(f''''_id: {r[\"\"_id\"\"]}, keyword: {r[\"\"keywords\"\"][0][\"\"keyword\"\"]}''''\\) for r in data[:5]]\")",
+      "Bash(node -e \"const d=require\\(''''fs''''\\).readFileSync\\(''''/dev/stdin'''',''''utf8''''\\); const r=JSON.parse\\(d\\); r.slice\\(0,5\\).forEach\\(x=>console.log\\(x._id, x.keywords[0].keyword\\)\\)\")",
+      "Bash(curl -s \"https://api.arasaac.org/v1/pictograms/es/search/cepillarse%20dientes\" -o /tmp/arasaac1.json)",
+      "Bash(node -e \"const r=require\\(''/tmp/arasaac1.json''\\); r.slice\\(0,5\\).forEach\\(x=>console.log\\(x._id, x.keywords[0].keyword\\)\\)\")",
+      "Bash(curl -s \"https://api.arasaac.org/v1/pictograms/es/search/cepillarse%20dientes\" -o \"C:/Users/fer-l/AppData/Local/Temp/arasaac1.json\")",
+      "Bash(node -e \"const r=require\\(''C:/Users/fer-l/AppData/Local/Temp/arasaac1.json''\\); r.slice\\(0,5\\).forEach\\(x=>console.log\\(x._id, x.keywords[0].keyword\\)\\)\")",
+      "Bash(curl -s \"https://api.arasaac.org/v1/pictograms/es/search/lavarse%20manos\" -o \"C:/Users/fer-l/AppData/Local/Temp/arasaac2.json\")",
+      "Bash(node -e \"const r=require\\(''C:/Users/fer-l/AppData/Local/Temp/arasaac2.json''\\); r.slice\\(0,5\\).forEach\\(x=>console.log\\(x._id, x.keywords[0].keyword\\)\\)\")",
+      "Bash(curl -s \"https://api.arasaac.org/v1/pictograms/es/search/beber\" -o \"C:/Users/fer-l/AppData/Local/Temp/arasaac3.json\")",
+      "Bash(node -e \"const r=require\\(''C:/Users/fer-l/AppData/Local/Temp/arasaac3.json''\\); r.slice\\(0,5\\).forEach\\(x=>console.log\\(x._id, x.keywords[0].keyword\\)\\)\")",
+      "Bash(curl -s \"https://api.arasaac.org/v1/pictograms/es/search/integraci%C3%B3n%20sensorial\" -o \"C:/Users/fer-l/AppData/Local/Temp/arasaac4.json\")",
+      "Bash(node -e \"const r=require\\(''C:/Users/fer-l/AppData/Local/Temp/arasaac4.json''\\); r.slice\\(0,5\\).forEach\\(x=>console.log\\(x._id, x.keywords[0].keyword\\)\\)\")",
+      "Bash(curl -s \"https://api.arasaac.org/v1/pictograms/es/search/enjabonar\")",
+      "Bash(node -e \"let d='''''''';process.stdin.on\\(''''data'''',c=>d+=c\\);process.stdin.on\\(''''end'''',\\(\\)=>{const r=JSON.parse\\(d\\);r.slice\\(0,5\\).forEach\\(x=>console.log\\(x._id, x.keywords[0].keyword\\)\\)}\\)\")",
+      "Bash(curl -s \"https://api.arasaac.org/v1/pictograms/es/search/jab%C3%B3n%20manos\")",
+      "Bash(curl -s \"https://api.arasaac.org/v1/pictograms/es/search/mojar%20cepillo\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(d[0][''''_id''''], d[0][''''keywords''''][0][''''keyword'''']\\) if d else print\\(''''NO RESULTS''''\\)\")",
+      "Bash(node -e \":*)",
+      "Bash(ls \"c:/Users/fer-l/Desktop/\"*.html)",
+      "Bash(ls \"c:/Users/fer-l/Desktop/TEApp - \"*.html)",
+      "Bash(ls \"c:/Users/fer-l/Desktop/TEApp/\"*.html)",
+      "Bash(sed 's|.*/||')",
+      "Read(//c/Users/fer-l/Desktop/**)",
+      "Bash(mkdir -p \"c:/Users/fer-l/Desktop/TEApp/documentacion\")",
+      "Bash(mv \"c:/Users/fer-l/Desktop/TEApp/TEApp - \"*.html \"c:/Users/fer-l/Desktop/TEApp/documentacion/\")",
+      "Bash(mv \"c:/Users/fer-l/Desktop/TEApp/TEApp - \"*.pdf \"c:/Users/fer-l/Desktop/TEApp/documentacion/\")",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(./gradlew tasks:*)",
+      "Bash(ipconfig)",
+      "WebSearch",
+      "Bash(grep \"\\\\.ts$\")"
+    ]
+  }
+}

@@ -1,0 +1,292 @@
+<!-- Tabs header -->
+<div class="dialog-tabs">
+  <button class="dialog-tab" [class.active]="activeTab === 'catalog'"
+          (click)="activeTab = 'catalog'">
+    <mat-icon>grid_view</mat-icon> Catálogo
+  </button>
+  <button class="dialog-tab" [class.active]="activeTab === 'new'"
+          (click)="activeTab = 'new'">
+    <mat-icon>add_circle_outline</mat-icon> Nueva actividad
+  </button>
+</div>
+
+<!-- ===== TAB CATÁLOGO ===== -->
+<mat-dialog-content class="picker-content" *ngIf="activeTab === 'catalog'">
+
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Buscar actividad</mat-label>
+    <input matInput [(ngModel)]="searchQuery" (ngModelChange)="onSearch()"
+           placeholder="Ej: cepillar dientes">
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <div class="category-filters">
+    <button mat-stroked-button
+            [class.active]="selectedCategory === null"
+            (click)="selectCategory(null)"
+            class="filter-btn">Todas</button>
+    <button mat-stroked-button
+            *ngFor="let cat of categories"
+            [class.active]="selectedCategory === cat"
+            (click)="selectCategory(cat)"
+            class="filter-btn">
+      {{ categoryLabels[cat] }}
+    </button>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="32"></mat-spinner>
+  </div>
+
+  <div class="activities-list" *ngIf="!loading">
+
+    <!-- Sección: Actividades del terapeuta -->
+    <ng-container *ngIf="filteredTherapist.length > 0">
+      <div class="section-header section-header--therapist">
+        <mat-icon>psychology</mat-icon>
+        <span>Del terapeuta</span>
+      </div>
+      <button class="activity-option"
+              *ngFor="let activity of filteredTherapist"
+              (click)="selectActivity(activity)"
+              [attr.aria-label]="'Seleccionar ' + activity.name">
+        <app-activity-chip [activity]="activity"></app-activity-chip>
+        <mat-icon class="select-icon">chevron_right</mat-icon>
+      </button>
+    </ng-container>
+
+    <!-- Sección: Catálogo del sistema -->
+    <ng-container *ngIf="filteredPredefined.length > 0">
+      <div class="section-header">
+        <mat-icon>auto_awesome</mat-icon>
+        <span>Catálogo</span>
+      </div>
+      <button class="activity-option"
+              *ngFor="let activity of filteredPredefined"
+              (click)="selectActivity(activity)"
+              [attr.aria-label]="'Seleccionar ' + activity.name">
+        <app-activity-chip [activity]="activity"></app-activity-chip>
+        <mat-icon class="select-icon">chevron_right</mat-icon>
+      </button>
+    </ng-container>
+
+    <!-- Sección: Actividades personalizadas del padre -->
+    <ng-container *ngIf="filteredCustom.length > 0">
+      <div class="section-header">
+        <mat-icon>edit_note</mat-icon>
+        <span>Mis actividades</span>
+      </div>
+      <button class="activity-option"
+              *ngFor="let activity of filteredCustom"
+              (click)="selectActivity(activity)"
+              [attr.aria-label]="'Seleccionar ' + activity.name">
+        <app-activity-chip [activity]="activity"></app-activity-chip>
+        <mat-icon class="select-icon">chevron_right</mat-icon>
+      </button>
+    </ng-container>
+
+    <div class="empty-results" *ngIf="filteredActivities.length === 0">
+      <mat-icon>search_off</mat-icon>
+      <p>No se encontraron actividades</p>
+      <button mat-stroked-button (click)="activeTab = 'new'" class="create-hint-btn">
+        <mat-icon>add</mat-icon> Crear actividad personalizada
+      </button>
+    </div>
+  </div>
+
+</mat-dialog-content>
+
+<!-- ===== TAB NUEVA ACTIVIDAD ===== -->
+<mat-dialog-content class="picker-content new-activity-content" *ngIf="activeTab === 'new'">
+
+  <form [formGroup]="newForm" (ngSubmit)="createAndSelect()" id="newActivityForm">
+
+    <!-- Nombre -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre de la actividad</mat-label>
+      <input matInput formControlName="name" placeholder="Ej: Clase de natación" autocomplete="off">
+      <mat-error *ngIf="newForm.get('name')?.hasError('required')">El nombre es obligatorio</mat-error>
+      <mat-error *ngIf="newForm.get('name')?.hasError('minlength')">Mínimo 2 caracteres</mat-error>
+    </mat-form-field>
+
+    <!-- Categoría -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Categoría</mat-label>
+      <mat-select formControlName="category">
+        <mat-option *ngFor="let cat of categories" [value]="cat">
+          {{ categoryLabels[cat] }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Color -->
+    <div class="field-label">Color</div>
+    <div class="color-presets">
+      <button type="button" class="color-swatch"
+              *ngFor="let color of colorPresets"
+              [style.background-color]="color"
+              [class.selected]="selectedColor === color"
+              (click)="selectedColor = color"
+              [attr.aria-label]="'Color ' + color">
+        <mat-icon *ngIf="selectedColor === color">check</mat-icon>
+      </button>
+    </div>
+
+    <!-- Ícono -->
+    <div class="field-label">Ícono</div>
+    <div class="icon-grid">
+      <button type="button" class="icon-option"
+              *ngFor="let icon of iconOptions"
+              [class.selected]="selectedIcon === icon"
+              [style.background-color]="selectedIcon === icon ? selectedColor : ''"
+              (click)="selectedIcon = icon"
+              [matTooltip]="icon">
+        <mat-icon>{{ icon }}</mat-icon>
+      </button>
+    </div>
+
+    <!-- Imagen -->
+    <div class="field-label">Imagen (opcional)</div>
+
+    <!-- Selector de modo de imagen -->
+    <div class="image-mode-tabs">
+      <button type="button" class="img-mode-btn" [class.active]="imageMode === 'upload'"
+              (click)="imageMode = 'upload'">
+        <mat-icon>upload</mat-icon> Subir imagen
+      </button>
+      <button type="button" class="img-mode-btn" [class.active]="imageMode === 'arasaac'"
+              (click)="imageMode = 'arasaac'">
+        <mat-icon>image_search</mat-icon> Pictograma ARASAAC
+      </button>
+    </div>
+
+    <!-- Subir imagen propia -->
+    <div class="image-upload-area" *ngIf="imageMode === 'upload'">
+      <ng-container *ngIf="!selectedImage">
+        <label class="upload-placeholder" for="activityImageInput">
+          <mat-icon>add_photo_alternate</mat-icon>
+          <span>Subir imagen</span>
+          <input id="activityImageInput" type="file" accept="image/*"
+                 (change)="onImageSelected($event)" hidden>
+        </label>
+      </ng-container>
+      <ng-container *ngIf="selectedImage">
+        <div class="image-preview-wrap">
+          <img [src]="selectedImage" class="activity-img-preview" alt="Preview">
+          <button mat-icon-button class="remove-img-btn" (click)="removeImage()" type="button" matTooltip="Quitar imagen">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Búsqueda ARASAAC -->
+    <div class="arasaac-panel" *ngIf="imageMode === 'arasaac'">
+      <div class="arasaac-search-row">
+        <input class="arasaac-input" [(ngModel)]="arasaacQuery" [ngModelOptions]="{standalone: true}"
+               placeholder="Ej: cepillar dientes" (keyup.enter)="searchArasaac()">
+        <button mat-flat-button color="primary" type="button" (click)="searchArasaac()"
+                [disabled]="arasaacSearching || !arasaacQuery.trim()">
+          <mat-spinner diameter="14" *ngIf="arasaacSearching"></mat-spinner>
+          <mat-icon *ngIf="!arasaacSearching">search</mat-icon>
+        </button>
+      </div>
+
+      <!-- Pictograma seleccionado -->
+      <div class="arasaac-selected" *ngIf="selectedPictogramUrl">
+        <img [src]="selectedPictogramUrl" alt="Pictograma seleccionado">
+        <button mat-icon-button type="button" (click)="removeImage()" matTooltip="Quitar pictograma">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Grid de resultados -->
+      <div class="arasaac-grid" *ngIf="arasaacResults.length > 0">
+        <button type="button" class="arasaac-thumb"
+                *ngFor="let pic of arasaacResults"
+                [class.selected]="selectedPictogramUrl === arasaacService.imageUrl(pic._id)"
+                (click)="selectPictogram(pic)"
+                [matTooltip]="pic.keyword">
+          <img [src]="arasaacService.thumbUrl(pic._id)" [alt]="pic.keyword" loading="lazy">
+        </button>
+      </div>
+
+      <p class="arasaac-hint" *ngIf="!arasaacSearching && arasaacResults.length === 0 && arasaacQuery">
+        Sin resultados. Prueba otro término.
+      </p>
+      <p class="arasaac-credit">Pictogramas por <strong>ARASAAC</strong> (arasaac.org) — Licencia Creative Commons BY-NC-SA</p>
+    </div>
+
+    <!-- Temporizador -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Duración (minutos, opcional)</mat-label>
+      <input matInput type="number" formControlName="durationMinutes" min="1" max="180"
+             placeholder="Ej: 15">
+      <mat-icon matSuffix>timer</mat-icon>
+    </mat-form-field>
+
+    <div class="pausable-row" *ngIf="newForm.get('durationMinutes')?.value">
+      <mat-slide-toggle formControlName="pausable" color="primary">
+        Permitir pausar el temporizador
+      </mat-slide-toggle>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-row">
+      <span class="field-label">Vista previa:</span>
+      <div class="preview-chip" [style.background-color]="selectedColor + '66'">
+        <div class="preview-icon" [style.background-color]="selectedColor">
+          <mat-icon>{{ selectedIcon }}</mat-icon>
+        </div>
+        <span>{{ newForm.get('name')?.value || 'Mi actividad' }}</span>
+      </div>
+    </div>
+
+  </form>
+
+</mat-dialog-content>
+
+<!-- Sección temporizador (siempre visible) -->
+<div class="timer-section">
+  <div class="timer-section-header">
+    <mat-icon>timer</mat-icon>
+    <span>Temporizador (opcional)</span>
+  </div>
+  <div class="timer-duration-row">
+    <mat-form-field appearance="outline" class="duration-field">
+      <mat-label>Duración (min)</mat-label>
+      <input matInput type="number" [(ngModel)]="entryDurationMinutes" min="1" max="180"
+             placeholder="Ej: 15">
+    </mat-form-field>
+  </div>
+  <div class="timer-pausable-row">
+    <mat-slide-toggle [(ngModel)]="entryPausable" color="primary"
+                      [disabled]="!entryDurationMinutes">
+      Pausable
+    </mat-slide-toggle>
+  </div>
+  <div class="timer-pausable-row">
+    <mat-slide-toggle [(ngModel)]="entryRequireFullTimer" color="primary"
+                      [disabled]="!entryDurationMinutes">
+      Debe esperar que termine el conteo
+    </mat-slide-toggle>
+  </div>
+</div>
+
+<!-- Acciones -->
+<mat-dialog-actions class="picker-actions">
+  <mat-slide-toggle [(ngModel)]="addToAllDays" color="primary" class="all-days-toggle">
+    Agregar a todos los días
+  </mat-slide-toggle>
+
+  <button mat-button [mat-dialog-close]="undefined">Cancelar</button>
+
+  <button mat-flat-button color="primary"
+          *ngIf="activeTab === 'new'"
+          type="submit" form="newActivityForm"
+          [disabled]="newForm.invalid || saving">
+    <mat-spinner diameter="16" *ngIf="saving"></mat-spinner>
+    <mat-icon *ngIf="!saving">add</mat-icon>
+    {{ saving ? 'Guardando...' : 'Crear y agregar' }}
+  </button>
+</mat-dialog-actions>

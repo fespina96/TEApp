@@ -1,0 +1,221 @@
+<div class="page-container">
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="cargando">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Cargando agenda...</p>
+  </div>
+
+  <ng-container *ngIf="!cargando && participante && agenda">
+
+    <!-- ===== BANNER CUMPLEAÑOS ===== -->
+    <div class="birthday-banner" *ngIf="esCumpleanos">
+      <span class="birthday-emoji">🎂</span>
+      <div class="birthday-text">
+        <strong>¡Hoy es el cumpleaños de {{ participante!.name }}!</strong>
+        <span *ngIf="edadParticipante !== null">Cumple {{ edadParticipante }} años 🎉</span>
+      </div>
+      <span class="birthday-emoji">🎈</span>
+    </div>
+
+    <!-- ===== MODO NIÑO ===== -->
+    <ng-container *ngIf="modoNino">
+
+      <div class="kid-mode-wrapper">
+        <!-- Header modo niño -->
+        <header class="kid-header">
+          <div class="kid-avatar" [style.background-color]="participante.avatarColor">
+            <img *ngIf="participante.avatarBase64" [src]="participante.avatarBase64" class="kid-avatar-img" alt="">
+            <span *ngIf="!participante.avatarBase64">{{ inicialesParticipante }}</span>
+          </div>
+          <div class="kid-title-block">
+            <h1 class="kid-name">¡Hola, {{ participante.name }}!</h1>
+            <p class="kid-subtitle">Estas son tus actividades de hoy 🌟</p>
+          </div>
+
+          <!-- Widget clima -->
+          <div class="kid-weather" *ngIf="clima">
+            <span class="kid-weather-emoji">{{ clima.emoji }}</span>
+            <div class="kid-weather-info">
+              <span class="kid-weather-temp">{{ clima.temp }}°C</span>
+              <span class="kid-weather-label">{{ clima.label }}</span>
+            </div>
+          </div>
+
+          <button mat-stroked-button class="btn-exit-kid" (click)="salirModoNino()">
+            <mat-icon>lock</mat-icon>
+            Salir
+          </button>
+        </header>
+
+        <!-- Ahora → Después -->
+        <div class="now-next" *ngIf="entradaActual">
+          <div class="now-next-card now-card" (click)="alternarCompletada(entradaActual)">
+            <span class="now-next-label">Ahora</span>
+            <div class="now-next-icon" [style.background-color]="entradaActual.activity.color">
+              <img *ngIf="entradaActual.activity.pictogramUrl || entradaActual.activity.imageBase64"
+                   [src]="entradaActual.activity.pictogramUrl || entradaActual.activity.imageBase64"
+                   class="now-next-img" alt="">
+              <mat-icon *ngIf="!entradaActual.activity.pictogramUrl && !entradaActual.activity.imageBase64">
+                {{ entradaActual.activity.iconName || 'star' }}
+              </mat-icon>
+            </div>
+            <span class="now-next-name">{{ entradaActual.activity.name }}</span>
+          </div>
+
+          <div class="now-next-arrow">
+            <mat-icon>arrow_forward</mat-icon>
+          </div>
+
+          <div class="now-next-card next-card" *ngIf="entradaSiguiente">
+            <span class="now-next-label">Después</span>
+            <div class="now-next-icon" [style.background-color]="entradaSiguiente.activity.color + '99'">
+              <img *ngIf="entradaSiguiente.activity.pictogramUrl || entradaSiguiente.activity.imageBase64"
+                   [src]="entradaSiguiente.activity.pictogramUrl || entradaSiguiente.activity.imageBase64"
+                   class="now-next-img" alt="">
+              <mat-icon *ngIf="!entradaSiguiente.activity.pictogramUrl && !entradaSiguiente.activity.imageBase64">
+                {{ entradaSiguiente.activity.iconName || 'star' }}
+              </mat-icon>
+            </div>
+            <span class="now-next-name">{{ entradaSiguiente.activity.name }}</span>
+          </div>
+
+          <div class="now-next-card next-card next-card--empty" *ngIf="!entradaSiguiente">
+            <span class="now-next-label">Después</span>
+            <div class="now-next-icon now-next-icon--empty">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <span class="now-next-name">¡Todo listo!</span>
+          </div>
+        </div>
+
+        <!-- Slots del día actual -->
+        <div class="kid-slots">
+          <div class="kid-slot" *ngFor="let slot of timeSlots"
+               [ngClass]="'kid-slot-' + slot.toLowerCase()">
+
+            <div class="kid-slot-header">
+              <mat-icon>{{ iconosFranja[slot] }}</mat-icon>
+              <span>{{ slotLabels[slot] }}</span>
+            </div>
+
+            <div class="kid-entries">
+              <div class="kid-entry" *ngFor="let entrada of obtenerEntradasHoy(slot)"
+                   [class.kid-entry-done]="estaCompletadaHoy(entrada)"
+                   [class.kid-entry-special]="entrada.activity.category === 'SPECIAL_EVENT'"
+                   (click)="alternarCompletada(entrada)">
+                <div *ngIf="entrada.activity.category === 'SPECIAL_EVENT'" class="kid-special-label">
+                  <mat-icon>star</mat-icon>
+                  <span>¡Evento especial!</span>
+                  <mat-icon>star</mat-icon>
+                </div>
+                <div class="kid-entry-icon"
+                     [style.background-color]="entrada.activity.color">
+                  <mat-icon>{{ entrada.activity.iconName || 'star' }}</mat-icon>
+                </div>
+                <span class="kid-entry-name">{{ entrada.activity.name }}</span>
+                <span class="kid-steps-badge" *ngIf="(entrada.activity.stepCount ?? 0) > 0">
+                  <mat-icon>format_list_numbered</mat-icon>
+                  {{ entrada.activity.stepCount }} pasos
+                </span>
+                <button mat-icon-button class="kid-speak-btn"
+                        *ngIf="speech.isSupported"
+                        (click)="$event.stopPropagation(); speech.speak(entrada.activity.name)"
+                        matTooltip="Escuchar"
+                        aria-label="Leer actividad en voz alta">
+                  <mat-icon>volume_up</mat-icon>
+                </button>
+                <img *ngIf="entrada.activity.imageBase64 || entrada.activity.pictogramUrl"
+                     [src]="entrada.activity.imageBase64 || entrada.activity.pictogramUrl"
+                     class="kid-entry-image" alt="">
+                <mat-icon class="kid-check-icon">
+                  {{ estaCompletadaHoy(entrada) ? 'check_circle' : 'radio_button_unchecked' }}
+                </mat-icon>
+              </div>
+
+              <div class="kid-empty" *ngIf="obtenerEntradasHoy(slot).length === 0">
+                <mat-icon>wb_sunny</mat-icon>
+                <span>Sin actividades</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </ng-container>
+
+    <!-- ===== VISTA NORMAL (padres) ===== -->
+    <ng-container *ngIf="!modoNino">
+
+      <!-- Cabecera del niño -->
+      <header class="agenda-header">
+        <div class="back-btn">
+          <a mat-icon-button routerLink="/app/dashboard" aria-label="Volver al inicio">
+            <mat-icon>arrow_back</mat-icon>
+          </a>
+        </div>
+
+        <div class="child-info">
+          <div class="child-avatar" [style.background-color]="participante.avatarColor">
+            {{ inicialesParticipante }}
+          </div>
+          <div>
+            <h1 class="child-name">Agenda de {{ participante.name }}</h1>
+            <p class="agenda-subtitle">Rutina semanal organizada por franjas horarias</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button mat-stroked-button class="btn-reset-week" (click)="resetearSemana()"
+                  matTooltip="Limpiar actividades completadas de esta semana">
+            <mat-icon>restart_alt</mat-icon>
+            Resetear semana
+          </button>
+          <button mat-flat-button class="btn-kid-mode" (click)="activarModoNino()"
+                  matTooltip="Activar vista para el participante">
+            <mat-icon>child_care</mat-icon>
+            Modo participante
+          </button>
+        </div>
+      </header>
+
+      <!-- Tabs de días de la semana -->
+      <mat-tab-group animationDuration="150ms"
+                     [selectedIndex]="indiceDiaActual"
+                     class="days-tabs">
+
+        <mat-tab *ngFor="let dia of days" [label]="dayLabels[dia]">
+          <div class="day-grid">
+
+            <app-time-slot-column
+              [childId]="idParticipante"
+              [day]="dia"
+              slot="MORNING"
+              [entries]="obtenerEntradas(dia, 'MORNING')"
+              (scheduleChanged)="alCambiarAgenda()">
+            </app-time-slot-column>
+
+            <app-time-slot-column
+              [childId]="idParticipante"
+              [day]="dia"
+              slot="AFTERNOON"
+              [entries]="obtenerEntradas(dia, 'AFTERNOON')"
+              (scheduleChanged)="alCambiarAgenda()">
+            </app-time-slot-column>
+
+            <app-time-slot-column
+              [childId]="idParticipante"
+              [day]="dia"
+              slot="NIGHT"
+              [entries]="obtenerEntradas(dia, 'NIGHT')"
+              (scheduleChanged)="alCambiarAgenda()">
+            </app-time-slot-column>
+
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+
+    </ng-container>
+
+  </ng-container>
+</div>

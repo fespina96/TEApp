@@ -1,0 +1,89 @@
+<div class="page-container">
+  <!-- Saludo -->
+  <header class="dashboard-header">
+    <div>
+      <h1 class="section-title">¡Hola, {{ nombreUsuario }}! 👋</h1>
+      <p class="header-subtitle">Aquí están tus participantes</p>
+    </div>
+    <button mat-flat-button class="btn-add" (click)="agregarParticipante()"
+            aria-label="Agregar nuevo participante">
+      <mat-icon>add</mat-icon>
+      Nuevo participante
+    </button>
+  </header>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="cargando">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Cargando participantes...</p>
+  </div>
+
+  <!-- Estado vacío -->
+  <div class="empty-state" *ngIf="!cargando && participantes.length === 0">
+    <div class="empty-illustration">👦</div>
+    <h2>¡Aún no hay participantes!</h2>
+    <p>Crea el primer participante para empezar a organizar su agenda.</p>
+    <button mat-flat-button class="btn-add" (click)="agregarParticipante()">
+      <mat-icon>add</mat-icon>
+      Agregar el primero
+    </button>
+  </div>
+
+  <!-- Grid de participantes -->
+  <div class="children-grid" *ngIf="!cargando && participantes.length > 0">
+    <app-child-card
+      *ngFor="let child of participantes"
+      [child]="child"
+      (edit)="editarParticipante($event)"
+      (editAvatar)="editarAvatarParticipante($event)"
+      (delete)="eliminarParticipante($event)">
+    </app-child-card>
+  </div>
+
+  <!-- Mi terapeuta (solo padres) -->
+  <section class="therapists-section" *ngIf="esPadre">
+    <div class="therapists-header">
+      <h2 class="section-subtitle">Mi terapeuta</h2>
+      <button mat-stroked-button class="btn-link-therapist"
+              *ngIf="terapeutas.length === 0"
+              (click)="mostrarFormVinculacion = !mostrarFormVinculacion">
+        <mat-icon>{{ mostrarFormVinculacion ? 'close' : 'add_link' }}</mat-icon>
+        {{ mostrarFormVinculacion ? 'Cancelar' : 'Vincular terapeuta' }}
+      </button>
+    </div>
+
+    <!-- Formulario de vinculación (solo si no tiene terapeuta) -->
+    <div class="link-form" *ngIf="mostrarFormVinculacion && terapeutas.length === 0">
+      <mat-form-field appearance="outline" class="code-field">
+        <mat-label>Código de invitación</mat-label>
+        <input matInput [(ngModel)]="codigoTerapeuta" placeholder="Ej: ABC12345" maxlength="10"
+               (keyup.enter)="vincularTerapeuta()">
+        <mat-icon matSuffix>vpn_key</mat-icon>
+      </mat-form-field>
+      <button mat-flat-button class="btn-confirm-link" (click)="vincularTerapeuta()" [disabled]="!codigoTerapeuta.trim()">
+        Vincular
+      </button>
+    </div>
+
+    <!-- Sin terapeuta -->
+    <p class="no-therapists" *ngIf="terapeutas.length === 0 && !mostrarFormVinculacion">
+      No tienes un terapeuta vinculado aún.
+    </p>
+
+    <!-- Terapeuta vinculado -->
+    <div class="therapist-list" *ngIf="terapeutas.length > 0">
+      <div class="therapist-item" *ngFor="let t of terapeutas">
+        <div class="therapist-avatar" *ngIf="!t.avatarBase64">{{ t.fullName.charAt(0).toUpperCase() }}</div>
+        <img *ngIf="t.avatarBase64" [src]="t.avatarBase64" class="therapist-avatar therapist-avatar-img" [alt]="t.fullName">
+        <div class="therapist-info">
+          <span class="therapist-name">{{ t.fullName }}</span>
+          <span class="therapist-email">{{ t.email }}</span>
+        </div>
+        <button mat-icon-button class="btn-unlink" (click)="desvincularTerapeuta(t.id)"
+                matTooltip="Desvincular terapeuta" aria-label="Desvincular">
+          <mat-icon>link_off</mat-icon>
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

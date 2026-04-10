@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">TEApp – Mi Agenda</string>
+    <string name="title_activity_main">TEApp – Mi Agenda</string>
+    <string name="package_name">com.teapp.miagenda</string>
+    <string name="custom_url_scheme">com.teapp.miagenda</string>
+</resources>

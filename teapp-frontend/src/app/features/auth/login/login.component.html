@@ -1,0 +1,159 @@
+<div class="login-page">
+  <div class="login-decoration">
+    <div class="decoration-circle c1"></div>
+    <div class="decoration-circle c2"></div>
+    <div class="decoration-circle c3"></div>
+  </div>
+
+  <mat-card class="login-card">
+    <!-- Logo / Título -->
+    <div class="login-header">
+      <img src="assets/logo.svg" alt="TEApp logo" class="login-logo-img">
+      <h1 class="login-title">TEApp</h1>
+      <p class="login-subtitle">Agenda semanal para niños</p>
+    </div>
+
+    <!-- Tabs pill-style -->
+    <div class="tab-switcher">
+      <button type="button" class="tab-btn" [class.active]="pestanaActiva === 'login'"
+              (click)="pestanaActiva = 'login'; mensajeError = ''">
+        Iniciar sesión
+      </button>
+      <button type="button" class="tab-btn" [class.active]="pestanaActiva === 'register'"
+              (click)="pestanaActiva = 'register'; mensajeError = ''">
+        Crear cuenta
+      </button>
+    </div>
+
+    <!-- ─── Pestaña: Iniciar sesión ─── -->
+    <form *ngIf="pestanaActiva === 'login'"
+          [formGroup]="loginForm" (ngSubmit)="onLogin()" class="auth-form">
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Correo electrónico</mat-label>
+        <input matInput type="email" formControlName="email"
+               placeholder="tu@correo.com" autocomplete="email">
+        <mat-icon matSuffix>email</mat-icon>
+        <mat-error *ngIf="loginForm.get('email')?.hasError('required')">El email es obligatorio</mat-error>
+        <mat-error *ngIf="loginForm.get('email')?.hasError('email')">Email no válido</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contraseña</mat-label>
+        <input matInput [type]="ocultarContrasena ? 'password' : 'text'"
+               formControlName="password" autocomplete="current-password">
+        <button mat-icon-button matSuffix type="button"
+                (click)="ocultarContrasena = !ocultarContrasena"
+                [attr.aria-label]="ocultarContrasena ? 'Mostrar contraseña' : 'Ocultar contraseña'">
+          <mat-icon>{{ ocultarContrasena ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">La contraseña es obligatoria</mat-error>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">Mínimo 6 caracteres</mat-error>
+      </mat-form-field>
+
+      <div class="forgot-row">
+        <a routerLink="/forgot-password" class="forgot-link">¿Olvidaste tu contraseña?</a>
+        <mat-checkbox formControlName="rememberMe" color="primary" class="remember-check">
+          Recordar dispositivo
+        </mat-checkbox>
+      </div>
+
+      <p class="error-msg" *ngIf="mensajeError">{{ mensajeError }}</p>
+
+      <button mat-flat-button type="submit" class="submit-btn"
+              [disabled]="loginForm.invalid || cargando">
+        <mat-spinner diameter="20" *ngIf="cargando"></mat-spinner>
+        <span *ngIf="!cargando">Entrar</span>
+      </button>
+
+      <p class="switch-hint">
+        ¿No tenés cuenta?
+        <button type="button" class="link-btn" (click)="pestanaActiva = 'register'; mensajeError = ''">Crear cuenta</button>
+      </p>
+    </form>
+
+    <!-- ─── Pestaña: Crear cuenta ─── -->
+    <form *ngIf="pestanaActiva === 'register'"
+          [formGroup]="registerForm" (ngSubmit)="onRegister()" class="auth-form">
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre completo</mat-label>
+        <input matInput type="text" formControlName="fullName"
+               placeholder="Tu nombre" autocomplete="name">
+        <mat-icon matSuffix>person</mat-icon>
+        <mat-error *ngIf="registerForm.get('fullName')?.hasError('required')">El nombre es obligatorio</mat-error>
+      </mat-form-field>
+
+      <!-- Role selector -->
+      <div class="role-selector">
+        <button type="button" class="role-btn" [class.active]="rolSeleccionado === 'PARENT'" (click)="rolSeleccionado = 'PARENT'">
+          <mat-icon>family_restroom</mat-icon>
+          <span>Soy padre/madre/tutor</span>
+        </button>
+        <button type="button" class="role-btn" [class.active]="rolSeleccionado === 'THERAPIST'" (click)="rolSeleccionado = 'THERAPIST'">
+          <mat-icon>psychology</mat-icon>
+          <span>Soy terapeuta</span>
+        </button>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Correo electrónico</mat-label>
+        <input matInput type="email" formControlName="email"
+               placeholder="tu@correo.com" autocomplete="email">
+        <mat-icon matSuffix>email</mat-icon>
+        <mat-error *ngIf="registerForm.get('email')?.hasError('required')">El email es obligatorio</mat-error>
+        <mat-error *ngIf="registerForm.get('email')?.hasError('email')">Email no válido</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Fecha de nacimiento</mat-label>
+        <input matInput [matDatepicker]="selectorFecha" formControlName="dateOfBirth"
+               placeholder="DD/MM/AAAA" readonly>
+        <mat-datepicker-toggle matSuffix [for]="selectorFecha"></mat-datepicker-toggle>
+        <mat-datepicker #selectorFecha startView="multi-year"></mat-datepicker>
+        <mat-error *ngIf="registerForm.get('dateOfBirth')?.hasError('required')">La fecha de nacimiento es obligatoria</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contraseña</mat-label>
+        <input matInput [type]="ocultarContrasena ? 'password' : 'text'"
+               formControlName="password" autocomplete="new-password">
+        <button mat-icon-button matSuffix type="button"
+                (click)="ocultarContrasena = !ocultarContrasena"
+                aria-label="Mostrar/ocultar contraseña">
+          <mat-icon>{{ ocultarContrasena ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="registerForm.get('password')?.hasError('required')">La contraseña es obligatoria</mat-error>
+        <mat-error *ngIf="registerForm.get('password')?.hasError('minlength')">Mínimo 8 caracteres</mat-error>
+        <mat-error *ngIf="registerForm.get('password')?.hasError('pattern') && !registerForm.get('password')?.hasError('minlength')">Debe incluir al menos una mayúscula y un número</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Confirmar contraseña</mat-label>
+        <input matInput [type]="ocultarConfirmacion ? 'password' : 'text'"
+               formControlName="confirmPassword" autocomplete="new-password">
+        <button mat-icon-button matSuffix type="button"
+                (click)="ocultarConfirmacion = !ocultarConfirmacion"
+                aria-label="Mostrar/ocultar confirmación">
+          <mat-icon>{{ ocultarConfirmacion ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="registerForm.get('confirmPassword')?.hasError('required')">Debes confirmar la contraseña</mat-error>
+        <mat-error *ngIf="registerForm.hasError('passwordsMismatch') && registerForm.get('confirmPassword')?.touched">Las contraseñas no coinciden</mat-error>
+      </mat-form-field>
+
+      <p class="error-msg" *ngIf="mensajeError">{{ mensajeError }}</p>
+
+      <button mat-flat-button type="submit" class="submit-btn"
+              [disabled]="registerForm.invalid || cargando">
+        <mat-spinner diameter="20" *ngIf="cargando"></mat-spinner>
+        <span *ngIf="!cargando">Crear cuenta</span>
+      </button>
+
+      <p class="switch-hint">
+        ¿Ya tenés cuenta?
+        <button type="button" class="link-btn" (click)="pestanaActiva = 'login'; mensajeError = ''">Iniciar sesión</button>
+      </p>
+    </form>
+
+  </mat-card>
+</div>

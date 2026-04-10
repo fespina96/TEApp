@@ -1,0 +1,336 @@
+.therapist-header {
+  margin-bottom: 24px;
+
+  .header-subtitle {
+    margin: 4px 0 0;
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+  }
+}
+
+// Invite code card
+.invite-card {
+  border-radius: var(--radius-lg) !important;
+  margin-bottom: 28px;
+  border-left: 4px solid var(--color-sky-blue) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.invite-content {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 4px 0;
+
+  @media (max-width: 600px) {
+    .copy-btn { width: 100%; }
+  }
+}
+
+.invite-icon {
+  font-size: 2rem;
+  height: 2rem;
+  width: 2rem;
+  color: var(--color-sky-blue);
+  flex-shrink: 0;
+}
+
+.invite-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.invite-label {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.invite-code {
+  font-size: 1.6rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.18em;
+  color: var(--color-text-primary);
+  font-family: 'Courier New', monospace;
+}
+
+.invite-hint {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.copy-btn {
+  background: var(--color-sky-blue) !important;
+  color: var(--color-text-primary) !important;
+  border-radius: var(--radius-md) !important;
+  flex-shrink: 0;
+}
+
+// Loading states
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 64px;
+  color: var(--color-text-secondary);
+}
+
+.loading-small {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+}
+
+// Content grid - 3 panels side by side on wide screens
+.content-grid {
+  display: grid;
+  grid-template-columns: 280px 260px 1fr;
+  gap: 20px;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Panels
+.panel {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  min-height: 200px;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid #F0F0F0;
+  margin: 0;
+
+  mat-icon {
+    font-size: 1.2rem;
+    height: 1.2rem;
+    width: 1.2rem;
+    color: var(--color-sky-blue);
+  }
+}
+
+.readonly-badge {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-medium);
+  background: #F0FAF4;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+  border-radius: 12px;
+  padding: 2px 8px;
+  letter-spacing: 0.03em;
+}
+
+.empty-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 24px;
+  color: var(--color-text-secondary);
+  text-align: center;
+
+  mat-icon {
+    font-size: 2.5rem;
+    height: 2.5rem;
+    width: 2.5rem;
+    opacity: 0.4;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+}
+
+// Parent list
+.parent-list,
+.children-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.parent-item,
+.child-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+  border-bottom: 1px solid #F5F5F5;
+
+  &:last-child { border-bottom: none; }
+
+  &:hover { background: #F7FBFD; }
+
+  &.selected {
+    background: #EEF7FC;
+    border-left: 3px solid var(--color-sky-blue);
+    padding-left: 13px;
+  }
+
+  .chevron {
+    margin-left: auto;
+    font-size: 1.1rem;
+    height: 1.1rem;
+    width: 1.1rem;
+    color: #BDBDBD;
+    flex-shrink: 0;
+  }
+}
+
+// Avatars
+.parent-avatar,
+.child-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-sky-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-bold);
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.parent-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.parent-name,
+.child-name {
+  font-weight: var(--font-weight-medium);
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.parent-email {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Schedule panel
+.schedule-tabs {
+  ::ng-deep .mat-mdc-tab-labels {
+    padding: 0 8px;
+    overflow-x: auto;
+  }
+}
+
+.day-content {
+  padding: 12px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.time-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slot-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .slot-icon {
+    font-size: 1rem;
+    height: 1rem;
+    width: 1rem;
+    color: var(--color-sky-blue);
+  }
+
+  .slot-label {
+    font-size: 0.82rem;
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-secondary);
+  }
+}
+
+.activities-row {
+  padding-left: 4px;
+}
+
+.activity-chip {
+  font-size: 0.82rem !important;
+  min-height: 28px !important;
+  border-radius: 14px !important;
+  margin: 2px !important;
+  color: var(--color-text-primary) !important;
+
+  ::ng-deep .mdc-evolution-chip__text-label {
+    color: var(--color-text-primary) !important;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &.chip-done {
+    opacity: 0.9;
+    ::ng-deep .mdc-evolution-chip__text-label {
+      text-decoration: line-through;
+      color: #2e7d32 !important;
+    }
+  }
+}
+
+.chip-check-icon {
+  font-size: 14px !important;
+  height: 14px !important;
+  width: 14px !important;
+  color: #2e7d32;
+}
+
+.empty-slot {
+  font-size: 0.8rem;
+  color: #BDBDBD;
+  font-style: italic;
+  padding-left: 4px;
+}

@@ -1,0 +1,75 @@
+<div class="page-container">
+  <div class="list-header">
+    <h1 class="section-title">Mis participantes</h1>
+    <a mat-flat-button routerLink="/app/children/new" class="btn-add">
+      <mat-icon>add</mat-icon>
+      Agregar participante
+    </a>
+  </div>
+
+  <div class="loading-container" *ngIf="cargando">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div class="empty-state" *ngIf="!cargando && participantes.length === 0">
+    <p>Aún no has registrado ningún participante.</p>
+    <a mat-flat-button routerLink="/app/children/new" class="btn-add">
+      <mat-icon>add</mat-icon>
+      Agregar el primero
+    </a>
+  </div>
+
+  <div class="table-wrapper" *ngIf="!cargando && participantes.length > 0">
+    <table mat-table [dataSource]="participantes" class="children-table">
+
+      <ng-container matColumnDef="avatar">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let child">
+          <div class="table-avatar-wrapper" (click)="editarAvatar(child)"
+               [matTooltip]="'Cambiar foto de ' + child.name">
+            <div class="table-avatar" [style.background-color]="child.avatarColor">
+              <img *ngIf="child.avatarBase64" [src]="child.avatarBase64" class="table-avatar-img" alt="foto">
+              <span *ngIf="!child.avatarBase64">{{ child.name.charAt(0).toUpperCase() }}</span>
+            </div>
+            <div class="table-avatar-overlay"><mat-icon>photo_camera</mat-icon></div>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Nombre</th>
+        <td mat-cell *matCellDef="let child">
+          <strong>{{ child.name }}</strong>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="age">
+        <th mat-header-cell *matHeaderCellDef>Edad</th>
+        <td mat-cell *matCellDef="let child">{{ calcularEdad(child.dateOfBirth) }} años</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let child">
+          <div class="row-actions">
+            <a mat-icon-button [routerLink]="['/app/children', child.id, 'agenda']"
+               [matTooltip]="'Ver agenda de ' + child.name" aria-label="Ver agenda">
+              <mat-icon>calendar_month</mat-icon>
+            </a>
+            <a mat-icon-button [routerLink]="['/app/children', child.id, 'edit']"
+               [matTooltip]="'Editar ' + child.name" aria-label="Editar">
+              <mat-icon>edit</mat-icon>
+            </a>
+            <button mat-icon-button color="warn" (click)="eliminarParticipante(child)"
+                    [matTooltip]="'Eliminar ' + child.name" aria-label="Eliminar">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnasVisibles"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnasVisibles;"></tr>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="96" fill="#A8D8EA"/>
+  <!-- T -->
+  <text x="20" y="420" font-family="Arial Black, sans-serif" font-weight="900"
+        font-size="420" fill="#D4856A">T</text>
+  <!-- E -->
+  <text x="138" y="420" font-family="Arial Black, sans-serif" font-weight="900"
+        font-size="420" fill="#F5CE5A" opacity="0.95">E</text>
+  <!-- A -->
+  <text x="268" y="420" font-family="Arial Black, sans-serif" font-weight="900"
+        font-size="420" fill="#4BBFB5" opacity="0.95">A</text>
+</svg>

@@ -1,0 +1,85 @@
+<div class="page-container">
+  <div class="catalog-header">
+    <div>
+      <h1 class="section-title">Catálogo de actividades</h1>
+      <p class="header-sub">Actividades predefinidas y tus actividades personalizadas</p>
+    </div>
+    <button mat-flat-button class="btn-add" (click)="abrirFormCrear()"
+            aria-label="Crear nueva actividad personalizada">
+      <mat-icon>add</mat-icon>
+      Nueva actividad
+    </button>
+  </div>
+
+  <!-- Filtros por categoría -->
+  <div class="category-filters">
+    <button mat-stroked-button
+            [class.active]="categoriaSeleccionada === null"
+            (click)="seleccionarCategoria(null)"
+            class="filter-btn">
+      Todas
+    </button>
+    <button mat-stroked-button
+            *ngFor="let cat of categories"
+            [class.active]="categoriaSeleccionada === cat"
+            (click)="seleccionarCategoria(cat)"
+            class="filter-btn">
+      {{ categoryLabels[cat] }}
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="cargando">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- Grid de actividades -->
+  <div class="activities-grid" *ngIf="!cargando">
+    <div class="activity-card card-autism"
+         *ngFor="let activity of actividadesFiltradas">
+
+      <div class="activity-header">
+        <app-activity-chip [activity]="activity"></app-activity-chip>
+        <div class="badge-predefined" *ngIf="activity.predefined" title="Actividad del sistema">
+          <mat-icon>verified</mat-icon>
+        </div>
+      </div>
+
+      <img *ngIf="activity.pictogramUrl || activity.imageBase64"
+           [src]="activity.pictogramUrl || activity.imageBase64"
+           class="activity-pictogram" alt="">
+
+      <p class="activity-description" *ngIf="activity.description">
+        {{ activity.description }}
+      </p>
+
+      <div class="activity-actions">
+        <button class="steps-btn" (click)="gestionarPasos(activity)"
+                [matTooltip]="(activity.stepCount || 0) > 0 ? 'Editar pasos' : 'Añadir pasos'"
+                aria-label="Gestionar pasos">
+          <mat-icon>format_list_numbered</mat-icon>
+          <span *ngIf="(activity.stepCount || 0) > 0" class="steps-count">
+            {{ activity.stepCount }} {{ activity.stepCount === 1 ? 'paso' : 'pasos' }}
+          </span>
+          <span *ngIf="(activity.stepCount || 0) === 0" class="steps-empty">Sin pasos</span>
+        </button>
+        <button mat-icon-button (click)="editarActividad(activity)"
+                *ngIf="!activity.predefined"
+                aria-label="Editar actividad" matTooltip="Editar">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="eliminarActividad(activity)"
+                *ngIf="!activity.predefined"
+                aria-label="Eliminar actividad" matTooltip="Eliminar">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Estado vacío -->
+    <div class="empty-state" *ngIf="actividadesFiltradas.length === 0">
+      <mat-icon>search_off</mat-icon>
+      <p>No hay actividades en esta categoría</p>
+    </div>
+  </div>
+</div>
