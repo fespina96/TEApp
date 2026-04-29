@@ -1,0 +1,86 @@
+<div class="page-container">
+
+  <div class="loading-wrap" *ngIf="cargando">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+
+  <ng-container *ngIf="!cargando && usuario">
+
+    <!-- Avatar + datos básicos -->
+    <mat-card class="profile-card">
+      <div class="avatar-section">
+        <div class="avatar-wrap">
+          <div class="avatar" [style.background-color]="usuario.avatarColor ?? '#A8D8EA'">
+            <img *ngIf="usuario.avatarBase64" [src]="usuario.avatarBase64" class="avatar-img" alt="foto">
+            <span *ngIf="!usuario.avatarBase64">{{ iniciales }}</span>
+          </div>
+          <button class="avatar-edit-btn" type="button" (click)="abrirCambioAvatar()" matTooltip="Cambiar foto">
+            <mat-icon>photo_camera</mat-icon>
+          </button>
+        </div>
+        <div class="user-meta">
+          <p class="user-email">{{ usuario.email }}</p>
+          <span class="user-role">{{ rolLabel }}</span>
+          <p class="user-since">Miembro desde {{ fechaAlta }}</p>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Formulario edición perfil -->
+    <mat-card class="profile-card">
+      <h2 class="card-title">Datos personales</h2>
+
+      <form [formGroup]="form" (ngSubmit)="guardarPerfil()" class="profile-form">
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre completo</mat-label>
+          <input matInput formControlName="fullName" autocomplete="name">
+          <mat-icon matSuffix>person</mat-icon>
+          <mat-error *ngIf="form.get('fullName')?.hasError('required')">El nombre es obligatorio</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Fecha de nacimiento</mat-label>
+          <input matInput [matDatepicker]="dpPerfil" formControlName="dateOfBirth" readonly>
+          <mat-datepicker-toggle matSuffix [for]="dpPerfil"></mat-datepicker-toggle>
+          <mat-datepicker #dpPerfil startView="multi-year"></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Correo electrónico</mat-label>
+          <input matInput [value]="usuario.email" readonly>
+          <mat-icon matSuffix>email</mat-icon>
+        </mat-form-field>
+
+        <button mat-flat-button type="submit" class="btn-save"
+                [disabled]="form.invalid || guardando">
+          <mat-spinner diameter="18" *ngIf="guardando"></mat-spinner>
+          <span *ngIf="!guardando">Guardar cambios</span>
+        </button>
+
+      </form>
+    </mat-card>
+
+    <!-- Seguridad -->
+    <mat-card class="profile-card">
+      <h2 class="card-title">Seguridad</h2>
+
+      <button mat-stroked-button class="btn-action" (click)="abrirCambioContrasena()">
+        <mat-icon>lock</mat-icon>
+        Cambiar contraseña
+      </button>
+    </mat-card>
+
+    <!-- Zona de peligro -->
+    <mat-card class="profile-card danger-card">
+      <h2 class="card-title danger-title">Zona de peligro</h2>
+      <p class="danger-desc">Al eliminar tu cuenta se borrarán todos tus datos de forma permanente. Esta acción no se puede deshacer.</p>
+
+      <button mat-flat-button class="btn-delete" (click)="confirmarEliminarCuenta()">
+        <mat-icon>delete_forever</mat-icon>
+        Eliminar mi cuenta
+      </button>
+    </mat-card>
+
+  </ng-container>
+</div>

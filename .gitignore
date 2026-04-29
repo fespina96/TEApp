@@ -1,0 +1,26 @@
+# Backend
+teapp-backend/target/
+teapp-backend/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+
+# Frontend
+teapp-frontend/node_modules/
+teapp-frontend/dist/
+teapp-frontend/.angular/
+teapp-frontend/docs/
+
+# IDE
+.idea/
+.vscode/settings.json
+*.iml
+.DS_Store
+
+# Logs
+*.log
+
+# Configuración local con secretos (no commitear)
+application-local.yml
+**/application-local.yml
+

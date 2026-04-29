@@ -1,0 +1,73 @@
+<div class="page-container">
+  <div class="form-header">
+    <button mat-icon-button routerLink="/app/dashboard" aria-label="Volver">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="section-title">
+      {{ modoEdicion ? 'Editar participante' : 'Nuevo participante' }}
+    </h1>
+  </div>
+
+  <mat-card class="form-card">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <!-- Preview del avatar -->
+      <div class="avatar-preview"
+           [style.background-color]="form.get('avatarColor')?.value">
+        {{ form.get('name')?.value?.charAt(0)?.toUpperCase() || '?' }}
+      </div>
+
+      <!-- Nombre -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre del participante</mat-label>
+        <input matInput formControlName="name" placeholder="Ej: Lucas">
+        <mat-error *ngIf="form.get('name')?.hasError('required')">El nombre es obligatorio</mat-error>
+        <mat-error *ngIf="form.get('name')?.hasError('maxlength')">Máximo 100 caracteres</mat-error>
+      </mat-form-field>
+
+      <!-- Fecha de nacimiento -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Fecha de nacimiento</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="dateOfBirth"
+               [max]="fechaMaxima" placeholder="DD/MM/AAAA">
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="form.get('dateOfBirth')?.hasError('required')">La fecha es obligatoria</mat-error>
+      </mat-form-field>
+
+      <!-- Selector de color del avatar -->
+      <div class="color-section">
+        <label class="color-label">Color del perfil</label>
+        <div class="color-palette">
+          <button
+            *ngFor="let c of coloresAvatar"
+            type="button"
+            class="color-btn"
+            [style.background-color]="c.value"
+            [class.selected]="form.get('avatarColor')?.value === c.value"
+            (click)="seleccionarColor(c.value)"
+            [attr.aria-label]="'Color ' + c.label"
+            [title]="c.label">
+            <mat-icon *ngIf="form.get('avatarColor')?.value === c.value">check</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Notas -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Notas adicionales (opcional)</mat-label>
+        <textarea matInput formControlName="notes" rows="3"
+                  placeholder="Información relevante sobre el participante..."></textarea>
+      </mat-form-field>
+
+      <!-- Botones -->
+      <div class="form-actions">
+        <button mat-button type="button" routerLink="/app/dashboard">Cancelar</button>
+        <button mat-flat-button type="submit" class="btn-save" [disabled]="form.invalid || cargando">
+          <mat-icon>save</mat-icon>
+          {{ modoEdicion ? 'Guardar cambios' : 'Crear perfil' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</div>

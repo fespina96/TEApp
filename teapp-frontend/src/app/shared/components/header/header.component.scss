@@ -1,0 +1,160 @@
+.app-toolbar {
+  background: var(--color-card-bg) !important;
+  border-bottom: 2px solid var(--color-sky-blue);
+  box-shadow: var(--shadow-sm);
+  padding: 0 24px;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--color-text-primary);
+
+    .brand-logo {
+      height: 36px;
+      width: auto;
+    }
+
+    .brand-name {
+      font-size: 1.2rem;
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+    }
+  }
+
+  .spacer { flex: 1; }
+
+  .main-nav {
+    display: flex;
+    gap: 4px;
+
+    a {
+      color: var(--color-text-secondary);
+      border-radius: var(--radius-md);
+      font-weight: var(--font-weight-medium);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s, background 0.2s;
+
+      &:hover {
+        color: var(--color-text-primary);
+        background: var(--color-border);
+      }
+
+      &.nav-active {
+        color: var(--color-teal);
+        background: rgba(120, 193, 200, 0.12);
+      }
+
+      // Pierce MDC internal label wrapper (Android WebView)
+      ::ng-deep .mdc-button__label {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      mat-icon {
+        font-size: 20px;
+        height: 20px;
+        width: 20px;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        vertical-align: middle;
+      }
+    }
+  }
+
+  .user-avatar-btn {
+    margin-left: 16px;
+    padding: 0 !important;
+    width: 42px !important;
+    height: 42px !important;
+    --mdc-icon-button-state-layer-size: 42px;
+
+    // Pierce MDC icon button internals para Android
+    ::ng-deep .mat-mdc-button-base,
+    ::ng-deep .mdc-icon-button {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 42px !important;
+      height: 42px !important;
+      padding: 0 !important;
+    }
+
+    ::ng-deep .mat-mdc-button-touch-target {
+      width: 42px !important;
+      height: 42px !important;
+    }
+  }
+
+  .user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--color-sky-blue);
+    color: var(--color-text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-bold);
+    font-size: 0.85rem;
+    cursor: pointer;
+    border: 2px solid var(--color-border);
+    transition: border-color 0.2s;
+    overflow: hidden;
+
+    &:hover { border-color: var(--color-teal); }
+
+    .user-avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+  }
+
+  @media (max-width: 600px) {
+    padding: 0 12px;
+
+    .brand-name { display: none; }
+
+    .user-avatar-btn { margin-left: 8px; }
+
+    .main-nav {
+      gap: 0;
+
+      a {
+        padding: 0 6px;
+        min-width: unset;
+
+        .nav-label { display: none; }
+      }
+    }
+  }
+}
+
+.user-menu-header {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  cursor: default;
+
+  strong { font-size: 0.95rem; color: var(--color-text-primary); }
+  small  { font-size: 0.78rem; color: var(--color-text-secondary); margin-top: 2px; }
+}
+
+.main-content {
+  min-height: calc(100vh - 64px);
+  background: var(--color-bg);
+}

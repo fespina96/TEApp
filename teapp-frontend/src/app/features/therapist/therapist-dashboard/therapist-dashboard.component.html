@@ -1,0 +1,149 @@
+<div class="page-container">
+
+  <!-- Header -->
+  <header class="therapist-header">
+    <div>
+      <h1 class="section-title">Panel de Terapeuta</h1>
+      <p class="header-subtitle">Supervisa la agenda de los participantes de tus padres vinculados</p>
+    </div>
+  </header>
+
+  <!-- Invite code card -->
+  <mat-card class="invite-card" *ngIf="codigoInvitacion">
+    <div class="invite-content">
+      <mat-icon class="invite-icon">share</mat-icon>
+      <div class="invite-info">
+        <span class="invite-label">Tu código de invitación</span>
+        <span class="invite-code">{{ codigoInvitacion }}</span>
+        <span class="invite-hint">Comparte este código con los padres para que puedan vincularse contigo</span>
+      </div>
+      <button mat-flat-button class="copy-btn" (click)="copiarCodigo()" matTooltip="Copiar código">
+        <mat-icon>content_copy</mat-icon>
+        Copiar
+      </button>
+    </div>
+  </mat-card>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="cargando">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Cargando padres vinculados...</p>
+  </div>
+
+  <!-- Content grid -->
+  <div class="content-grid" *ngIf="!cargando">
+
+    <!-- Left: Supervised parents -->
+    <section class="panel parents-panel">
+      <h2 class="panel-title">
+        <mat-icon>group</mat-icon>
+        Padres supervisados ({{ padres.length }})
+      </h2>
+
+      <div class="empty-panel" *ngIf="padres.length === 0">
+        <mat-icon>person_add</mat-icon>
+        <p>Aún no hay padres vinculados.<br>Comparte tu código de invitación.</p>
+      </div>
+
+      <div class="parent-list" *ngIf="padres.length > 0">
+        <button
+          *ngFor="let padre of padres"
+          class="parent-item"
+          [class.selected]="padreSeleccionado?.id === padre.id"
+          (click)="seleccionarPadre(padre)"
+          type="button">
+          <div class="parent-avatar">
+            <img *ngIf="padre.avatarBase64" [src]="padre.avatarBase64" alt="foto" class="avatar-img">
+            <span *ngIf="!padre.avatarBase64">{{ obtenerIniciales(padre.fullName) }}</span>
+          </div>
+          <div class="parent-info">
+            <span class="parent-name">{{ padre.fullName }}</span>
+            <span class="parent-email">{{ padre.email }}</span>
+          </div>
+          <mat-icon class="chevron">chevron_right</mat-icon>
+        </button>
+      </div>
+    </section>
+
+    <!-- Middle: Children of selected parent -->
+    <section class="panel children-panel" *ngIf="padreSeleccionado">
+      <h2 class="panel-title">
+        <mat-icon>child_care</mat-icon>
+        Participantes de {{ padreSeleccionado.fullName }}
+      </h2>
+
+      <div class="loading-small" *ngIf="cargandoParticipantes">
+        <mat-spinner diameter="32"></mat-spinner>
+      </div>
+
+      <div class="empty-panel" *ngIf="!cargandoParticipantes && participantesDePadre.length === 0">
+        <mat-icon>sentiment_neutral</mat-icon>
+        <p>Este padre aún no tiene participantes registrados.</p>
+      </div>
+
+      <div class="children-list" *ngIf="!cargandoParticipantes && participantesDePadre.length > 0">
+        <button
+          *ngFor="let participante of participantesDePadre"
+          class="child-item"
+          [class.selected]="participanteSeleccionado?.id === participante.id"
+          (click)="seleccionarParticipante(participante)"
+          type="button">
+          <div class="child-avatar" [style.background]="participante.avatarColor || '#A8D8EA'">
+            <img *ngIf="participante.avatarBase64" [src]="participante.avatarBase64" alt="foto" class="avatar-img">
+            <span *ngIf="!participante.avatarBase64">{{ obtenerIniciales(participante.name) }}</span>
+          </div>
+          <span class="child-name">{{ participante.name }}</span>
+          <mat-icon class="chevron">chevron_right</mat-icon>
+        </button>
+      </div>
+    </section>
+
+    <!-- Right: Schedule of selected child -->
+    <section class="panel schedule-panel" *ngIf="participanteSeleccionado">
+      <h2 class="panel-title">
+        <mat-icon>calendar_month</mat-icon>
+        Agenda de {{ participanteSeleccionado.name }}
+        <span class="readonly-badge">Solo lectura</span>
+      </h2>
+
+      <div class="loading-small" *ngIf="cargandoAgenda">
+        <mat-spinner diameter="32"></mat-spinner>
+      </div>
+
+      <mat-tab-group *ngIf="!cargandoAgenda && agendaParticipante" animationDuration="150ms" class="schedule-tabs">
+        <mat-tab *ngFor="let dia of days" [label]="dayLabels[dia]">
+          <div class="day-content">
+            <div class="time-slot" *ngFor="let franja of timeSlots">
+              <div class="slot-header">
+                <mat-icon class="slot-icon">{{ franja === 'MORNING' ? 'wb_sunny' : franja === 'AFTERNOON' ? 'wb_cloudy' : 'nightlight_round' }}</mat-icon>
+                <span class="slot-label">{{ slotLabels[franja] }}</span>
+              </div>
+              <div class="activities-row">
+                <ng-container *ngIf="obtenerEntradas(dia, franja).length > 0; else slotVacio">
+                  <mat-chip-set>
+                    <mat-chip *ngFor="let entrada of obtenerEntradas(dia, franja)"
+                              class="activity-chip"
+                              [class.chip-done]="estaCompletadaHoy(entrada)"
+                              [style.background]="estaCompletadaHoy(entrada) ? '#C8E6C9' : (entrada.activity?.color || '#A8D8EA')">
+                      <mat-icon *ngIf="estaCompletadaHoy(entrada)" class="chip-check-icon">check_circle</mat-icon>
+                      {{ entrada.activity?.name }}
+                    </mat-chip>
+                  </mat-chip-set>
+                </ng-container>
+                <ng-template #slotVacio>
+                  <span class="empty-slot">Sin actividades</span>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+
+      <div class="empty-panel" *ngIf="!cargandoAgenda && !agendaParticipante">
+        <mat-icon>event_busy</mat-icon>
+        <p>No se pudo cargar la agenda.</p>
+      </div>
+    </section>
+
+  </div>
+</div>

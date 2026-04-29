@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_login_gradient">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:gravity="center_horizontal"
+            android:paddingTop="36dp"
+            android:paddingBottom="36dp">
+
+            <!-- Card blanca (igual que Angular) -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="16dp"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingBottom="28dp">
+
+                    <!-- Header: logo + título + subtítulo -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:paddingTop="32dp"
+                        android:paddingBottom="16dp"
+                        android:paddingStart="24dp"
+                        android:paddingEnd="24dp">
+
+                        <ImageView
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:src="@drawable/ic_launcher_img"
+                            android:scaleType="fitCenter"
+                            android:contentDescription="TEApp logo"
+                            android:layout_marginBottom="8dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TEApp"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/on_primary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Agenda semanal para niños"
+                            android:textSize="13sp"
+                            android:textColor="@color/text_secondary"
+                            android:layout_marginTop="2dp" />
+
+                    </LinearLayout>
+
+                    <!-- Pill tab switcher (igual que Angular) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/bg_pill_tab_container"
+                        android:padding="5dp"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginEnd="24dp"
+                        android:layout_marginBottom="4dp">
+
+                        <TextView
+                            android:id="@+id/tab_login"
+                            android:layout_width="0dp"
+                            android:layout_height="42dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/iniciar_sesion"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/on_primary"
+                            android:background="@drawable/bg_pill_tab_active" />
+
+                        <TextView
+                            android:id="@+id/tab_register"
+                            android:layout_width="0dp"
+                            android:layout_height="42dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/registrarse"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_secondary"
+                            android:background="@android:color/transparent" />
+
+                    </LinearLayout>
+
+                    <!-- Formulario (el contenido varía según el tab) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingStart="24dp"
+                        android:paddingEnd="24dp"
+                        android:paddingTop="12dp">
+
+                        <!-- Email -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/til_email"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:hint="@string/correo"
+                            app:hintTextColor="@color/text_input_hint"
+                            app:boxStrokeColor="@color/text_input_stroke"
+                            app:boxBackgroundColor="#EEF7FB">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/et_email"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/on_primary"
+                                android:inputType="textEmailAddress" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Contraseña -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/til_password"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:hint="@string/contrasena"
+                            app:passwordToggleEnabled="true"
+                            app:hintTextColor="@color/text_input_hint"
+                            app:boxStrokeColor="@color/text_input_stroke"
+                            app:boxBackgroundColor="#EEF7FB">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/et_password"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/on_primary"
+                                android:inputType="textPassword" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Recordar dispositivo (solo login) -->
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/switch_recordar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/recordar_dispositivo"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="13sp"
+                            android:checked="true"
+                            android:layout_marginBottom="4dp" />
+
+                        <!-- Nombre (solo registro, oculto por defecto) -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/til_nombre"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:hint="@string/nombre_completo"
+                            android:visibility="gone"
+                            app:hintTextColor="@color/text_input_hint"
+                            app:boxStrokeColor="@color/text_input_stroke"
+                            app:boxBackgroundColor="#EEF7FB">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/et_nombre"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/on_primary"
+                                android:inputType="textPersonName" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Fecha nacimiento (solo registro) -->
+                        <LinearLayout
+                            android:id="@+id/til_fecha_nac"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/fecha_nacimiento"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_input_hint"
+                                android:layout_marginStart="4dp"
+                                android:layout_marginBottom="2dp" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/til_fecha_nac_inner"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp"
+                                app:hintEnabled="false"
+                                app:boxBackgroundColor="#EEF7FB"
+                                app:boxStrokeColor="@color/text_input_stroke">
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/et_fecha_nac"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/on_primary"
+                                    android:textColorHint="@color/text_input_hint"
+                                    android:hint="Seleccioná una fecha"
+                                    android:focusable="false"
+                                    android:clickable="true" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                        </LinearLayout>
+
+                        <!-- Rol (solo registro) -->
+                        <RadioGroup
+                            android:id="@+id/radio_group"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:visibility="gone"
+                            android:layout_marginBottom="12dp">
+                            <RadioButton
+                                android:id="@+id/rb_padre"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:textColor="@color/on_primary"
+                                android:text="@string/soy_padre"
+                                android:checked="true" />
+                            <RadioButton
+                                android:id="@+id/rb_terapeuta"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:textColor="@color/on_primary"
+                                android:text="@string/soy_terapeuta" />
+                        </RadioGroup>
+
+                        <!-- Botón principal -->
+                        <Button
+                            android:id="@+id/btn_submit"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/iniciar_sesion"
+                            style="@style/Widget.TEApp.Button" />
+
+                        <!-- ¿Olvidaste la contraseña? -->
+                        <Button
+                            android:id="@+id/btn_olvide"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="@string/olvidaste_contrasena"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="13sp"
+                            style="@style/Widget.MaterialComponents.Button.TextButton" />
+
+                        <ProgressBar
+                            android:id="@+id/progress_bar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="8dp"
+                            android:visibility="gone" />
+
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

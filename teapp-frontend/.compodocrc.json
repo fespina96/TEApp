@@ -1,0 +1,16 @@
+{
+  "tsconfig": "./tsconfig.json",
+  "output": "./docs",
+  "name": "TEApp Frontend",
+  "theme": "material",
+  "includes": "./src",
+  "includesName": "Documentación adicional",
+  "disableSourceCode": false,
+  "disableGraph": false,
+  "disablePrivate": false,
+  "disableInternal": false,
+  "assetsFolder": "./src/assets",
+  "open": false,
+  "silent": false,
+  "language": "es-ES"
+}

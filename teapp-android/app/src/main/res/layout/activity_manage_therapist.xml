@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <!-- Vincular nuevo terapeuta -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@color/primary">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vincular terapeuta"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/on_primary"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_codigo"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/codigo_terapeuta_hint"
+                android:layout_marginEnd="8dp"
+                app:boxBackgroundColor="#EEF7FB"
+                app:boxStrokeColor="@color/text_input_stroke"
+                app:hintTextColor="@color/text_input_hint">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_codigo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/on_primary"
+                    android:inputType="textCapCharacters"
+                    android:textAllCaps="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btn_vincular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/vincular"
+                style="@style/Widget.TEApp.Button" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Terapeutas vinculados"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="@color/on_primary"
+        android:padding="16dp" />
+
+    <TextView
+        android:id="@+id/tv_vacio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sin_terapeutas"
+        android:textSize="15sp"
+        android:textColor="@color/text_secondary"
+        android:gravity="center"
+        android:padding="16dp"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp" />
+
+</LinearLayout>

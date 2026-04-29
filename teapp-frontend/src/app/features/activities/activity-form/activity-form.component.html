@@ -1,0 +1,68 @@
+<h2 mat-dialog-title>{{ modoEdicion ? 'Editar actividad' : 'Nueva actividad personalizada' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" id="activity-form" (ngSubmit)="onSubmit()" class="activity-form">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre de la actividad</mat-label>
+      <input matInput formControlName="name" placeholder="Ej: Leer cuento">
+      <mat-error *ngIf="form.get('name')?.hasError('required')">El nombre es obligatorio</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Descripción (opcional)</mat-label>
+      <textarea matInput formControlName="description" rows="2"
+                placeholder="Descripción breve de la actividad"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Categoría</mat-label>
+      <mat-select formControlName="category">
+        <mat-option *ngFor="let cat of categories" [value]="cat">
+          {{ categoryLabels[cat] }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Selector de icono -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Icono</mat-label>
+      <mat-select formControlName="iconName">
+        <mat-option *ngFor="let icon of MATERIAL_ICONS" [value]="icon">
+          <mat-icon>{{ icon }}</mat-icon>
+          {{ icon }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Temporizador -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Duración (minutos, opcional)</mat-label>
+      <input matInput type="number" formControlName="durationMinutes" min="1" max="180"
+             placeholder="Ej: 15">
+      <mat-icon matSuffix>timer</mat-icon>
+    </mat-form-field>
+
+    <div class="pausable-row" *ngIf="form.get('durationMinutes')?.value">
+      <mat-slide-toggle formControlName="pausable" color="primary">
+        Permitir pausar el temporizador
+      </mat-slide-toggle>
+    </div>
+
+    <!-- Preview del chip -->
+    <div class="chip-preview" [style.background-color]="form.get('color')?.value">
+      <mat-icon *ngIf="form.get('iconName')?.value">{{ form.get('iconName')?.value }}</mat-icon>
+      <span>{{ form.get('name')?.value || 'Vista previa' }}</span>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]="false">Cancelar</button>
+  <button mat-flat-button class="btn-save" (click)="onSubmit()"
+          [disabled]="form.invalid || cargando">
+    <mat-icon>save</mat-icon>
+    {{ modoEdicion ? 'Guardar cambios' : 'Crear actividad' }}
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Autism-friendly palette — sincronizada con Angular autism-palette.scss -->
+
+    <!-- Primarios de marca -->
+    <color name="primary">#A8D8EA</color>           <!-- Azul cielo -->
+    <color name="primary_dark">#78C1C8</color>       <!-- Teal — activo/enfocado -->
+    <color name="primary_variant">#D0ECF5</color>    <!-- Azul muy claro -->
+    <color name="secondary">#B8E0C8</color>          <!-- Verde suave -->
+    <color name="secondary_variant">#D8F0E0</color>
+    <color name="lavender">#C9B8E8</color>           <!-- Lavanda -->
+    <color name="peach">#F9D8C0</color>              <!-- Melocotón -->
+    <color name="muted_purple">#9B7EC8</color>       <!-- Púrpura suave -->
+
+    <!-- Fondos y superficies -->
+    <color name="background">#F8F9FA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="border">#E2E8EF</color>
+
+    <!-- Texto -->
+    <color name="on_primary">#343A40</color>         <!-- Texto primario — sobre fondos claros -->
+    <color name="on_background">#343A40</color>
+    <color name="on_surface">#343A40</color>
+    <color name="text_secondary">#6C757D</color>
+    <color name="text_muted">#ADB5BD</color>
+
+    <!-- Estados semánticos -->
+    <color name="success_green">#8BC4A0</color>      <!-- Sage — completado -->
+    <color name="warning_amber">#E8C56B</color>      <!-- Amber pastel — precaución -->
+    <color name="teal">#78C1C8</color>               <!-- Teal — activo -->
+
+    <!-- Franjas horarias -->
+    <color name="morning_bg">#FFF9E6</color>
+    <color name="afternoon_bg">#F0FAF4</color>
+    <color name="night_bg">#F0EDF8</color>
+
+    <!-- Categorías de actividad -->
+    <color name="cat_hygiene">#A8D8EA</color>
+    <color name="cat_meal">#FAF0BE</color>
+    <color name="cat_education">#B8E0C8</color>
+    <color name="cat_play">#C9B8E8</color>
+    <color name="cat_therapy">#D4E8C8</color>
+    <color name="cat_rest">#E0D8F0</color>
+    <color name="cat_outdoor">#C8E8D0</color>
+    <color name="cat_custom">#F9D8C0</color>
+    <color name="cat_special">#FAF0BE</color>
+
+    <!-- Overlay completado -->
+    <color name="completed_overlay">#4DB8E0C8</color>
+
+    <!-- Modo niño -->
+    <color name="kid_now_bg">#E8F5F9</color>
+    <color name="kid_next_bg">#FFF9E6</color>
+</resources>

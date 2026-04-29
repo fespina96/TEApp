@@ -1,0 +1,130 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { AuthService } from '../../../core/services/auth.service';
+
+/**
+ * Página de inicio de sesión y registro de padres.
+ * Contiene dos pestañas: Login y Registro.
+ */
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatCheckboxModule
+  ],
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.scss'
+})
+export class LoginComponent {
+  loginForm: FormGroup;
+  registerForm: FormGroup;
+  /** Indica si hay una petición en curso */
+  cargando = false;
+  /** Mensaje de error a mostrar bajo el formulario */
+  mensajeError = '';
+  /** Controla si la contraseña es visible */
+  ocultarContrasena = true;
+  /** Controla si la confirmación de contraseña es visible */
+  ocultarConfirmacion = true;
+  /** Rol seleccionado en el registro */
+  rolSeleccionado: 'PARENT' | 'THERAPIST' = 'PARENT';
+  /** Pestaña activa: login o registro */
+  pestanaActiva: 'login' | 'register' = 'login';
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
+    this.loginForm = this.fb.group({
+      email:      ['', [Validators.required, Validators.email]],
+      password:   ['', [Validators.required, Validators.minLength(6)]],
+      rememberMe: [false]
+    });
+
+    this.registerForm = this.fb.group({
+      fullName:        ['', [Validators.required, Validators.maxLength(255)]],
+      email:           ['', [Validators.required, Validators.email]],
+      dateOfBirth:     [null, [Validators.required]],
+      password:        ['', [Validators.required, Validators.minLength(8),
+                             Validators.pattern(/^(?=.*[A-Z])(?=.*\d).+$/)]],
+      confirmPassword: ['', [Validators.required]]
+    }, { validators: this.validadorContrasenasIguales });
+  }
+
+  /** Validador que verifica que password y confirmPassword sean iguales */
+  private validadorContrasenasIguales(grupo: AbstractControl): ValidationErrors | null {
+    const pw  = grupo.get('password')?.value;
+    const cpw = grupo.get('confirmPassword')?.value;
+    return pw && cpw && pw !== cpw ? { passwordsMismatch: true } : null;
+  }
+
+  /** Envía las credenciales de login */
+  onLogin(): void {
+    if (this.loginForm.invalid) return;
+    this.cargando = true;
+    this.mensajeError = '';
+
+    const { rememberMe, ...credenciales } = this.loginForm.value;
+    this.authService.login(credenciales, rememberMe).subscribe({
+      next: (respuesta) => {
+        const destino = respuesta.role === 'THERAPIST' ? '/app/therapist' : '/app/dashboard';
+        this.router.navigate([destino]);
+      },
+      error: (err) => {
+        if (err.status === 0) {
+          this.mensajeError = 'No se pudo conectar con el servidor. Verificá tu conexión.';
+        } else if (err.status === 401) {
+          this.mensajeError = 'Email o contraseña incorrectos.';
+        } else {
+          this.mensajeError = 'Error al iniciar sesión. Intentá de nuevo.';
+        }
+        this.cargando = false;
+      }
+    });
+  }
+
+  /** Envía los datos de registro de nuevo usuario */
+  onRegister(): void {
+    if (this.registerForm.invalid) return;
+    this.cargando = true;
+    this.mensajeError = '';
+
+    const { confirmPassword, dateOfBirth, ...datosRegistro } = this.registerForm.value;
+    const fechaNacimiento = dateOfBirth instanceof Date
+      ? dateOfBirth.toISOString().split('T')[0]
+      : dateOfBirth;
+    this.authService.register({ ...datosRegistro, dateOfBirth: fechaNacimiento, role: this.rolSeleccionado }).subscribe({
+      next: (respuesta) => {
+        const destino = respuesta.role === 'THERAPIST' ? '/app/therapist' : '/app/dashboard';
+        this.router.navigate([destino]);
+      },
+      error: (err) => {
+        this.mensajeError = err.error?.message || 'Error al registrarse. Intenta de nuevo.';
+        this.cargando = false;
+      }
+    });
+  }
+}

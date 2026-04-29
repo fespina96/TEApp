@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TEApp</string>
+
+    <!-- Auth -->
+    <string name="iniciar_sesion">Iniciar sesión</string>
+    <string name="registrarse">Registrarse</string>
+    <string name="correo">Correo electrónico</string>
+    <string name="contrasena">Contraseña</string>
+    <string name="nombre_completo">Nombre completo</string>
+    <string name="fecha_nacimiento">Fecha de nacimiento</string>
+    <string name="olvidaste_contrasena">¿Olvidaste tu contraseña?</string>
+    <string name="recuperar_contrasena">Recuperar contraseña</string>
+    <string name="enviar_enlace">Enviar enlace</string>
+    <string name="soy_padre">Soy padre/tutor</string>
+    <string name="soy_terapeuta">Soy terapeuta</string>
+    <string name="confirmar_contrasena">Confirmar contraseña</string>
+
+    <!-- Dashboard -->
+    <string name="participantes">Participantes</string>
+    <string name="agregar_participante">Agregar participante</string>
+    <string name="cerrar_sesion">Cerrar sesión</string>
+    <string name="ver_agenda">Ver agenda</string>
+    <string name="editar">Editar</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="sin_participantes">Sin participantes registrados</string>
+
+    <!-- Agenda -->
+    <string name="agenda">Agenda</string>
+    <string name="manana">Mañana</string>
+    <string name="tarde">Tarde</string>
+    <string name="noche">Noche</string>
+    <string name="agregar_actividad">Agregar actividad</string>
+    <string name="modo_participante">Modo participante</string>
+    <string name="sin_actividades">Sin actividades para este día</string>
+    <string name="lunes">Lunes</string>
+    <string name="martes">Martes</string>
+    <string name="miercoles">Miércoles</string>
+    <string name="jueves">Jueves</string>
+    <string name="viernes">Viernes</string>
+    <string name="sabado">Sábado</string>
+    <string name="domingo">Domingo</string>
+
+    <!-- Kid mode -->
+    <string name="ahora">Ahora</string>
+    <string name="despues">Después</string>
+    <string name="completado">¡Completado!</string>
+    <string name="marcar_como_hecho">Marcar como hecho</string>
+    <string name="salir_modo_participante">Salir del modo participante</string>
+
+    <!-- Common -->
+    <string name="guardar">Guardar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="volver">Volver</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="cargando">Cargando…</string>
+    <string name="error_red">Error de conexión. Verificá que el servidor esté activo.</string>
+    <string name="campos_requeridos">Completá todos los campos requeridos.</string>
+    <string name="notas">Notas</string>
+    <string name="duracion_minutos">Duración (minutos)</string>
+
+    <!-- Child form -->
+    <string name="nuevo_participante">Nuevo participante</string>
+    <string name="editar_participante">Editar participante</string>
+    <string name="nombre_participante">Nombre del participante</string>
+    <string name="color_avatar">Color de avatar</string>
+
+    <!-- Activity catalog -->
+    <string name="catalogo_actividades">Catálogo de actividades</string>
+    <string name="predefinidas">Predefinidas</string>
+    <string name="personalizadas">Personalizadas</string>
+    <string name="buscar">Buscar…</string>
+    <string name="seleccionar">Seleccionar</string>
+
+    <!-- Therapist -->
+    <string name="panel_terapeuta">Panel de terapeuta</string>
+    <string name="padres_supervisados">Padres supervisados</string>
+    <string name="mi_codigo">Mi código de invitación</string>
+
+    <!-- Activity form -->
+    <string name="nueva_actividad">Nueva actividad</string>
+    <string name="editar_actividad">Editar actividad</string>
+    <string name="descripcion">Descripción (opcional)</string>
+    <string name="categoria">Categoría</string>
+    <string name="duracion_min">Duración (minutos)</string>
+    <string name="pausable">Pausable</string>
+    <string name="buscar_pictograma">Buscar pictograma ARASAAC…</string>
+    <string name="pictograma_seleccionado">Pictograma seleccionado</string>
+
+    <!-- Steps -->
+    <string name="pasos_de_actividad">Pasos de la actividad</string>
+    <string name="sin_descripcion">Sin descripción</string>
+    <string name="paso_completado">¡Listo! Marcando como completado…</string>
+
+    <!-- Timer -->
+    <string name="pausar">Pausar</string>
+    <string name="reanudar">Reanudar</string>
+
+    <!-- Entry settings -->
+    <string name="configurar_entrada">Configurar entrada</string>
+    <string name="requerir_timer_completo">Requerir timer completo</string>
+    <string name="opciones_entrada">Opciones de actividad</string>
+    <string name="editar_configuracion">Editar configuración</string>
+
+    <!-- Reset week -->
+    <string name="resetear_semana">Resetear semana</string>
+    <string name="confirmar_reset">¿Borrar todas las marcas de completado de esta semana?</string>
+
+    <!-- Change password -->
+    <string name="cambiar_contrasena">Cambiar contraseña</string>
+    <string name="contrasena_actual">Contraseña actual</string>
+    <string name="nueva_contrasena">Nueva contraseña</string>
+    <string name="confirmar_nueva">Confirmar nueva contraseña</string>
+
+    <!-- Manage therapists -->
+    <string name="mis_terapeutas">Mis terapeutas</string>
+    <string name="vincular_terapeuta">Vincular terapeuta</string>
+    <string name="codigo_terapeuta_hint">Código de invitación del terapeuta</string>
+    <string name="vincular">Vincular</string>
+    <string name="desvincular">Desvincular</string>
+    <string name="sin_terapeutas">Sin terapeutas vinculados</string>
+
+    <!-- Supervised agenda -->
+    <string name="agenda_supervisada">Agenda (solo lectura)</string>
+
+    <!-- Dashboard -->
+    <string name="opciones">Opciones</string>
+    <string name="ver_participante">Ver agenda</string>
+    <string name="actividades">Actividades</string>
+
+    <!-- Kid mode exit -->
+    <string name="verificar_identidad">Verificar identidad</string>
+    <string name="contrasena_para_salir">Ingresá tu contraseña para salir del modo participante</string>
+    <string name="verificar">Verificar</string>
+    <string name="contrasena_incorrecta">Contraseña incorrecta. Intentá de nuevo.</string>
+
+    <!-- Login remember -->
+    <string name="recordar_dispositivo">Recordar dispositivo</string>
+
+    <!-- Child avatar -->
+    <string name="cambiar_foto">Cambiar foto</string>
+    <string name="foto_perfil">Foto de perfil</string>
+</resources>

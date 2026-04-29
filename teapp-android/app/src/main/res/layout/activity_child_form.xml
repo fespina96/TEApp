@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_nombre"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/nombre_participante"
+            android:layout_marginBottom="12dp"
+            app:boxBackgroundColor="#EEF7FB"
+            app:boxStrokeColor="@color/text_input_stroke"
+            app:boxStrokeWidth="2dp"
+            app:boxStrokeWidthFocused="3dp"
+            app:hintTextColor="@color/text_input_hint">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_nombre"
+                android:textColorHint="@color/text_input_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/on_primary"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fecha_nacimiento"
+            android:textSize="12sp"
+            android:textColor="@color/text_input_hint"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="2dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_fecha"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:hintEnabled="false"
+            app:boxBackgroundColor="#EEF7FB"
+            app:boxStrokeColor="@color/text_input_stroke"
+            app:boxStrokeWidth="2dp"
+            app:boxStrokeWidthFocused="3dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_fecha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/on_primary"
+                android:textColorHint="@color/text_input_hint"
+                android:hint="Seleccioná una fecha"
+                android:focusable="false"
+                android:clickable="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_notas"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/notas"
+            android:layout_marginBottom="20dp"
+            app:boxBackgroundColor="#EEF7FB"
+            app:boxStrokeColor="@color/text_input_stroke"
+            app:boxStrokeWidth="2dp"
+            app:boxStrokeWidthFocused="3dp"
+            app:hintTextColor="@color/text_input_hint">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_notas"
+                android:textColorHint="@color/text_input_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/on_primary"
+                android:inputType="textMultiLine"
+                android:minLines="2" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Avatar foto -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/foto_perfil"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <ImageView
+                android:id="@+id/img_avatar"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:scaleType="centerCrop"
+                android:background="@drawable/circle_avatar"
+                android:contentDescription="Avatar del participante"
+                android:layout_marginEnd="16dp" />
+
+            <Button
+                android:id="@+id/btn_cambiar_foto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cambiar_foto"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:textColor="@color/on_primary" />
+
+        </LinearLayout>
+
+        <!-- Color avatar -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/color_avatar"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
+            <View android:id="@+id/color1" android:layout_width="0dp" android:layout_height="40dp"
+                android:layout_weight="1" android:layout_margin="4dp" android:elevation="2dp" />
+            <View android:id="@+id/color2" android:layout_width="0dp" android:layout_height="40dp"
+                android:layout_weight="1" android:layout_margin="4dp" android:elevation="2dp" />
+            <View android:id="@+id/color3" android:layout_width="0dp" android:layout_height="40dp"
+                android:layout_weight="1" android:layout_margin="4dp" android:elevation="2dp" />
+            <View android:id="@+id/color4" android:layout_width="0dp" android:layout_height="40dp"
+                android:layout_weight="1" android:layout_margin="4dp" android:elevation="2dp" />
+            <View android:id="@+id/color5" android:layout_width="0dp" android:layout_height="40dp"
+                android:layout_weight="1" android:layout_margin="4dp" android:elevation="2dp" />
+            <View android:id="@+id/color6" android:layout_width="0dp" android:layout_height="40dp"
+                android:layout_weight="1" android:layout_margin="4dp" android:elevation="2dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_guardar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/guardar"
+            style="@style/Widget.TEApp.Button" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</ScrollView>

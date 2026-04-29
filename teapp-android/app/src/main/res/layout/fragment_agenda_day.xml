@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/tv_vacio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sin_actividades"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:gravity="center"
+            android:padding="32dp"
+            android:visibility="gone" />
+
+        <!-- Mañana -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="☀️  Mañana"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#8B6914"
+            android:background="@drawable/bg_slot_morning"
+            android:padding="12dp"
+            android:layout_marginTop="4dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_manana"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Tarde -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🌤️  Tarde"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#2C6E6E"
+            android:background="@drawable/bg_slot_afternoon"
+            android:padding="12dp"
+            android:layout_marginTop="4dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_tarde"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Noche -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🌙  Noche"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#4A3870"
+            android:background="@drawable/bg_slot_night"
+            android:padding="12dp"
+            android:layout_marginTop="4dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_noche"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:layout_marginBottom="8dp" />
+
+    </LinearLayout>
+</ScrollView>

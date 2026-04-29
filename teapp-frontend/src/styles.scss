@@ -1,0 +1,202 @@
+// ============================================================
+// ESTILOS GLOBALES - TEApp
+// ============================================================
+@use '@angular/material' as mat;
+@import 'app/shared/theme/autism-palette';
+
+// --- Tipografía de Angular Material ---
+@include mat.core();
+
+// Paleta primaria: Azul cielo
+$teapp-primary: mat.define-palette((
+  50:  #E8F5FA,
+  100: #C5E5F2,
+  200: #A8D8EA,
+  300: #80C4DF,
+  400: #6BBAD4,
+  500: #A8D8EA,
+  600: #6BBAD4,
+  700: #4EABCA,
+  800: #3D94B8,
+  900: #2B7A9C,
+  contrast: (
+    50:  #343A40,
+    100: #343A40,
+    200: #343A40,
+    300: #343A40,
+    400: #343A40,
+    500: #343A40,
+    600: #FFFFFF,
+    700: #FFFFFF,
+    800: #FFFFFF,
+    900: #FFFFFF,
+  )
+), 500, 700, 200);
+
+// Paleta accent: Lavanda
+$teapp-accent: mat.define-palette((
+  50:  #F0EDF8,
+  100: #DDD6F2,
+  200: #C9B8E8,
+  300: #B59ADE,
+  400: #A585D5,
+  500: #C9B8E8,
+  600: #9B7EC8,
+  700: #8A6EB8,
+  800: #7860A8,
+  900: #5A4488,
+  contrast: (
+    50:  #343A40,
+    100: #343A40,
+    200: #343A40,
+    300: #343A40,
+    400: #343A40,
+    500: #343A40,
+    600: #FFFFFF,
+    700: #FFFFFF,
+    800: #FFFFFF,
+    900: #FFFFFF,
+  )
+), 500, 700, 200);
+
+// Paleta warn: Ámbar (sin rojo)
+$teapp-warn: mat.define-palette((
+  50:  #FDF8E8,
+  100: #FAF0BE,
+  200: #F5E17A,
+  300: #EFD058,
+  400: #EAC23E,
+  500: #E8C56B,
+  600: #D4A83A,
+  700: #B8882A,
+  800: #9A6A1E,
+  900: #7A4E14,
+  contrast: (
+    50:  #343A40,
+    100: #343A40,
+    200: #343A40,
+    300: #343A40,
+    400: #343A40,
+    500: #343A40,
+    600: #343A40,
+    700: #FFFFFF,
+    800: #FFFFFF,
+    900: #FFFFFF,
+  )
+), 500, 700, 200);
+
+$teapp-theme: mat.define-light-theme((
+  color: (
+    primary: $teapp-primary,
+    accent:  $teapp-accent,
+    warn:    $teapp-warn,
+  ),
+  typography: mat.define-typography-config(
+    $font-family: 'Nunito, Roboto, sans-serif',
+  ),
+  density: 0,
+));
+
+@include mat.all-component-themes($teapp-theme);
+
+// ============================================================
+// RESET Y BASE
+// ============================================================
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+// ============================================================
+// UTILIDADES GLOBALES
+// ============================================================
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.card-autism {
+  background: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+}
+
+.section-title {
+  font-size: 1.4rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: 16px;
+}
+
+// ============================================================
+// SNACKBAR PERSONALIZADO
+// ============================================================
+.snack-success .mat-mdc-snack-bar-label {
+  color: var(--color-sage) !important;
+}
+.snack-error .mat-mdc-snack-bar-label {
+  color: #E57373 !important;
+}
+
+// ============================================================
+// CHIP DE ACTIVIDAD
+// ============================================================
+.activity-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-xl);
+  font-size: 0.85rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  border: none;
+  cursor: default;
+
+  .material-icons {
+    font-size: 16px;
+  }
+}
+
+// ============================================================
+// FRANJA HORARIA
+// ============================================================
+.slot-morning   { background: var(--slot-morning-bg);   }
+.slot-afternoon { background: var(--slot-afternoon-bg); }
+.slot-night     { background: var(--slot-night-bg);     }
+
+// ============================================================
+// RESPONSIVE
+// ============================================================
+@media (max-width: 600px) {
+  .page-container {
+    padding: 16px 12px;
+  }
+
+  // Make Material dialogs full-width on phones
+  .cdk-overlay-pane {
+    max-width: 100vw !important;
+  }
+
+  .mat-mdc-dialog-container {
+    border-radius: var(--radius-lg) !important;
+  }
+}

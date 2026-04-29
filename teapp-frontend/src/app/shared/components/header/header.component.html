@@ -1,0 +1,66 @@
+<mat-toolbar class="app-toolbar">
+  <!-- Logo y nombre -->
+  <a class="brand" routerLink="/app/dashboard">
+    <img src="assets/logo.png" alt="TEApp logo" class="brand-logo">
+    <span class="brand-name">TEApp</span>
+  </a>
+
+  <span class="spacer"></span>
+
+  <!-- Navegación principal -->
+  <nav class="main-nav">
+    <!-- Nav for therapists -->
+    <ng-container *ngIf="authService.isTherapist()">
+      <a mat-button routerLink="/app/therapist" routerLinkActive="nav-active">
+        <mat-icon>supervisor_account</mat-icon>
+        <span class="nav-label">Supervisión</span>
+      </a>
+    </ng-container>
+
+    <!-- Nav for parents -->
+    <ng-container *ngIf="!authService.isTherapist()">
+      <a mat-button routerLink="/app/dashboard" routerLinkActive="nav-active">
+        <mat-icon>home</mat-icon>
+        <span class="nav-label">Inicio</span>
+      </a>
+      <a mat-button routerLink="/app/children" routerLinkActive="nav-active">
+        <mat-icon>people</mat-icon>
+        <span class="nav-label">Participantes</span>
+      </a>
+      <a mat-button routerLink="/app/activities" routerLinkActive="nav-active">
+        <mat-icon>category</mat-icon>
+        <span class="nav-label">Actividades</span>
+      </a>
+    </ng-container>
+  </nav>
+
+  <!-- Menú de usuario -->
+  <button mat-icon-button [matMenuTriggerFor]="menuUsuario" class="user-avatar-btn"
+          aria-label="Menú de usuario">
+    <div class="user-avatar">
+      <img *ngIf="usuarioActual?.avatarBase64" [src]="usuarioActual!.avatarBase64" class="user-avatar-img" alt="foto">
+      <span *ngIf="!usuarioActual?.avatarBase64">{{ iniciales }}</span>
+    </div>
+  </button>
+
+  <mat-menu #menuUsuario="matMenu">
+    <div class="user-menu-header" mat-menu-item disabled>
+      <strong>{{ usuarioActual?.fullName }}</strong>
+      <small>{{ usuarioActual?.email }}</small>
+    </div>
+    <button mat-menu-item routerLink="/app/profile">
+      <mat-icon>manage_accounts</mat-icon>
+      Mi perfil
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Cerrar sesión
+    </button>
+  </mat-menu>
+</mat-toolbar>
+
+<!-- Contenido de la ruta hija -->
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>

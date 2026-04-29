@@ -1,0 +1,45 @@
+<div class="slot-column" [ngClass]="slotClass">
+
+  <!-- Cabecera de la franja -->
+  <div class="slot-header">
+    <mat-icon class="slot-icon">{{ slotIcons[slot] }}</mat-icon>
+    <h3 class="slot-title">{{ slotLabels[slot] }}</h3>
+    <span class="entry-count" *ngIf="localEntries.length > 0">{{ localEntries.length }}</span>
+  </div>
+
+  <!-- Lista de entradas con drag-and-drop -->
+  <div class="entries-list"
+       cdkDropList
+       [cdkDropListData]="localEntries"
+       (cdkDropListDropped)="onDrop($event)">
+
+    <div cdkDrag
+         *ngFor="let entry of localEntries"
+         class="entry-drag-wrapper">
+
+      <div class="drag-handle" cdkDragHandle aria-label="Arrastrar para reordenar">
+        <mat-icon>drag_indicator</mat-icon>
+      </div>
+
+      <app-entry-card
+        [entry]="entry"
+        [isCompletedToday]="isCompletedToday(entry)"
+        (delete)="onDeleteEntry($event)"
+        class="entry-card-wrapper">
+      </app-entry-card>
+    </div>
+
+    <div class="empty-slot" *ngIf="localEntries.length === 0">
+      <p>Sin actividades</p>
+    </div>
+  </div>
+
+  <!-- Botón agregar actividad -->
+  <button mat-stroked-button class="btn-add-activity"
+          (click)="openActivityPicker()"
+          [attr.aria-label]="'Agregar actividad a ' + slotLabels[slot]">
+    <mat-icon>add</mat-icon>
+    Agregar
+  </button>
+
+</div>

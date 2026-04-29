@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="106" fill="white"/>
+  <defs>
+    <filter id="sh" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="10" flood-color="#00000028"/>
+    </filter>
+  </defs>
+  <text x="27" y="341"
+        font-family="'Arial Rounded MT Bold', Nunito, 'Helvetica Neue', Arial, sans-serif"
+        font-weight="900" font-size="213" fill="#4285F4" filter="url(#sh)">T</text>
+  <text x="176" y="341"
+        font-family="'Arial Rounded MT Bold', Nunito, 'Helvetica Neue', Arial, sans-serif"
+        font-weight="900" font-size="213" fill="#26B5AD" filter="url(#sh)">E</text>
+  <text x="336" y="341"
+        font-family="'Arial Rounded MT Bold', Nunito, 'Helvetica Neue', Arial, sans-serif"
+        font-weight="900" font-size="213" fill="#F5A623" filter="url(#sh)">A</text>
+</svg>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="2dp"
+    android:layout_marginEnd="2dp"
+    android:layout_marginTop="3dp"
+    android:layout_marginBottom="3dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical">
+
+        <!-- Ícono con color de la actividad -->
+        <FrameLayout
+            android:id="@+id/frame_icon"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginEnd="12dp">
+
+            <ImageView
+                android:id="@+id/img_pictogram"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="Pictograma"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <!-- Nombre de la actividad -->
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/on_primary" />
+
+        <!-- Check circle (completado o no) -->
+        <ImageView
+            android:id="@+id/iv_check"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@android:drawable/checkbox_off_background"
+            android:contentDescription="Estado"
+            android:layout_marginStart="8dp" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

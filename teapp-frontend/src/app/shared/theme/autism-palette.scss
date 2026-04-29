@@ -1,0 +1,77 @@
+// ============================================================
+// PALETA DE COLORES AMIGABLE PARA NIÑOS CON AUTISMO
+// Colores suaves, desaturados, sin rojo intenso ni naranja brillante
+// Contraste de texto cumple WCAG AA
+// ============================================================
+
+:root {
+  // --- Colores primarios de marca ---
+  --color-sky-blue:      #A8D8EA; // Azul cielo suave — primario, cabecera
+  --color-soft-green:    #B8E0C8; // Verde suave — éxito, mañana
+  --color-pastel-yellow: #FAF0BE; // Amarillo pastel — resaltados, tarde
+  --color-lavender:      #C9B8E8; // Lavanda — secundario, noche
+  --color-peach:         #F9D8C0; // Melocotón — actividades personalizadas
+
+  // --- Colores neutros ---
+  --color-bg:           #F8F9FA; // Fondo general de la página
+  --color-card-bg:      #FFFFFF; // Fondo de tarjetas
+  --color-border:       #E2E8EF; // Bordes suaves
+  --color-text-primary: #343A40; // Texto principal (no negro puro)
+  --color-text-secondary: #6C757D; // Texto secundario
+  --color-text-muted:   #ADB5BD;  // Texto muy secundario
+
+  // --- Estados semánticos ---
+  --color-teal:         #78C1C8; // Activo / enfocado / enlaces
+  --color-muted-purple: #9B7EC8; // Secundario / visitado
+  --color-amber:        #E8C56B; // Precaución / pendiente
+  --color-sage:         #8BC4A0; // Confirmado / completado
+
+  // --- Franjas horarias ---
+  --slot-morning-bg:    #FFF9E6;
+  --slot-morning-icon:  #E8C56B;
+  --slot-morning-label: #8B6914;
+
+  --slot-afternoon-bg:  #F0FAF4;
+  --slot-afternoon-icon:#78C1C8;
+  --slot-afternoon-label:#2C6E6E;
+
+  --slot-night-bg:      #F0EDF8;
+  --slot-night-icon:    #9B7EC8;
+  --slot-night-label:   #4A3870;
+
+  // --- Colores por categoría de actividad ---
+  --cat-hygiene:    #A8D8EA;
+  --cat-meal:       #FAF0BE;
+  --cat-education:  #B8E0C8;
+  --cat-play:       #C9B8E8;
+  --cat-therapy:    #D4E8C8;
+  --cat-rest:       #E0D8F0;
+  --cat-outdoor:    #C8E8D0;
+  --cat-custom:     #F9D8C0;
+
+  // --- Colores de avatar para niños ---
+  --avatar-blue:    #A8D8EA;
+  --avatar-green:   #B8E0C8;
+  --avatar-yellow:  #FAF0BE;
+  --avatar-purple:  #C9B8E8;
+  --avatar-peach:   #F9D8C0;
+  --avatar-teal:    #A8E0DA;
+
+  // --- Tipografía ---
+  --font-family: 'Nunito', 'Roboto', sans-serif;
+  --font-size-base: 16px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 600;
+  --font-weight-bold: 800;
+
+  // --- Espaciado ---
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   20px;
+  --radius-xl:   28px;
+
+  // --- Sombras ---
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+}
