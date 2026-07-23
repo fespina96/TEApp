@@ -15,7 +15,6 @@ import com.bumptech.glide.Glide;
 import com.teapp.R;
 import com.teapp.model.ActivityItem;
 
-
 import java.util.List;
 
 public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHolder> {
@@ -28,7 +27,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
     private final Listener listener;
 
     public ActivityAdapter(List<ActivityItem> items, Listener listener) {
-        this.items = items;
+        this.items    = items;
         this.listener = listener;
     }
 
@@ -43,18 +42,36 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder h, int position) {
         ActivityItem act = items.get(position);
+
         h.tvName.setText(act.name);
         h.tvCategory.setText(categoryLabel(act.category));
 
-        if (act.color != null) {
-            try {
-                h.card.setCardBackgroundColor(Color.parseColor(act.color));
-            } catch (Exception ignored) {}
+        if (act.description != null && !act.description.isEmpty()) {
+            h.tvDescription.setText(act.description);
+            h.tvDescription.setVisibility(View.VISIBLE);
+        } else {
+            h.tvDescription.setVisibility(View.GONE);
         }
 
-        if (act.pictogramUrl != null) {
+        if (act.stepCount != null && act.stepCount > 0) {
+            h.tvSteps.setText(act.stepCount + (act.stepCount == 1 ? " paso" : " pasos"));
+        } else {
+            h.tvSteps.setText("Sin pasos");
+        }
+
+        h.ivPredefined.setVisibility(act.predefined ? View.VISIBLE : View.GONE);
+
+        // Color de fondo de la card
+        if (act.color != null) {
+            try { h.card.setCardBackgroundColor(Color.parseColor(act.color)); }
+            catch (Exception ignored) {}
+        }
+
+        // Pictograma
+        String imgUrl = act.pictogramUrl != null ? act.pictogramUrl : act.imageBase64;
+        if (imgUrl != null) {
             Glide.with(h.imgPictogram.getContext())
-                    .load(act.pictogramUrl)
+                    .load(imgUrl)
                     .placeholder(R.drawable.ic_activity_placeholder)
                     .into(h.imgPictogram);
             h.imgPictogram.setVisibility(View.VISIBLE);
@@ -63,6 +80,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
         }
 
         h.card.setOnClickListener(v -> listener.onSelect(act));
+        h.card.setOnLongClickListener(v -> { listener.onSelect(act); return true; });
     }
 
     private String categoryLabel(String cat) {
@@ -85,15 +103,18 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         CardView card;
-        TextView tvName, tvCategory;
-        ImageView imgPictogram;
+        TextView tvName, tvCategory, tvDescription, tvSteps;
+        ImageView imgPictogram, ivPredefined;
 
         ViewHolder(View v) {
             super(v);
-            card         = v.findViewById(R.id.card);
-            tvName       = v.findViewById(R.id.tv_name);
-            tvCategory   = v.findViewById(R.id.tv_category);
-            imgPictogram = v.findViewById(R.id.img_pictogram);
+            card          = v.findViewById(R.id.card);
+            tvName        = v.findViewById(R.id.tv_name);
+            tvCategory    = v.findViewById(R.id.tv_category);
+            tvDescription = v.findViewById(R.id.tv_description);
+            tvSteps       = v.findViewById(R.id.tv_steps);
+            imgPictogram  = v.findViewById(R.id.img_pictogram);
+            ivPredefined  = v.findViewById(R.id.iv_predefined);
         }
     }
 }

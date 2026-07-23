@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.teapp.R;
@@ -24,9 +26,12 @@ import com.teapp.model.Child;
 import com.teapp.ui.activity.ActivityCatalogActivity;
 import com.teapp.ui.adapter.ChildAdapter;
 import com.teapp.ui.agenda.AgendaActivity;
+import com.teapp.model.TherapistInfo;
 import com.teapp.ui.auth.LoginActivity;
 import com.teapp.ui.child.ChildFormActivity;
 import com.teapp.ui.profile.ProfileActivity;
+import com.teapp.ui.therapist.ManageTherapistActivity;
+import com.teapp.util.ConnectionChecker;
 import com.teapp.util.Constants;
 import com.teapp.util.PrefsManager;
 
@@ -50,6 +55,9 @@ public class DashboardActivity extends AppCompatActivity implements ChildAdapter
     private ApiService api;
     private final List<Child> participantes = new ArrayList<>();
     private ChildAdapter adapter;
+    private TerapeutaAdapter terapeutaAdapter;
+    private final List<TherapistInfo> terapeutas = new ArrayList<>();
+    private ConnectionChecker connectionChecker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +68,7 @@ public class DashboardActivity extends AppCompatActivity implements ChildAdapter
 
         prefs = new PrefsManager(this);
         api   = ApiClient.getInstance(this).getApi();
+        connectionChecker = new ConnectionChecker(this);
 
         String nombre = prefs.getUserName();
         binding.tvUsuario.setText("¡Hola, " + (nombre.isEmpty() ? "!" : nombre + "! 👋"));
@@ -72,10 +81,16 @@ public class DashboardActivity extends AppCompatActivity implements ChildAdapter
                 startActivity(new Intent(this, ChildFormActivity.class)));
 
 
-        // Menú popup (igual que mat-menu de Angular)
         binding.btnMenu.setOnClickListener(v -> mostrarMenu(v));
+        binding.btnVincularTerapeuta.setOnClickListener(v ->
+                startActivity(new Intent(this, ManageTherapistActivity.class)));
 
-        binding.swipeRefresh.setOnRefreshListener(this::cargarParticipantes);
+        // Adapter terapeutas
+        terapeutaAdapter = new TerapeutaAdapter(terapeutas);
+        binding.rvTerapeutas.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvTerapeutas.setAdapter(terapeutaAdapter);
+
+        binding.swipeRefresh.setOnRefreshListener(this::cargarTodo);
     }
 
     private void mostrarMenu(View anchor) {
@@ -104,7 +119,28 @@ public class DashboardActivity extends AppCompatActivity implements ChildAdapter
     @Override
     protected void onResume() {
         super.onResume();
+        connectionChecker.check();
+        cargarTodo();
+    }
+
+    private void cargarTodo() {
         cargarParticipantes();
+        cargarTerapeutas();
+    }
+
+    private void cargarTerapeutas() {
+        api.getMyTherapists().enqueue(new Callback<List<TherapistInfo>>() {
+            @Override
+            public void onResponse(Call<List<TherapistInfo>> call, Response<List<TherapistInfo>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    terapeutas.clear();
+                    terapeutas.addAll(response.body());
+                    terapeutaAdapter.notifyDataSetChanged();
+                    binding.tvSinTerapeutas.setVisibility(terapeutas.isEmpty() ? View.VISIBLE : View.GONE);
+                }
+            }
+            @Override public void onFailure(Call<List<TherapistInfo>> call, Throwable t) {}
+        });
     }
 
     @Override
@@ -194,5 +230,38 @@ public class DashboardActivity extends AppCompatActivity implements ChildAdapter
         prefs.clear();
         startActivity(new Intent(this, LoginActivity.class));
         finish();
+    }
+
+    static class TerapeutaAdapter extends RecyclerView.Adapter<TerapeutaAdapter.VH> {
+        private final List<TherapistInfo> items;
+        TerapeutaAdapter(List<TherapistInfo> items) { this.items = items; }
+
+        @Override
+        public VH onCreateViewHolder(android.view.ViewGroup parent, int viewType) {
+            android.view.View v = android.view.LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_therapist, parent, false);
+            return new VH(v);
+        }
+
+        @Override
+        public void onBindViewHolder(VH h, int pos) {
+            TherapistInfo t = items.get(pos);
+            h.tvNombre.setText(t.fullName);
+            h.tvEmail.setText(t.email);
+            h.btnDesvincular.setVisibility(android.view.View.GONE); // Solo lectura en dashboard
+        }
+
+        @Override public int getItemCount() { return items.size(); }
+
+        static class VH extends RecyclerView.ViewHolder {
+            android.widget.TextView tvNombre, tvEmail;
+            android.widget.Button btnDesvincular;
+            VH(android.view.View v) {
+                super(v);
+                tvNombre      = v.findViewById(R.id.tv_nombre);
+                tvEmail       = v.findViewById(R.id.tv_email);
+                btnDesvincular = v.findViewById(R.id.btn_desvincular);
+            }
+        }
     }
 }

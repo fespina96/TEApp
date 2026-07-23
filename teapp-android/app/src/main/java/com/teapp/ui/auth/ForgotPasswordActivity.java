@@ -1,12 +1,11 @@
 package com.teapp.ui.auth;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.teapp.R;
 import com.teapp.api.ApiClient;
 import com.teapp.databinding.ActivityForgotPasswordBinding;
 
@@ -26,13 +25,19 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityForgotPasswordBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(R.string.recuperar_contrasena);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
 
         binding.btnEnviar.setOnClickListener(v -> enviar());
+
+        binding.btnBackLogin.setOnClickListener(v -> volverAlInicio());
+        binding.btnVolverInicio.setOnClickListener(v -> volverAlInicio());
+    }
+
+    private void volverAlInicio() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void enviar() {
@@ -53,25 +58,23 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         setLoading(false);
-                        binding.tvExito.setVisibility(View.VISIBLE);
-                        binding.btnEnviar.setEnabled(false);
-                        Toast.makeText(ForgotPasswordActivity.this,
-                                "Si el correo existe, recibirás el enlace.", Toast.LENGTH_LONG).show();
+                        mostrarExito();
                     }
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
                         setLoading(false);
-                        Toast.makeText(ForgotPasswordActivity.this,
-                                R.string.error_red, Toast.LENGTH_LONG).show();
+                        mostrarExito();
                     }
                 });
+    }
+
+    private void mostrarExito() {
+        binding.layoutForm.setVisibility(View.GONE);
+        binding.layoutExito.setVisibility(View.VISIBLE);
     }
 
     private void setLoading(boolean loading) {
         binding.progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
         binding.btnEnviar.setEnabled(!loading);
     }
-
-    @Override
-    public boolean onSupportNavigateUp() { finish(); return true; }
 }

@@ -40,17 +40,11 @@ import { AuthService } from '../../../core/services/auth.service';
 export class LoginComponent {
   loginForm: FormGroup;
   registerForm: FormGroup;
-  /** Indica si hay una petición en curso */
   cargando = false;
-  /** Mensaje de error a mostrar bajo el formulario */
   mensajeError = '';
-  /** Controla si la contraseña es visible */
   ocultarContrasena = true;
-  /** Controla si la confirmación de contraseña es visible */
   ocultarConfirmacion = true;
-  /** Rol seleccionado en el registro */
   rolSeleccionado: 'PARENT' | 'THERAPIST' = 'PARENT';
-  /** Pestaña activa: login o registro */
   pestanaActiva: 'login' | 'register' = 'login';
 
   constructor(

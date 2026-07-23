@@ -6,6 +6,7 @@ export interface User {
   email: string;
   fullName: string;
   avatarBase64?: string;
+  avatarColor?: string;
   role: 'PARENT' | 'THERAPIST';
   inviteCode?: string;
   dateOfBirth?: string;
@@ -19,6 +20,7 @@ export interface AuthResponse {
   email: string;
   fullName: string;
   avatarBase64?: string;
+  avatarColor?: string;
   role: 'PARENT' | 'THERAPIST';
   inviteCode?: string;
   dateOfBirth?: string;

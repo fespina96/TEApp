@@ -79,7 +79,7 @@
                         android:id="@+id/btn_menu"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:src="@android:drawable/ic_menu"
+                        android:src="@drawable/ic_more_vert"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:contentDescription="Menú"
                         android:layout_marginStart="8dp" />
@@ -130,6 +130,58 @@
                     android:layout_height="wrap_content"
                     android:nestedScrollingEnabled="false" />
 
+                <!-- Sección Mi terapeuta (igual que Angular dashboard) -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/border"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="16dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Mi terapeuta"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/on_primary" />
+
+                    <Button
+                        android:id="@+id/btn_vincular_terapeuta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Gestionar"
+                        android:textSize="12sp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:textColor="@color/on_primary" />
+
+                </LinearLayout>
+
+                <!-- Lista de terapeutas vinculados -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_terapeutas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false" />
+
+                <TextView
+                    android:id="@+id/tv_sin_terapeutas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No tenés un terapeuta vinculado aún."
+                    android:textSize="13sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone" />
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
@@ -143,7 +195,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:contentDescription="Nuevo participante"
-        android:src="@android:drawable/ic_input_add"
+        android:src="@drawable/ic_add"
         app:backgroundTint="@color/primary" />
 
 </LinearLayout>

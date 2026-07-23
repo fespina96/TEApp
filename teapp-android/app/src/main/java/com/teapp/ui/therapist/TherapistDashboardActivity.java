@@ -1,6 +1,10 @@
 package com.teapp.ui.therapist;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +24,8 @@ import com.teapp.api.ApiService;
 import com.teapp.databinding.ActivityTherapistDashboardBinding;
 import com.teapp.model.Child;
 import com.teapp.ui.auth.LoginActivity;
+import com.teapp.ui.profile.ProfileActivity;
+import com.teapp.util.ConnectionChecker;
 import com.teapp.util.PrefsManager;
 
 import java.util.ArrayList;
@@ -42,6 +48,7 @@ public class TherapistDashboardActivity extends AppCompatActivity {
 
     private final List<Child> participantesActuales = new ArrayList<>();
     private ChildAdapter childAdapter;
+    private ConnectionChecker connectionChecker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +58,34 @@ public class TherapistDashboardActivity extends AppCompatActivity {
 
         prefs = new PrefsManager(this);
         api   = ApiClient.getInstance(this).getApi();
+        connectionChecker = new ConnectionChecker(this);
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
 
-        binding.tvUsuario.setText(prefs.getUserName());
-        binding.tvCodigo.setText("Código: " + prefs.getInviteCode());
+        // Header
+        String nombre = prefs.getUserName();
+        binding.tvUsuario.setText(nombre);
+        String inicial = (!nombre.isEmpty()) ? String.valueOf(nombre.charAt(0)).toUpperCase() : "T";
+        binding.tvInitials.setText(inicial);
+        try { binding.tvInitials.setBackgroundColor(Color.parseColor("#C9B8E8")); } catch (Exception ignored) {}
+
+        // Código de invitación
+        String codigo = prefs.getInviteCode();
+        binding.tvCodigo.setText(codigo != null ? codigo : "—");
+
+        // Botón copiar (igual que Angular)
+        binding.btnCopiarCodigo.setOnClickListener(v -> {
+            ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            cm.setPrimaryClip(ClipData.newPlainText("codigo", codigo));
+            Toast.makeText(this, "Código copiado", Toast.LENGTH_SHORT).show();
+        });
+
+        // Perfil y logout
+        binding.btnPerfil.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
+        binding.btnLogout.setOnClickListener(v -> {
+            prefs.clear();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+        });
 
         childAdapter = new ChildAdapter(participantesActuales, child -> {
             if (padreSeleccionadoIdx < 0 || padreSeleccionadoIdx >= padres.size()) return;
@@ -75,7 +107,14 @@ public class TherapistDashboardActivity extends AppCompatActivity {
             finish();
         });
 
+        connectionChecker.check();
         cargarPadres();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        connectionChecker.check();
     }
 
     private void cargarPadres() {

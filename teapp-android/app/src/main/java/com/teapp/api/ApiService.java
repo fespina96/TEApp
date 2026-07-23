@@ -30,6 +30,10 @@ import retrofit2.http.Query;
 
 public interface ApiService {
 
+    // ── Health ───────────────────────────────────────────────────────────────
+    @GET("health")
+    Call<Map<String, String>> health();
+
     // ── Auth ──────────────────────────────────────────────────────────────────
     @POST("auth/login")
     Call<AuthResponse> login(@Body LoginRequest body);
@@ -149,7 +153,7 @@ public interface ApiService {
     @DELETE("therapist/link/{therapistId}")
     Call<Void> unlinkTherapist(@Path("therapistId") String therapistId);
 
-    // ── User ──────────────────────────────────────────────────────────────────
+    // ── Avatar ────────────────────────────────────────────────────────────────
     @PUT("users/me/avatar")
     Call<Void> updateUserAvatar(@Body RequestBody body);
 }

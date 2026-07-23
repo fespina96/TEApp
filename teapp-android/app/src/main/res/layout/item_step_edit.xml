@@ -56,7 +56,7 @@
                 android:id="@+id/btn_subir"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@android:drawable/arrow_up_float"
+                android:src="@drawable/ic_arrow_up"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Subir paso" />
 
@@ -64,7 +64,7 @@
                 android:id="@+id/btn_bajar"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@android:drawable/arrow_down_float"
+                android:src="@drawable/ic_arrow_down"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Bajar paso" />
 
@@ -72,7 +72,7 @@
                 android:id="@+id/btn_eliminar"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@android:drawable/ic_menu_delete"
+                android:src="@drawable/ic_delete"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Eliminar paso" />
         </LinearLayout>

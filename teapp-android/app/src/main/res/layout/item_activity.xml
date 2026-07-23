@@ -16,6 +16,7 @@
         android:gravity="center"
         android:padding="12dp">
 
+        <!-- Pictograma -->
         <ImageView
             android:id="@+id/img_pictogram"
             android:layout_width="@dimen/pictogram_size"
@@ -24,6 +25,7 @@
             android:contentDescription="Pictograma"
             android:visibility="gone" />
 
+        <!-- Nombre -->
         <TextView
             android:id="@+id/tv_name"
             android:layout_width="match_parent"
@@ -34,6 +36,7 @@
             android:gravity="center"
             android:layout_marginTop="6dp" />
 
+        <!-- Categoría -->
         <TextView
             android:id="@+id/tv_category"
             android:layout_width="match_parent"
@@ -41,6 +44,54 @@
             android:textSize="11sp"
             android:textColor="@color/text_secondary"
             android:gravity="center" />
+
+        <!-- Descripción (igual que Angular) -->
+        <TextView
+            android:id="@+id/tv_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="11sp"
+            android:textColor="@color/text_secondary"
+            android:gravity="center"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:layout_marginTop="3dp"
+            android:visibility="gone" />
+
+        <!-- Conteo de pasos (igual que Angular "3 pasos / Sin pasos") -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="6dp">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_list"
+                android:contentDescription="Pasos"
+                android:layout_marginEnd="3dp" />
+
+            <TextView
+                android:id="@+id/tv_steps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:text="Sin pasos" />
+
+        </LinearLayout>
+
+        <!-- Badge predefinida (ícono verificado) -->
+        <ImageView
+            android:id="@+id/iv_predefined"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@android:drawable/checkbox_on_background"
+            android:contentDescription="Predefinida"
+            android:layout_marginTop="4dp"
+            android:visibility="gone" />
 
     </LinearLayout>
 

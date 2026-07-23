@@ -16,8 +16,8 @@ import com.teapp.repository.ActivityStepRepository;
 import com.teapp.repository.ChildRepository;
 import com.teapp.repository.ScheduleEntryRepository;
 import com.teapp.repository.UserRepository;
+import com.teapp.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +41,7 @@ public class ScheduleService {
     private final ActivityStepRepository stepRepository;
     private final UserRepository userRepository;
     private final ActivityCompletionRepository completionRepository;
+    private final SecurityUtils securityUtils;
 
     /**
      * Retorna la agenda semanal completa de un niño, opcionalmente filtrada por día.
@@ -156,16 +157,9 @@ public class ScheduleService {
     // ---- Helpers privados ----
 
     private Child verificarAccesoParticipante(UUID idParticipante) {
-        UUID idUsuario = obtenerIdUsuarioActual();
+        UUID idUsuario = securityUtils.idUsuarioActual();
         return childRepository.findByIdAndUserId(idParticipante, idUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Niño", idParticipante));
-    }
-
-    private UUID obtenerIdUsuarioActual() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario", email))
-                .getId();
     }
 
     private WeeklyScheduleResponse construirRespuestaSemanal(UUID idParticipante, List<ScheduleEntry> entradas) {

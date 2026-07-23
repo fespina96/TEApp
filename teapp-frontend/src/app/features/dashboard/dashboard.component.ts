@@ -44,19 +44,12 @@ import { Child } from '../../core/models/child.model';
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit {
-  /** Lista de participantes del padre autenticado */
   participantes: Child[] = [];
-  /** Indica si se está cargando la lista de participantes */
   cargando = true;
-
-  /** Lista de terapeutas vinculados al padre */
   terapeutas: LinkedTherapist[] = [];
-  /** Controla la visibilidad del formulario de vinculación */
   mostrarFormVinculacion = false;
-  /** Código de invitación ingresado por el padre */
   codigoTerapeuta = '';
 
-  /** Retorna true si el usuario autenticado es padre (no terapeuta) */
   get esPadre(): boolean {
     return this.authService.currentUser?.role !== 'THERAPIST';
   }

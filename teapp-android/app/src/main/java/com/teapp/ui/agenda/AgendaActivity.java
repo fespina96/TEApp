@@ -40,6 +40,7 @@ import com.google.android.material.textfield.TextInputEditText;
 public class AgendaActivity extends AppCompatActivity
         implements AgendaDayFragment.HostCallback {
 
+    private static final int REQ_PICK_ACTIVITY = 100;
     private static final String[] DIAS = {
             "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"
     };
@@ -124,7 +125,7 @@ public class AgendaActivity extends AppCompatActivity
         Intent intent = new Intent(this, ActivityPickerActivity.class);
         intent.putExtra("child_id", childId);
         intent.putExtra("day", diaActual);
-        startActivityForResult(intent, 100);
+        startActivityForResult(intent, REQ_PICK_ACTIVITY);
     }
 
     private void abrirModoNino() {
@@ -162,7 +163,7 @@ public class AgendaActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 100 && resultCode == RESULT_OK) cargarAgenda();
+        if (requestCode == REQ_PICK_ACTIVITY && resultCode == RESULT_OK) cargarAgenda();
     }
 
     // ── HostCallback ──────────────────────────────────────────────────────────

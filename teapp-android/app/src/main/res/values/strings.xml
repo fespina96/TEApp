@@ -127,6 +127,7 @@
     <string name="opciones">Opciones</string>
     <string name="ver_participante">Ver agenda</string>
     <string name="actividades">Actividades</string>
+    <string name="codigo_copiado">Código copiado</string>
 
     <!-- Kid mode exit -->
     <string name="verificar_identidad">Verificar identidad</string>
@@ -140,4 +141,9 @@
     <!-- Child avatar -->
     <string name="cambiar_foto">Cambiar foto</string>
     <string name="foto_perfil">Foto de perfil</string>
+
+    <!-- Connection -->
+    <string name="sin_conexion">Sin conexión al servidor</string>
+    <string name="reintentar">Reintentar conexión</string>
+    <string name="volver_inicio">Volver al inicio</string>
 </resources>

@@ -122,15 +122,12 @@ export class AgendaViewComponent implements OnInit {
     return this.agenda?.week?.[dia]?.[franja] ?? [];
   }
 
-  /** Recarga la agenda tras agregar o eliminar una entrada */
   alCambiarAgenda(): void {
     this.cargarAgenda();
   }
 
-  /** Índice del día actual para el tab seleccionado por defecto */
   get indiceDiaActual(): number {
-    const mapaDias: Record<number, number> = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 0: 6 };
-    return mapaDias[new Date().getDay()] ?? 0;
+    return (new Date().getDay() + 6) % 7;
   }
 
   /** Día de la semana actual como DayOfWeek */

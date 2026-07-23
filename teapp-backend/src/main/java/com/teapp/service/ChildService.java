@@ -7,8 +7,8 @@ import com.teapp.entity.User;
 import com.teapp.exception.ResourceNotFoundException;
 import com.teapp.repository.ChildRepository;
 import com.teapp.repository.UserRepository;
+import com.teapp.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +25,7 @@ public class ChildService {
 
     private final ChildRepository childRepository;
     private final UserRepository userRepository;
+    private final SecurityUtils securityUtils;
 
     /**
      * Retorna todos los participantes del padre autenticado.
@@ -33,7 +34,7 @@ public class ChildService {
      */
     @Transactional(readOnly = true)
     public List<ChildResponse> getAll() {
-        UUID idUsuario = obtenerIdUsuarioActual();
+        UUID idUsuario = securityUtils.idUsuarioActual();
         return childRepository.findAllByUserId(idUsuario).stream()
                 .map(this::aRespuesta)
                 .toList();
@@ -58,7 +59,7 @@ public class ChildService {
      */
     @Transactional
     public ChildResponse create(ChildRequest solicitud) {
-        UUID idUsuario = obtenerIdUsuarioActual();
+        UUID idUsuario = securityUtils.idUsuarioActual();
         User padre = userRepository.getReferenceById(idUsuario);
 
         Child participante = Child.builder()
@@ -131,16 +132,9 @@ public class ChildService {
     // ---- Helpers privados ----
 
     private Child buscarParticipantePropio(UUID idParticipante) {
-        UUID idUsuario = obtenerIdUsuarioActual();
+        UUID idUsuario = securityUtils.idUsuarioActual();
         return childRepository.findByIdAndUserId(idParticipante, idUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Niño", idParticipante));
-    }
-
-    private UUID obtenerIdUsuarioActual() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario", email))
-                .getId();
     }
 
     private ChildResponse aRespuesta(Child participante) {

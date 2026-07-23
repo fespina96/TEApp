@@ -15,8 +15,8 @@ import com.teapp.repository.ActivityRepository;
 import com.teapp.repository.ActivityStepRepository;
 import com.teapp.repository.ScheduleEntryRepository;
 import com.teapp.repository.UserRepository;
+import com.teapp.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +35,7 @@ public class ActivityService {
     private final ActivityStepRepository stepRepository;
     private final ScheduleEntryRepository scheduleEntryRepository;
     private final UserRepository userRepository;
+    private final SecurityUtils securityUtils;
 
     /**
      * Retorna las actividades disponibles para el usuario autenticado
@@ -45,7 +46,7 @@ public class ActivityService {
      */
     @Transactional(readOnly = true)
     public List<ActivityResponse> getAvailable(ActivityCategory categoria) {
-        UUID idUsuario = obtenerIdUsuarioActual();
+        UUID idUsuario = securityUtils.idUsuarioActual();
         List<Activity> actividades = (categoria == null)
             ? activityRepository.findAvailableForUser(idUsuario)
             : activityRepository.findAvailableForUserAndCategory(idUsuario, categoria);
@@ -71,7 +72,7 @@ public class ActivityService {
      */
     @Transactional
     public ActivityResponse create(ActivityRequest solicitud) {
-        UUID idUsuario = obtenerIdUsuarioActual();
+        UUID idUsuario = securityUtils.idUsuarioActual();
         User usuario = userRepository.getReferenceById(idUsuario);
 
         Activity actividad = Activity.builder()
@@ -101,7 +102,7 @@ public class ActivityService {
      */
     @Transactional
     public ActivityResponse update(UUID idActividad, ActivityRequest solicitud) {
-        UUID idUsuario = obtenerIdUsuarioActual();
+        UUID idUsuario = securityUtils.idUsuarioActual();
         Activity actividad = activityRepository.findByIdAndCreatedById(idActividad, idUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Actividad", idActividad));
 
@@ -130,7 +131,7 @@ public class ActivityService {
      */
     @Transactional
     public void delete(UUID idActividad) {
-        UUID idUsuario = obtenerIdUsuarioActual();
+        UUID idUsuario = securityUtils.idUsuarioActual();
         Activity actividad = activityRepository.findByIdAndCreatedById(idActividad, idUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Actividad", idActividad));
 
@@ -165,14 +166,13 @@ public class ActivityService {
      */
     @Transactional
     public List<ActivityStepResponse> saveSteps(UUID idActividad, List<ActivityStepRequest> solicitudes) {
-        UUID idUsuario = obtenerIdUsuarioActual();
+        UUID idUsuario = securityUtils.idUsuarioActual();
         Activity actividad = activityRepository.findById(idActividad)
                 .orElseThrow(() -> new ResourceNotFoundException("Actividad", idActividad));
 
         boolean esDueno = actividad.getCreatedBy() != null
                 && actividad.getCreatedBy().getId().equals(idUsuario);
-        boolean esPredefinidaEditable = actividad.isPredefined();
-        if (!esDueno && !esPredefinidaEditable) {
+        if (!esDueno && !actividad.isPredefined()) {
             throw new UnauthorizedException("No tienes permiso para editar los pasos de esta actividad");
         }
 
@@ -199,13 +199,6 @@ public class ActivityService {
             paso.getId(), paso.getStepOrder(), paso.getTitle(),
             paso.getDescription(), paso.getImageBase64(), paso.getPictogramUrl()
         );
-    }
-
-    private UUID obtenerIdUsuarioActual() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario", email))
-                .getId();
     }
 
     private ActivityResponse aRespuesta(Activity actividad) {

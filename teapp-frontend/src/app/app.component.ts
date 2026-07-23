@@ -1,13 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { NoConnectionComponent } from './shared/no-connection/no-connection.component';
+import { ConnectivityService } from './core/services/connectivity.service';
 
-/**
- * Componente raíz de la aplicación. Solo actúa como contenedor del router.
- */
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
-  template: '<router-outlet></router-outlet>'
+  imports: [RouterOutlet, NoConnectionComponent],
+  template: `
+    <router-outlet></router-outlet>
+    <app-no-connection></app-no-connection>
+  `
 })
-export class AppComponent {}
+export class AppComponent implements OnInit {
+  constructor(private connectivity: ConnectivityService) {}
+
+  ngOnInit(): void {
+    this.connectivity.check();
+  }
+}

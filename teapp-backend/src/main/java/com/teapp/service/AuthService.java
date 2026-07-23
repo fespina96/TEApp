@@ -108,12 +108,13 @@ public class AuthService {
      *
      * @return código de invitación en mayúsculas
      */
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     private String generarCodigoInvitacion() {
         String caracteres = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-        SecureRandom generador = new SecureRandom();
         StringBuilder codigo = new StringBuilder(8);
         for (int i = 0; i < 8; i++) {
-            codigo.append(caracteres.charAt(generador.nextInt(caracteres.length())));
+            codigo.append(caracteres.charAt(RANDOM.nextInt(caracteres.length())));
         }
         return codigo.toString();
     }
