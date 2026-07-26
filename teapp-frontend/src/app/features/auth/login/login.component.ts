@@ -70,7 +70,7 @@ export class LoginComponent {
     return pw && cpw && pw !== cpw ? { passwordsMismatch: true } : null;
   }
 
-  onLogin(): void {
+  iniciarSesion(): void {
     if (this.loginForm.invalid) return;
     this.cargando = true;
     this.mensajeError = '';
@@ -94,7 +94,7 @@ export class LoginComponent {
     });
   }
 
-  onRegister(): void {
+  registrar(): void {
     if (this.registerForm.invalid) return;
     this.cargando = true;
     this.mensajeError = '';

@@ -14,7 +14,7 @@ export interface VisualTimerData {
   requireFullTimer: boolean;
 }
 
-const CIRCUMFERENCE = 2 * Math.PI * 90; // radio 90
+const CIRCUNFERENCIA = 2 * Math.PI * 90; // radio 90
 
 @Component({
   selector: 'app-visual-timer-dialog',
@@ -38,15 +38,15 @@ const CIRCUMFERENCE = 2 * Math.PI * 90; // radio 90
           <!-- Progreso -->
           <circle cx="100" cy="100" r="90" class="progress"
                   [style.stroke]="data.activityColor"
-                  [style.stroke-dasharray]="circumference"
-                  [style.stroke-dashoffset]="dashOffset"/>
+                  [style.stroke-dasharray]="circunferencia"
+                  [style.stroke-dashoffset]="desfase"/>
         </svg>
-        <div class="timer-center" [class.timer-done]="done">
-          <ng-container *ngIf="!done">
-            <span class="timer-time">{{ timeDisplay }}</span>
-            <span class="timer-label">{{ paused ? 'pausado' : 'restante' }}</span>
+        <div class="timer-center" [class.timer-done]="terminado">
+          <ng-container *ngIf="!terminado">
+            <span class="timer-time">{{ tiempoTexto }}</span>
+            <span class="timer-label">{{ pausado ? 'pausado' : 'restante' }}</span>
           </ng-container>
-          <ng-container *ngIf="done">
+          <ng-container *ngIf="terminado">
             <mat-icon class="done-icon">check_circle</mat-icon>
             <span class="done-text">¡Listo!</span>
           </ng-container>
@@ -56,29 +56,29 @@ const CIRCUMFERENCE = 2 * Math.PI * 90; // radio 90
       <!-- Controles -->
       <div class="timer-controls">
         <button mat-flat-button class="btn-pause"
-                *ngIf="data.pausable && !done"
-                (click)="togglePause()">
-          <mat-icon>{{ paused ? 'play_arrow' : 'pause' }}</mat-icon>
-          {{ paused ? 'Continuar' : 'Pausar' }}
+                *ngIf="data.pausable && !terminado"
+                (click)="alternarPausa()">
+          <mat-icon>{{ pausado ? 'play_arrow' : 'pause' }}</mat-icon>
+          {{ pausado ? 'Continuar' : 'Pausar' }}
         </button>
 
         <button mat-flat-button class="btn-done"
-                *ngIf="!done && !data.requireFullTimer"
-                (click)="markDone()">
+                *ngIf="!terminado && !data.requireFullTimer"
+                (click)="marcarTerminado()">
           <mat-icon>check_circle</mat-icon>
           Terminado
         </button>
 
         <button mat-stroked-button class="btn-close"
-                *ngIf="done"
-                (click)="close()">
+                *ngIf="terminado"
+                (click)="cerrar()">
           <mat-icon>check</mat-icon>
           Cerrar
         </button>
 
         <button mat-stroked-button class="btn-close"
-                *ngIf="!done && !data.requireFullTimer"
-                (click)="cancel()">
+                *ngIf="!terminado && !data.requireFullTimer"
+                (click)="cancelar()">
           <mat-icon>close</mat-icon>
           Cancelar
         </button>
@@ -207,14 +207,14 @@ const CIRCUMFERENCE = 2 * Math.PI * 90; // radio 90
 })
 export class VisualTimerDialogComponent implements OnInit, OnDestroy {
 
-  readonly circumference = CIRCUMFERENCE;
+  readonly circunferencia = CIRCUNFERENCIA;
 
-  totalSeconds = 0;
-  remainingSeconds = 0;
-  paused = false;
-  done = false;
+  segundosTotales = 0;
+  segundosRestantes = 0;
+  pausado = false;
+  terminado = false;
 
-  private intervalId?: ReturnType<typeof setInterval>;
+  private idIntervalo?: ReturnType<typeof setInterval>;
 
   constructor(
     public dialogRef: MatDialogRef<VisualTimerDialogComponent>,
@@ -222,53 +222,53 @@ export class VisualTimerDialogComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.totalSeconds = this.data.durationMinutes * 60;
-    this.remainingSeconds = this.totalSeconds;
-    this.startTick();
+    this.segundosTotales = this.data.durationMinutes * 60;
+    this.segundosRestantes = this.segundosTotales;
+    this.iniciarConteo();
   }
 
   ngOnDestroy(): void {
-    clearInterval(this.intervalId);
+    clearInterval(this.idIntervalo);
   }
 
-  get dashOffset(): number {
-    const progress = this.remainingSeconds / this.totalSeconds;
-    return CIRCUMFERENCE * (1 - progress);
+  get desfase(): number {
+    const progreso = this.segundosRestantes / this.segundosTotales;
+    return CIRCUNFERENCIA * (1 - progreso);
   }
 
-  get timeDisplay(): string {
-    const m = Math.floor(this.remainingSeconds / 60);
-    const s = this.remainingSeconds % 60;
+  get tiempoTexto(): string {
+    const m = Math.floor(this.segundosRestantes / 60);
+    const s = this.segundosRestantes % 60;
     return `${m}:${s.toString().padStart(2, '0')}`;
   }
 
-  togglePause(): void {
-    this.paused = !this.paused;
-    if (!this.paused) this.startTick();
-    else clearInterval(this.intervalId);
+  alternarPausa(): void {
+    this.pausado = !this.pausado;
+    if (!this.pausado) this.iniciarConteo();
+    else clearInterval(this.idIntervalo);
   }
 
-  markDone(): void {
-    clearInterval(this.intervalId);
-    this.done = true;
+  marcarTerminado(): void {
+    clearInterval(this.idIntervalo);
+    this.terminado = true;
   }
 
-  close(): void {
+  cerrar(): void {
     this.dialogRef.close(true);
   }
 
-  cancel(): void {
+  cancelar(): void {
     this.dialogRef.close(false);
   }
 
-  private startTick(): void {
-    clearInterval(this.intervalId);
-    this.intervalId = setInterval(() => {
-      if (this.remainingSeconds > 0) {
-        this.remainingSeconds--;
+  private iniciarConteo(): void {
+    clearInterval(this.idIntervalo);
+    this.idIntervalo = setInterval(() => {
+      if (this.segundosRestantes > 0) {
+        this.segundosRestantes--;
       } else {
-        clearInterval(this.intervalId);
-        this.done = true;
+        clearInterval(this.idIntervalo);
+        this.terminado = true;
       }
     }, 1000);
   }

@@ -31,19 +31,19 @@ export class TimeSlotColumnComponent implements OnChanges {
   @Input() entries: ScheduleEntry[] = [];
 
   // Copia mutable local para reordenar por drag-and-drop sin recargar del backend.
-  localEntries: ScheduleEntry[] = [];
+  entradasLocales: ScheduleEntry[] = [];
 
   @Output() scheduleChanged = new EventEmitter<void>();
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['entries']) {
-      this.localEntries = [...this.entries];
+      this.entradasLocales = [...this.entries];
     }
   }
 
-  readonly slotLabels = TIME_SLOT_LABELS;
+  readonly etiquetasFranja = TIME_SLOT_LABELS;
 
-  readonly slotIcons: Record<TimeSlot, string> = {
+  readonly iconosFranja: Record<TimeSlot, string> = {
     MORNING:   'wb_sunny',
     AFTERNOON: 'wb_cloudy',
     NIGHT:     'nights_stay'
@@ -55,7 +55,7 @@ export class TimeSlotColumnComponent implements OnChanges {
     private snackBar: MatSnackBar
   ) {}
 
-  get slotClass(): string {
+  get claseFranja(): string {
     const map: Record<TimeSlot, string> = {
       MORNING: 'slot-morning',
       AFTERNOON: 'slot-afternoon',
@@ -64,14 +64,14 @@ export class TimeSlotColumnComponent implements OnChanges {
     return map[this.slot];
   }
 
-  onDrop(event: CdkDragDrop<ScheduleEntry[]>): void {
+  alSoltar(event: CdkDragDrop<ScheduleEntry[]>): void {
     if (event.previousContainer !== event.container) return;
     if (event.previousIndex === event.currentIndex) return;
 
-    const backup = [...this.localEntries];
-    moveItemInArray(this.localEntries, event.previousIndex, event.currentIndex);
+    const backup = [...this.entradasLocales];
+    moveItemInArray(this.entradasLocales, event.previousIndex, event.currentIndex);
 
-    const requests = this.localEntries.map((entry, idx) =>
+    const requests = this.entradasLocales.map((entry, idx) =>
       this.scheduleService.updateEntry(this.childId, entry.id, {
         activityId: entry.activity.id,
         dayOfWeek:  this.day,
@@ -82,13 +82,13 @@ export class TimeSlotColumnComponent implements OnChanges {
 
     forkJoin(requests).subscribe({
       error: () => {
-        this.localEntries = backup;
+        this.entradasLocales = backup;
         this.snackBar.open('Error al reordenar', 'Cerrar', { duration: 3000 });
       }
     });
   }
 
-  openActivityPicker(): void {
+  abrirSelectorActividad(): void {
     const dialogRef = this.dialog.open(ActivityPickerDialogComponent, {
       width: '480px',
       maxWidth: '96vw',
@@ -126,12 +126,12 @@ export class TimeSlotColumnComponent implements OnChanges {
     });
   }
 
-  isCompletedToday(entry: ScheduleEntry): boolean {
+  estaCompletadaHoy(entry: ScheduleEntry): boolean {
     const today = new Date().toISOString().split('T')[0];
     return entry.completedDates?.includes(today) ?? false;
   }
 
-  onDeleteEntry(entry: ScheduleEntry): void {
+  alEliminarEntrada(entry: ScheduleEntry): void {
     this.scheduleService.deleteEntry(this.childId, entry.id).subscribe({
       next: () => {
         this.snackBar.open('Actividad eliminada', 'Ok', { duration: 2000 });

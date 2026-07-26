@@ -91,12 +91,12 @@
 
         <!-- Slots del día actual -->
         <div class="kid-slots">
-          <div class="kid-slot" *ngFor="let slot of timeSlots"
+          <div class="kid-slot" *ngFor="let slot of franjas"
                [ngClass]="'kid-slot-' + slot.toLowerCase()">
 
             <div class="kid-slot-header">
               <mat-icon>{{ iconosFranja[slot] }}</mat-icon>
-              <span>{{ slotLabels[slot] }}</span>
+              <span>{{ etiquetasFranja[slot] }}</span>
             </div>
 
             <div class="kid-entries">
@@ -184,7 +184,7 @@
                      [selectedIndex]="indiceDiaActual"
                      class="days-tabs">
 
-        <mat-tab *ngFor="let dia of days" [label]="dayLabels[dia]">
+        <mat-tab *ngFor="let dia of dias" [label]="etiquetasDia[dia]">
           <div class="day-grid">
 
             <app-time-slot-column

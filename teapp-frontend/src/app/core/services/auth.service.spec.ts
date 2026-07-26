@@ -33,7 +33,7 @@ describe('AuthService', () => {
     localStorage.clear();
   });
 
-  // ─── login ───────────────────────────────────────────────────────────────
+  // login
 
   it('login: debe hacer POST y almacenar el token en localStorage', () => {
     service.login({ email: 'padre@test.com', password: 'Pass1234' }).subscribe(resp => {
@@ -57,7 +57,7 @@ describe('AuthService', () => {
     });
   });
 
-  // ─── logout ───────────────────────────────────────────────────────────────
+  // logout
 
   it('logout: debe limpiar localStorage y emitir null en currentUser$', () => {
     localStorage.setItem('teapp_token', 'some.token');
@@ -70,7 +70,7 @@ describe('AuthService', () => {
     });
   });
 
-  // ─── isAuthenticated ─────────────────────────────────────────────────────
+  // isAuthenticated
 
   it('isAuthenticated: sin token → false', () => {
     expect(service.isAuthenticated()).toBeFalse();
@@ -81,7 +81,7 @@ describe('AuthService', () => {
     expect(service.isAuthenticated()).toBeTrue();
   });
 
-  // ─── forgotPassword ───────────────────────────────────────────────────────
+  // forgotPassword
 
   it('forgotPassword: debe hacer POST con el email', () => {
     service.forgotPassword('padre@test.com').subscribe();
@@ -92,7 +92,7 @@ describe('AuthService', () => {
     req.flush(null);
   });
 
-  // ─── register ─────────────────────────────────────────────────────────────
+  // register
 
   it('register: debe hacer POST y almacenar sesión', () => {
     const therapistResp: AuthResponse = { ...mockAuthResponse, role: 'THERAPIST', inviteCode: 'ABCD1234' };

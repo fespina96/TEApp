@@ -33,7 +33,7 @@ describe('LoginComponent', () => {
     fixture.detectChanges();
   });
 
-  // ─── loginForm validación ─────────────────────────────────────────────────
+  // loginForm validación
 
   it('loginForm: debe estar inválido cuando está vacío', () => {
     expect(component.loginForm.valid).toBeFalse();
@@ -49,7 +49,7 @@ describe('LoginComponent', () => {
     expect(component.loginForm.valid).toBeTrue();
   });
 
-  // ─── registerForm validación ──────────────────────────────────────────────
+  // registerForm validación
 
   it('registerForm: contraseña sin mayúscula → error de pattern', () => {
     component.registerForm.get('password')!.setValue('pass1234');
@@ -82,41 +82,41 @@ describe('LoginComponent', () => {
     expect(component.registerForm.hasError('passwordsMismatch')).toBeFalse();
   });
 
-  // ─── onLogin ──────────────────────────────────────────────────────────────
+  // iniciarSesion
 
-  it('onLogin: formulario inválido → no llama al servicio', () => {
-    component.onLogin();
+  it('iniciarSesion: formulario inválido → no llama al servicio', () => {
+    component.iniciarSesion();
     expect(authServiceSpy.login).not.toHaveBeenCalled();
   });
 
-  it('onLogin: éxito → navega al dashboard', () => {
+  it('iniciarSesion: éxito → navega al dashboard', () => {
     authServiceSpy.login.and.returnValue(of(mockAuthResponse as any));
     spyOn(router, 'navigate');
 
     component.loginForm.setValue({ email: 'padre@test.com', password: 'Pass1234', rememberMe: false });
-    component.onLogin();
+    component.iniciarSesion();
 
     expect(authServiceSpy.login).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/app/dashboard']);
   });
 
-  it('onLogin: error 401 → muestra mensaje de credenciales incorrectas', () => {
+  it('iniciarSesion: error 401 → muestra mensaje de credenciales incorrectas', () => {
     authServiceSpy.login.and.returnValue(throwError(() => ({ status: 401 })));
 
     component.loginForm.setValue({ email: 'padre@test.com', password: 'Wrong123', rememberMe: false });
-    component.onLogin();
+    component.iniciarSesion();
 
     expect(component.mensajeError).toBe('Email o contraseña incorrectos.');
     expect(component.cargando).toBeFalse();
   });
 
-  it('onLogin: terapeuta → navega a /app/therapist', () => {
+  it('iniciarSesion: terapeuta → navega a /app/therapist', () => {
     const therapistResp = { ...mockAuthResponse, role: 'THERAPIST' };
     authServiceSpy.login.and.returnValue(of(therapistResp as any));
     spyOn(router, 'navigate');
 
     component.loginForm.setValue({ email: 'tera@test.com', password: 'Pass1234', rememberMe: false });
-    component.onLogin();
+    component.iniciarSesion();
 
     expect(router.navigate).toHaveBeenCalledWith(['/app/therapist']);
   });

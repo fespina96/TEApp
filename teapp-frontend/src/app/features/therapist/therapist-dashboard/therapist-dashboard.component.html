@@ -111,12 +111,12 @@
       </div>
 
       <mat-tab-group *ngIf="!cargandoAgenda && agendaParticipante" animationDuration="150ms" class="schedule-tabs">
-        <mat-tab *ngFor="let dia of days" [label]="dayLabels[dia]">
+        <mat-tab *ngFor="let dia of dias" [label]="etiquetasDia[dia]">
           <div class="day-content">
-            <div class="time-slot" *ngFor="let franja of timeSlots">
+            <div class="time-slot" *ngFor="let franja of franjas">
               <div class="slot-header">
                 <mat-icon class="slot-icon">{{ franja === 'MORNING' ? 'wb_sunny' : franja === 'AFTERNOON' ? 'wb_cloudy' : 'nightlight_round' }}</mat-icon>
-                <span class="slot-label">{{ slotLabels[franja] }}</span>
+                <span class="slot-label">{{ etiquetasFranja[franja] }}</span>
               </div>
               <div class="activities-row">
                 <ng-container *ngIf="obtenerEntradas(dia, franja).length > 0; else slotVacio">

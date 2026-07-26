@@ -1,4 +1,4 @@
-// ── Tabs ──────────────────────────────────────────────────────────────────────
+// Tabs
 .dialog-tabs {
   display: flex;
   border-bottom: 2px solid var(--color-border);
@@ -31,7 +31,7 @@
   }
 }
 
-// ── Contenido compartido ──────────────────────────────────────────────────────
+// Contenido compartido
 .picker-content {
   display: flex;
   flex-direction: column;
@@ -129,7 +129,7 @@
   }
 }
 
-// ── Nueva actividad ───────────────────────────────────────────────────────────
+// Nueva actividad
 .new-activity-content {
   overflow-y: auto;
 
@@ -243,7 +243,7 @@
     }
   }
 
-  // ── Selector modo imagen ──────────────────────────────────────────────────
+  // Selector modo imagen
   .image-mode-tabs {
     display: flex;
     gap: 8px;
@@ -275,7 +275,7 @@
     }
   }
 
-  // ── Panel ARASAAC ──────────────────────────────────────────────────────────
+  // Panel ARASAAC
   .arasaac-panel {
     margin-bottom: 16px;
 
@@ -388,7 +388,7 @@
   }
 }
 
-// ── Sección temporizador ──────────────────────────────────────────────────────
+// Sección temporizador
 .timer-section {
   padding: 10px 16px 0;
   border-top: 1px solid var(--color-border);
@@ -418,7 +418,7 @@
   }
 }
 
-// ── Acciones ──────────────────────────────────────────────────────────────────
+// Acciones
 .picker-actions {
   display: flex;
   align-items: center;

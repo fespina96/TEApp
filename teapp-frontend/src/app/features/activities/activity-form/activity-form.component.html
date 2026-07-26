@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>{{ modoEdicion ? 'Editar actividad' : 'Nueva actividad personalizada' }}</h2>
 
 <mat-dialog-content>
-  <form [formGroup]="form" id="activity-form" (ngSubmit)="onSubmit()" class="activity-form">
+  <form [formGroup]="form" id="activity-form" (ngSubmit)="enviar()" class="activity-form">
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Nombre de la actividad</mat-label>
@@ -60,7 +60,7 @@
 
 <mat-dialog-actions align="end">
   <button mat-button [mat-dialog-close]="false">Cancelar</button>
-  <button mat-flat-button class="btn-save" (click)="onSubmit()"
+  <button mat-flat-button class="btn-save" (click)="enviar()"
           [disabled]="form.invalid || cargando">
     <mat-icon>save</mat-icon>
     {{ modoEdicion ? 'Guardar cambios' : 'Crear actividad' }}

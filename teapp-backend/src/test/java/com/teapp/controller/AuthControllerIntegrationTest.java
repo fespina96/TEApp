@@ -31,7 +31,7 @@ class AuthControllerIntegrationTest {
 
     private static final String BASE = "/api/v1/auth";
 
-    // ─── POST /register ───────────────────────────────────────────────────────
+    // POST /register
 
     @Test
     @DisplayName("POST /register: datos válidos → 200 con token")
@@ -97,7 +97,7 @@ class AuthControllerIntegrationTest {
                 .andExpect(jsonPath("$.inviteCode", hasLength(8)));
     }
 
-    // ─── POST /login ──────────────────────────────────────────────────────────
+    // POST /login
 
     @Test
     @DisplayName("POST /login: credenciales correctas → 200 con token")

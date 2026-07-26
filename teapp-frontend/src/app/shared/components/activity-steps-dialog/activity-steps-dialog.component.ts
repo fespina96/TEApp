@@ -72,7 +72,7 @@ interface StepDraft {
                 <label class="upload-placeholder" [for]="'stepImg' + i">
                   <mat-icon>add_photo_alternate</mat-icon>
                   <input [id]="'stepImg' + i" type="file" accept="image/*"
-                         (change)="onImageSelected($event, step)" hidden>
+                         (change)="alSeleccionarImagen($event, step)" hidden>
                 </label>
               </ng-container>
               <ng-container *ngIf="step.imageBase64">
@@ -101,7 +101,7 @@ interface StepDraft {
                         [class.selected]="step.pictogramUrl === arasaacService.imageUrl(pic._id)"
                         (click)="step.pictogramUrl = arasaacService.imageUrl(pic._id)"
                         [matTooltip]="pic.keyword">
-                  <img [src]="arasaacService.thumbUrl(pic._id)" [alt]="pic.keyword" cargando="lazy">
+                  <img [src]="arasaacService.thumbUrl(pic._id)" [alt]="pic.keyword" loading="lazy">
                 </button>
               </div>
               <div class="selected-pictogram" *ngIf="step.pictogramUrl">
@@ -114,13 +114,13 @@ interface StepDraft {
           </div>
 
           <div class="step-actions">
-            <button mat-icon-button (click)="moveUp(i)" [disabled]="i === 0" matTooltip="Subir">
+            <button mat-icon-button (click)="subir(i)" [disabled]="i === 0" matTooltip="Subir">
               <mat-icon>arrow_upward</mat-icon>
             </button>
-            <button mat-icon-button (click)="moveDown(i)" [disabled]="i === steps.length - 1" matTooltip="Bajar">
+            <button mat-icon-button (click)="bajar(i)" [disabled]="i === steps.length - 1" matTooltip="Bajar">
               <mat-icon>arrow_downward</mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="removeStep(i)" matTooltip="Eliminar paso">
+            <button mat-icon-button color="warn" (click)="eliminarPaso(i)" matTooltip="Eliminar paso">
               <mat-icon>delete</mat-icon>
             </button>
           </div>
@@ -131,7 +131,7 @@ interface StepDraft {
           <p>Sin pasos. Añade el primero.</p>
         </div>
 
-        <button mat-stroked-button class="btn-add-step" (click)="addStep()">
+        <button mat-stroked-button class="btn-add-step" (click)="agregarPaso()">
           <mat-icon>add</mat-icon> Añadir paso
         </button>
       </div>
@@ -143,7 +143,7 @@ interface StepDraft {
 
     <mat-dialog-actions align="end">
       <button mat-button [mat-dialog-close]="false">Cancelar</button>
-      <button mat-flat-button class="btn-save" (click)="save()" [disabled]="guardando || steps.length === 0">
+      <button mat-flat-button class="btn-save" (click)="guardar()" [disabled]="guardando || steps.length === 0">
         <mat-spinner diameter="16" *ngIf="guardando"></mat-spinner>
         <mat-icon *ngIf="!guardando">save</mat-icon>
         {{ guardando ? 'Guardando...' : 'Guardar pasos' }}
@@ -257,26 +257,26 @@ export class ActivityStepsDialogComponent implements OnInit {
     });
   }
 
-  addStep(): void {
+  agregarPaso(): void {
     this.steps.push({
       title: '', description: '', imageBase64: null, pictogramUrl: null,
       busquedaArasaac: '', resultadosArasaac: [], buscandoArasaac: false, modoImagen: 'upload'
     });
   }
 
-  removeStep(i: number): void { this.steps.splice(i, 1); }
+  eliminarPaso(i: number): void { this.steps.splice(i, 1); }
 
-  moveUp(i: number): void {
+  subir(i: number): void {
     if (i === 0) return;
     [this.steps[i - 1], this.steps[i]] = [this.steps[i], this.steps[i - 1]];
   }
 
-  moveDown(i: number): void {
+  bajar(i: number): void {
     if (i === this.steps.length - 1) return;
     [this.steps[i], this.steps[i + 1]] = [this.steps[i + 1], this.steps[i]];
   }
 
-  onImageSelected(event: Event, step: StepDraft): void {
+  alSeleccionarImagen(event: Event, step: StepDraft): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     const reader = new FileReader();
@@ -294,7 +294,7 @@ export class ActivityStepsDialogComponent implements OnInit {
     });
   }
 
-  save(): void {
+  guardar(): void {
     const invalid = this.steps.find(s => !s.title.trim());
     if (invalid) {
       this.snackBar.open('Todos los pasos deben tener un título', 'Ok', { duration: 3000 });

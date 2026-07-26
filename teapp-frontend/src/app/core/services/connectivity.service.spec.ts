@@ -20,7 +20,7 @@ describe('ConnectivityService', () => {
 
   afterEach(() => httpMock.verify());
 
-  // ─── estado inicial ──────────────────────────────────────────────────────
+  // estado inicial
 
   it('estado inicial: connected$ emite true', (done) => {
     service.connected$.subscribe(val => {
@@ -33,7 +33,7 @@ describe('ConnectivityService', () => {
     expect(service.isConnected).toBeTrue();
   });
 
-  // ─── check() ─────────────────────────────────────────────────────────────
+  // check()
 
   it('check(): servidor responde OK → connected$ permanece en true', () => {
     service.check();
@@ -79,7 +79,7 @@ describe('ConnectivityService', () => {
     httpMock.expectOne(healthUrl).flush({ status: 'ok' });
   });
 
-  // ─── markDisconnected() ───────────────────────────────────────────────────
+  // markDisconnected()
 
   it('markDisconnected(): connected$ emite false', () => {
     let emitted: boolean | undefined;

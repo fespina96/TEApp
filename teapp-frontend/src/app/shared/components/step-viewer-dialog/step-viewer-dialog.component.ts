@@ -21,7 +21,7 @@ export interface StepViewerData {
       <!-- Cabecera -->
       <div class="viewer-header" [style.background-color]="data.activityColor + '66'">
         <span class="viewer-activity">{{ data.activityName }}</span>
-        <span class="viewer-counter">{{ current + 1 }} / {{ data.steps.length }}</span>
+        <span class="viewer-counter">{{ actual + 1 }} / {{ data.steps.length }}</span>
       </div>
 
       <!-- Contenido del paso -->
@@ -32,7 +32,7 @@ export interface StepViewerData {
         </div>
 
         <div class="step-number" [style.background-color]="data.activityColor">
-          {{ current + 1 }}
+          {{ actual + 1 }}
         </div>
 
         <h2 class="step-title">{{ step.title }}</h2>
@@ -43,29 +43,29 @@ export interface StepViewerData {
       <!-- Barra de progreso -->
       <div class="progress-bar">
         <div class="progress-fill"
-             [style.width.%]="((current + 1) / data.steps.length) * 100"
+             [style.width.%]="((actual + 1) / data.steps.length) * 100"
              [style.background-color]="data.activityColor">
         </div>
       </div>
 
       <!-- Controles -->
       <div class="viewer-controls">
-        <button mat-stroked-button (click)="prev()" [disabled]="current === 0">
+        <button mat-stroked-button (click)="anterior()" [disabled]="actual === 0">
           <mat-icon>arrow_back</mat-icon>
           Anterior
         </button>
 
         <button mat-flat-button class="btn-next"
-                *ngIf="!isLast"
+                *ngIf="!esUltimo"
                 [style.background-color]="data.activityColor"
-                (click)="next()">
+                (click)="siguiente()">
           Siguiente
           <mat-icon>arrow_forward</mat-icon>
         </button>
 
         <button mat-flat-button class="btn-finish"
-                *ngIf="isLast"
-                (click)="finish()">
+                *ngIf="esUltimo"
+                (click)="finalizar()">
           <mat-icon>check_circle</mat-icon>
           ¡Listo!
         </button>
@@ -132,17 +132,17 @@ export interface StepViewerData {
   `]
 })
 export class StepViewerDialogComponent {
-  current = 0;
+  actual = 0;
 
   constructor(
     public dialogRef: MatDialogRef<StepViewerDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: StepViewerData
   ) {}
 
-  get step(): ActivityStep { return this.data.steps[this.current]; }
-  get isLast(): boolean { return this.current === this.data.steps.length - 1; }
+  get step(): ActivityStep { return this.data.steps[this.actual]; }
+  get esUltimo(): boolean { return this.actual === this.data.steps.length - 1; }
 
-  prev(): void { if (this.current > 0) this.current--; }
-  next(): void { if (!this.isLast) this.current++; }
-  finish(): void { this.dialogRef.close(true); }
+  anterior(): void { if (this.actual > 0) this.actual--; }
+  siguiente(): void { if (!this.esUltimo) this.actual++; }
+  finalizar(): void { this.dialogRef.close(true); }
 }

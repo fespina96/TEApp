@@ -86,7 +86,7 @@ export class ActivityFormComponent implements OnInit {
     });
   }
 
-  onSubmit(): void {
+  enviar(): void {
     if (this.form.invalid) return;
     this.cargando = true;
     const request = this.form.value;

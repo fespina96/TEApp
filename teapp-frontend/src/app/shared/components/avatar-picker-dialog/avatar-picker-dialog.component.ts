@@ -11,7 +11,7 @@ export interface AvatarPickerData {
   currentAvatar?: string;
 }
 
-const CATALOG: { emoji: string; bg: string }[] = [
+const CATALOGO: { emoji: string; bg: string }[] = [
   { emoji: '🦋', bg: '#C9B8E8' },
   { emoji: '🌟', bg: '#FAF0BE' },
   { emoji: '🚀', bg: '#A8D8EA' },
@@ -45,11 +45,11 @@ const CATALOG: { emoji: string; bg: string }[] = [
       <!-- Preview central -->
       <div class="preview-row">
         <div class="preview-circle">
-          <img *ngIf="preview" [src]="preview" class="preview-img" alt="preview">
-          <span *ngIf="!preview" class="preview-letter">{{ data.name.charAt(0).toUpperCase() }}</span>
+          <img *ngIf="vistaPrevia" [src]="vistaPrevia" class="preview-img" alt="preview">
+          <span *ngIf="!vistaPrevia" class="preview-letter">{{ data.name.charAt(0).toUpperCase() }}</span>
         </div>
-        <button *ngIf="preview" mat-icon-button color="warn" class="clear-btn"
-                matTooltip="Quitar foto" (click)="clearAvatar()">
+        <button *ngIf="vistaPrevia" mat-icon-button color="warn" class="clear-btn"
+                matTooltip="Quitar foto" (click)="quitarAvatar()">
           <mat-icon>cancel</mat-icon>
         </button>
       </div>
@@ -63,7 +63,7 @@ const CATALOG: { emoji: string; bg: string }[] = [
             <label class="upload-label">
               <mat-icon>upload</mat-icon>
               Elegir imagen
-              <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden>
+              <input type="file" accept="image/*" (change)="alSeleccionarArchivo($event)" hidden>
             </label>
           </div>
         </mat-tab>
@@ -73,11 +73,11 @@ const CATALOG: { emoji: string; bg: string }[] = [
           <div class="tab-content catalog-tab">
             <p class="tab-hint">Elige un avatar para el perfil.</p>
             <div class="catalog-grid">
-              <button *ngFor="let item of catalog" type="button"
+              <button *ngFor="let item of catalogo" type="button"
                       class="catalog-item"
-                      [class.selected]="preview === emojiDataUrl(item.emoji, item.bg)"
+                      [class.selected]="vistaPrevia === dataUrlDeEmoji(item.emoji, item.bg)"
                       [style.background-color]="item.bg"
-                      (click)="selectCatalog(item.emoji, item.bg)"
+                      (click)="seleccionarDelCatalogo(item.emoji, item.bg)"
                       [matTooltip]="item.emoji">
                 {{ item.emoji }}
               </button>
@@ -89,8 +89,8 @@ const CATALOG: { emoji: string; bg: string }[] = [
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button (click)="cancel()">Cancelar</button>
-      <button mat-flat-button color="primary" (click)="confirm()" [disabled]="preview === initialAvatar">
+      <button mat-button (click)="cancelar()">Cancelar</button>
+      <button mat-flat-button color="primary" (click)="confirmar()" [disabled]="vistaPrevia === avatarInicial">
         Guardar
       </button>
     </mat-dialog-actions>
@@ -176,19 +176,19 @@ const CATALOG: { emoji: string; bg: string }[] = [
   `]
 })
 export class AvatarPickerDialogComponent {
-  catalog = CATALOG;
-  preview: string | undefined;
-  initialAvatar: string | undefined;
+  catalogo = CATALOGO;
+  vistaPrevia: string | undefined;
+  avatarInicial: string | undefined;
 
   constructor(
     private dialogRef: MatDialogRef<AvatarPickerDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: AvatarPickerData
   ) {
-    this.preview = data.currentAvatar ?? undefined;
-    this.initialAvatar = this.preview;
+    this.vistaPrevia = data.currentAvatar ?? undefined;
+    this.avatarInicial = this.vistaPrevia;
   }
 
-  onFileSelected(event: Event): void {
+  alSeleccionarArchivo(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     const reader = new FileReader();
@@ -201,18 +201,18 @@ export class AvatarPickerDialogComponent {
         canvas.width  = img.width  * ratio;
         canvas.height = img.height * ratio;
         canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
-        this.preview = canvas.toDataURL('image/jpeg', 0.85);
+        this.vistaPrevia = canvas.toDataURL('image/jpeg', 0.85);
       };
       img.src = reader.result as string;
     };
     reader.readAsDataURL(file);
   }
 
-  selectCatalog(emoji: string, bg: string): void {
-    this.preview = this.emojiDataUrl(emoji, bg);
+  seleccionarDelCatalogo(emoji: string, bg: string): void {
+    this.vistaPrevia = this.dataUrlDeEmoji(emoji, bg);
   }
 
-  emojiDataUrl(emoji: string, bg: string): string {
+  dataUrlDeEmoji(emoji: string, bg: string): string {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
       <circle cx="50" cy="50" r="50" fill="${bg}"/>
       <text x="50" y="68" font-size="52" text-anchor="middle">${emoji}</text>
@@ -220,15 +220,15 @@ export class AvatarPickerDialogComponent {
     return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
   }
 
-  clearAvatar(): void {
-    this.preview = undefined;
+  quitarAvatar(): void {
+    this.vistaPrevia = undefined;
   }
 
-  cancel(): void {
+  cancelar(): void {
     this.dialogRef.close();
   }
 
-  confirm(): void {
-    this.dialogRef.close(this.preview ?? null);
+  confirmar(): void {
+    this.dialogRef.close(this.vistaPrevia ?? null);
   }
 }

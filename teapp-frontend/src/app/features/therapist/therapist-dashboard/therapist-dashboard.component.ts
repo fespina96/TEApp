@@ -45,10 +45,10 @@ export class TherapistDashboardComponent implements OnInit {
   cargandoParticipantes = false;
   cargandoAgenda = false;
 
-  readonly days = DAYS_OF_WEEK;
-  readonly dayLabels = DAY_LABELS;
-  readonly timeSlots = TIME_SLOTS;
-  readonly slotLabels = TIME_SLOT_LABELS;
+  readonly dias = DAYS_OF_WEEK;
+  readonly etiquetasDia = DAY_LABELS;
+  readonly franjas = TIME_SLOTS;
+  readonly etiquetasFranja = TIME_SLOT_LABELS;
 
   constructor(
     private therapistService: TherapistService,

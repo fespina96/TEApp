@@ -20,7 +20,7 @@ export class ChildCardComponent {
   @Output() editAvatar  = new EventEmitter<Child>();
   @Output() delete      = new EventEmitter<Child>();
 
-  get age(): number {
+  get edad(): number {
     const birth = new Date(this.child.dateOfBirth);
     const today = new Date();
     let age = today.getFullYear() - birth.getFullYear();
@@ -29,7 +29,7 @@ export class ChildCardComponent {
     return age;
   }
 
-  get avatarLetter(): string {
+  get letraAvatar(): string {
     return this.child.name.charAt(0).toUpperCase();
   }
 }

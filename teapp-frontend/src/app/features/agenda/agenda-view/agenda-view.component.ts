@@ -46,10 +46,10 @@ export class AgendaViewComponent implements OnInit {
   modoNino = false;
   clima: WeatherInfo | null = null;
 
-  readonly days = DAYS_OF_WEEK;
-  readonly dayLabels = DAY_LABELS;
-  readonly timeSlots = TIME_SLOTS;
-  readonly slotLabels = TIME_SLOT_LABELS;
+  readonly dias = DAYS_OF_WEEK;
+  readonly etiquetasDia = DAY_LABELS;
+  readonly franjas = TIME_SLOTS;
+  readonly etiquetasFranja = TIME_SLOT_LABELS;
 
   readonly iconosFranja: Record<TimeSlot, string> = {
     MORNING:   'wb_sunny',
@@ -113,7 +113,7 @@ export class AgendaViewComponent implements OnInit {
   }
 
   get diaActual(): DayOfWeek {
-    return this.days[this.indiceDiaActual];
+    return this.dias[this.indiceDiaActual];
   }
 
   get inicialesParticipante(): string {

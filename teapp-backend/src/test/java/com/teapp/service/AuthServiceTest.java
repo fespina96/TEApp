@@ -49,7 +49,7 @@ class AuthServiceTest {
         when(passwordEncoder.encode(anyString())).thenReturn("hashed_password");
     }
 
-    // ─── register ────────────────────────────────────────────────────────────
+    // register
 
     @Test
     @DisplayName("register: email nuevo → crea usuario y devuelve token")
@@ -118,7 +118,7 @@ class AuthServiceTest {
         assertThat(resp.inviteCode()).isNull();
     }
 
-    // ─── login ────────────────────────────────────────────────────────────────
+    // login
 
     @Test
     @DisplayName("login: credenciales correctas → devuelve token")

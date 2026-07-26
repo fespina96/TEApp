@@ -37,7 +37,7 @@ const ICON_OPTIONS = [
   styleUrl: './activity-picker-dialog.component.scss'
 })
 export class ActivityPickerDialogComponent implements OnInit {
-  // ── Catálogo ────────────────────────────────────────────────────────────────
+  // Catálogo
   activities: Activity[] = [];
   actividadesFiltradas: Activity[] = [];
   predefiniadasFiltradas: Activity[] = [];
@@ -48,10 +48,10 @@ export class ActivityPickerDialogComponent implements OnInit {
   categoriaSeleccionada: ActivityCategory | null = null;
   agregarATodosLosDias = false;
 
-  // ── Tabs ────────────────────────────────────────────────────────────────────
+  // Tabs
   pestanaActiva: 'catalog' | 'new' = 'catalog';
 
-  // ── Nueva actividad ─────────────────────────────────────────────────────────
+  // Nueva actividad
   newForm!: FormGroup;
   guardando = false;
   iconoSeleccionado = 'star';
@@ -59,12 +59,12 @@ export class ActivityPickerDialogComponent implements OnInit {
   imagenSeleccionada: string | null = null;
   urlPictogramaSeleccionado: string | null = null;
 
-  // ── Temporizador de entrada ──────────────────────────────────────────────────
+  // Temporizador de entrada
   duracionEntrada: number | null = null;
   entradaPausable = true;
   entradaRequiereTemporizador = false;
 
-  // ── ARASAAC ─────────────────────────────────────────────────────────────────
+  // ARASAAC
   modoImagen: 'upload' | 'arasaac' = 'upload';
   busquedaArasaac = '';
   resultadosArasaac: ArasaacPictogram[] = [];
@@ -112,7 +112,7 @@ export class ActivityPickerDialogComponent implements OnInit {
     });
   }
 
-  // ── Catálogo ────────────────────────────────────────────────────────────────
+  // Catálogo
   seleccionarCategoria(cat: ActivityCategory | null): void {
     this.categoriaSeleccionada = cat;
     this.aplicarFiltro();
@@ -143,7 +143,7 @@ export class ActivityPickerDialogComponent implements OnInit {
     });
   }
 
-  // ── Nueva actividad ─────────────────────────────────────────────────────────
+  // Nueva actividad
   crearYSeleccionar(): void {
     if (this.newForm.invalid) return;
     this.guardando = true;
@@ -189,7 +189,7 @@ export class ActivityPickerDialogComponent implements OnInit {
     this.urlPictogramaSeleccionado = null;
   }
 
-  // ── ARASAAC ─────────────────────────────────────────────────────────────────
+  // ARASAAC
   buscarArasaac(): void {
     if (!this.busquedaArasaac.trim()) return;
     this.buscandoArasaac = true;

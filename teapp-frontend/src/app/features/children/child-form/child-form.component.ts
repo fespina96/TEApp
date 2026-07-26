@@ -82,7 +82,7 @@ export class ChildFormComponent implements OnInit {
     this.form.patchValue({ avatarColor: color });
   }
 
-  onSubmit(): void {
+  enviar(): void {
     if (this.form.invalid) return;
     this.cargando = true;
 

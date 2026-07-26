@@ -55,7 +55,7 @@ export class ResetPasswordComponent implements OnInit {
     return pw && cpw && pw !== cpw ? { passwordsMismatch: true } : null;
   }
 
-  onSubmit(): void {
+  enviar(): void {
     if (this.form.invalid || !this.token) return;
     this.cargando = true;
     this.mensajeError = '';

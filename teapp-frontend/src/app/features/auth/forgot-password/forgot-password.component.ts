@@ -22,9 +22,9 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class ForgotPasswordComponent {
   form: FormGroup;
-  loading = false;
-  sent = false;
-  error = '';
+  cargando = false;
+  enviado = false;
+  mensajeError = '';
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.form = this.fb.group({
@@ -32,26 +32,26 @@ export class ForgotPasswordComponent {
     });
   }
 
-  onSubmit(): void {
+  enviar(): void {
     if (this.form.invalid) return;
-    this.loading = true;
-    this.error = '';
+    this.cargando = true;
+    this.mensajeError = '';
 
     this.authService.forgotPassword(this.form.value.email).subscribe({
       next: () => {
-        this.sent = true;
-        this.loading = false;
+        this.enviado = true;
+        this.cargando = false;
       },
       error: (err) => {
         if (err.status === 0) {
           // Error de red real: el servidor no responde
-          this.error = 'No se pudo conectar con el servidor. Verificá tu conexión.';
-          this.loading = false;
+          this.mensajeError = 'No se pudo conectar con el servidor. Verificá tu conexión.';
+          this.cargando = false;
         } else {
           // Cualquier otra respuesta HTTP: mostrar éxito por seguridad
           // (evita revelar si el email existe o no)
-          this.sent = true;
-          this.loading = false;
+          this.enviado = true;
+          this.cargando = false;
         }
       }
     });

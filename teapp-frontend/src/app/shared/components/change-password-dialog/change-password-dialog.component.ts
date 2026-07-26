@@ -57,7 +57,7 @@ export class ChangePasswordDialogComponent {
     }, { validators: passwordsMatch });
   }
 
-  onSubmit(): void {
+  enviar(): void {
     if (this.form.invalid || this.cargando) return;
     this.cargando = true;
     this.mensajeError = '';

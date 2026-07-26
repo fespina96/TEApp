@@ -61,7 +61,7 @@ class UserServiceTest {
         SecurityContextHolder.clearContext();
     }
 
-    // ─── changePassword ───────────────────────────────────────────────────────
+    // changePassword
 
     @Test
     @DisplayName("changePassword: contraseña actual correcta → actualiza contraseña")
@@ -91,7 +91,7 @@ class UserServiceTest {
         verify(userRepository, never()).save(any());
     }
 
-    // ─── updateAvatar ─────────────────────────────────────────────────────────
+    // updateAvatar
 
     @Test
     @DisplayName("updateAvatar: base64 válido → guarda avatar")

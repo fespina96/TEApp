@@ -59,7 +59,7 @@ class CompletionServiceTest {
         SecurityContextHolder.clearContext();
     }
 
-    // ─── markCompleted ────────────────────────────────────────────────────────
+    // markCompleted
 
     @Test
     @DisplayName("markCompleted: actividad no completada → crea registro y lo devuelve")
@@ -108,7 +108,7 @@ class CompletionServiceTest {
                 .isInstanceOf(UnauthorizedException.class);
     }
 
-    // ─── unmarkCompleted ──────────────────────────────────────────────────────
+    // unmarkCompleted
 
     @Test
     @DisplayName("unmarkCompleted: existe registro → lo elimina")
@@ -132,7 +132,7 @@ class CompletionServiceTest {
         verify(completionRepository, never()).delete(any());
     }
 
-    // ─── resetCurrentWeek ─────────────────────────────────────────────────────
+    // resetCurrentWeek
 
     @Test
     @DisplayName("resetCurrentWeek: elimina completions de lunes a domingo de la semana actual")

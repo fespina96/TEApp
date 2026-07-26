@@ -27,7 +27,7 @@
 
     <!-- ─── Pestaña: Iniciar sesión ─── -->
     <form *ngIf="pestanaActiva === 'login'"
-          [formGroup]="loginForm" (ngSubmit)="onLogin()" class="auth-form">
+          [formGroup]="loginForm" (ngSubmit)="iniciarSesion()" class="auth-form">
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Correo electrónico</mat-label>
@@ -74,7 +74,7 @@
 
     <!-- ─── Pestaña: Crear cuenta ─── -->
     <form *ngIf="pestanaActiva === 'register'"
-          [formGroup]="registerForm" (ngSubmit)="onRegister()" class="auth-form">
+          [formGroup]="registerForm" (ngSubmit)="registrar()" class="auth-form">
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Nombre completo</mat-label>

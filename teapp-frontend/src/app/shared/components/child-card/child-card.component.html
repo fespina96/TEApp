@@ -3,7 +3,7 @@
   <div class="avatar-wrapper">
     <div class="avatar" [style.background-color]="child.avatarColor">
       <img *ngIf="child.avatarBase64" [src]="child.avatarBase64" class="avatar-img" alt="foto">
-      <span *ngIf="!child.avatarBase64">{{ avatarLetter }}</span>
+      <span *ngIf="!child.avatarBase64">{{ letraAvatar }}</span>
     </div>
     <button class="avatar-camera-btn" type="button"
             (click)="editAvatar.emit(child)"
@@ -15,7 +15,7 @@
   <!-- Información del niño -->
   <div class="info">
     <h3 class="child-name">{{ child.name }}</h3>
-    <p class="child-age">{{ age }} años</p>
+    <p class="child-age">{{ edad }} años</p>
     <p class="child-notes" *ngIf="child.notes">{{ child.notes }}</p>
   </div>
 

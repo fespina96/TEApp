@@ -36,7 +36,7 @@ describe('ScheduleService', () => {
 
   afterEach(() => httpMock.verify());
 
-  // ─── getWeeklySchedule ────────────────────────────────────────────────────
+  // getWeeklySchedule
 
   it('getWeeklySchedule: debe hacer GET sin parámetros', () => {
     service.getWeeklySchedule(childId).subscribe(schedule => {
@@ -56,7 +56,7 @@ describe('ScheduleService', () => {
     req.flush(mockSchedule);
   });
 
-  // ─── markCompleted ────────────────────────────────────────────────────────
+  // markCompleted
 
   it('markCompleted: debe hacer POST con la fecha', () => {
     service.markCompleted(childId, entryId, today).subscribe();
@@ -69,7 +69,7 @@ describe('ScheduleService', () => {
     req.flush(null);
   });
 
-  // ─── unmarkCompleted ──────────────────────────────────────────────────────
+  // unmarkCompleted
 
   it('unmarkCompleted: debe hacer DELETE con la fecha en el body', () => {
     service.unmarkCompleted(childId, entryId, today).subscribe();
@@ -82,7 +82,7 @@ describe('ScheduleService', () => {
     req.flush(null);
   });
 
-  // ─── resetCurrentWeek ─────────────────────────────────────────────────────
+  // resetCurrentWeek
 
   it('resetCurrentWeek: debe hacer DELETE al endpoint de la semana', () => {
     service.resetCurrentWeek(childId).subscribe();
@@ -94,7 +94,7 @@ describe('ScheduleService', () => {
     req.flush(null);
   });
 
-  // ─── addEntry / deleteEntry ───────────────────────────────────────────────
+  // addEntry / deleteEntry
 
   it('addEntry: debe hacer POST con los datos de la entrada', () => {
     const entryReq = {

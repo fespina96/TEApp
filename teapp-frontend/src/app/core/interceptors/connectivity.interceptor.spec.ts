@@ -30,7 +30,7 @@ describe('connectivityInterceptor', () => {
 
   afterEach(() => httpMock.verify());
 
-  // ─── URLs externas ────────────────────────────────────────────────────────
+  // URLs externas
 
   it('URL externa: petición exitosa → pasa sin tocar ConnectivityService', () => {
     http.get(externalUrl).subscribe();
@@ -46,7 +46,7 @@ describe('connectivityInterceptor', () => {
     expect(connectivitySpy.markDisconnected).not.toHaveBeenCalled();
   });
 
-  // ─── URLs de la API ───────────────────────────────────────────────────────
+  // URLs de la API
 
   it('URL de API con respuesta exitosa: no llama a markDisconnected', () => {
     http.get(apiUrl).subscribe();
