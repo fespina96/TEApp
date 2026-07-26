@@ -247,16 +247,15 @@ TEApp/
 
 | Clave | Etiqueta |
 |-------|----------|
-| `HYGIENE` | Higiene personal |
+| `HYGIENE` | Higiene |
 | `MEAL` | Comidas |
 | `EDUCATION` | Educación |
 | `PLAY` | Juego |
 | `THERAPY` | Terapia |
-| `CHORES` | Tareas del hogar |
-| `SOCIAL` | Social |
 | `REST` | Descanso |
+| `OUTDOOR` | Aire libre |
+| `CUSTOM` | Personalizada |
 | `SPECIAL_EVENT` | Evento especial |
-| `OTHER` | Otro |
 
 ---
 

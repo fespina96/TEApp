@@ -166,7 +166,7 @@ public class AgendaActivity extends AppCompatActivity
         if (requestCode == REQ_PICK_ACTIVITY && resultCode == RESULT_OK) cargarAgenda();
     }
 
-    // ── HostCallback ──────────────────────────────────────────────────────────
+    // HostCallback
 
     @Override
     public Map<String, List<ScheduleEntry>> getEntriesForDay(String day) {

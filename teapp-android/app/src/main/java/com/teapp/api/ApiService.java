@@ -30,11 +30,11 @@ import retrofit2.http.Query;
 
 public interface ApiService {
 
-    // ── Health ───────────────────────────────────────────────────────────────
+    // Health
     @GET("health")
     Call<Map<String, String>> health();
 
-    // ── Auth ──────────────────────────────────────────────────────────────────
+    // Auth
     @POST("auth/login")
     Call<AuthResponse> login(@Body LoginRequest body);
 
@@ -44,7 +44,7 @@ public interface ApiService {
     @POST("auth/forgot-password")
     Call<Void> forgotPassword(@Body Map<String, String> body);
 
-    // ── Children ──────────────────────────────────────────────────────────────
+    // Children
     @GET("children")
     Call<List<Child>> getChildren();
 
@@ -63,7 +63,7 @@ public interface ApiService {
     @PUT("children/{id}/avatar")
     Call<Void> updateChildAvatar(@Path("id") String id, @Body RequestBody body);
 
-    // ── Schedule ──────────────────────────────────────────────────────────────
+    // Schedule
     @GET("children/{childId}/schedule")
     Call<WeeklySchedule> getSchedule(@Path("childId") String childId);
 
@@ -80,7 +80,7 @@ public interface ApiService {
     Call<Void> deleteEntry(@Path("childId") String childId,
                            @Path("entryId") String entryId);
 
-    // ── Completions ───────────────────────────────────────────────────────────
+    // Completions
     @POST("children/{childId}/schedule/{entryId}/completions")
     Call<Void> markCompleted(@Path("childId") String childId,
                              @Path("entryId") String entryId,
@@ -94,7 +94,7 @@ public interface ApiService {
     @DELETE("children/{childId}/completions/current-week")
     Call<Void> resetWeek(@Path("childId") String childId);
 
-    // ── Activities ────────────────────────────────────────────────────────────
+    // Activities
     @GET("activities")
     Call<List<ActivityItem>> getActivities();
 
@@ -120,7 +120,7 @@ public interface ApiService {
     Call<List<ActivityStep>> saveSteps(@Path("id") String activityId,
                                        @Body List<com.teapp.model.ActivityStepRequest> steps);
 
-    // ── User ──────────────────────────────────────────────────────────────────
+    // User
     @GET("users/me")
     Call<AuthResponse> getMe();
 
@@ -133,7 +133,7 @@ public interface ApiService {
     @DELETE("users/me")
     Call<Void> deleteMe();
 
-    // ── Therapist ─────────────────────────────────────────────────────────────
+    // Therapist
     @GET("therapist/supervised")
     Call<List<Map<String, Object>>> getSupervisedParents();
 
@@ -153,7 +153,7 @@ public interface ApiService {
     @DELETE("therapist/link/{therapistId}")
     Call<Void> unlinkTherapist(@Path("therapistId") String therapistId);
 
-    // ── Avatar ────────────────────────────────────────────────────────────────
+    // Avatar
     @PUT("users/me/avatar")
     Call<Void> updateUserAvatar(@Body RequestBody body);
 }

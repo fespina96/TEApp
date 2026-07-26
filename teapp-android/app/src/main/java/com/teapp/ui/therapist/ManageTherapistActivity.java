@@ -131,7 +131,7 @@ public class ManageTherapistActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() { finish(); return true; }
 
-    // ── Adapter ───────────────────────────────────────────────────────────────
+    // Adapter
 
     interface OnDesvinculo { void desvincular(TherapistInfo t); }
 

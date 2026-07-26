@@ -246,7 +246,7 @@ public class ActivityFormActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() { finish(); return true; }
 
-    // ── Modelos internos ───────────────────────────────────────────────────────
+    // Modelos internos
 
     static class ArasaacItem {
         int id;
@@ -254,7 +254,7 @@ public class ActivityFormActivity extends AppCompatActivity {
         ArasaacItem(int id, String keyword) { this.id = id; this.keyword = keyword; }
     }
 
-    // ── Adapter ARASAAC ────────────────────────────────────────────────────────
+    // Adapter ARASAAC
 
     interface OnArasaacSelect { void select(ArasaacItem item); }
 

@@ -180,7 +180,7 @@ public class TherapistDashboardActivity extends AppCompatActivity {
         });
     }
 
-    // ── Adapter ───────────────────────────────────────────────────────────────
+    // Adapter
 
     interface OnChildClick { void onClick(Child child); }
 

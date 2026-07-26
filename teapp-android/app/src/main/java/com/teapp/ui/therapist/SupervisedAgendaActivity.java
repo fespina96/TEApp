@@ -102,7 +102,7 @@ public class SupervisedAgendaActivity extends AppCompatActivity
         });
     }
 
-    // ── HostCallback (read-only: no actions) ──────────────────────────────────
+    // HostCallback (read-only: no actions)
 
     @Override
     public Map<String, List<ScheduleEntry>> getEntriesForDay(String day) {

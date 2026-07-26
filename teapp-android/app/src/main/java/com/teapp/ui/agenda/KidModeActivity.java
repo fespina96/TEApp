@@ -122,7 +122,7 @@ public class KidModeActivity extends AppCompatActivity {
         cargarAgenda();
     }
 
-    // ── Entrada tapeada → completar/descompletar ─────────────────────────────
+    // Entrada tapeada → completar/descompletar
 
     private void onEntradaTapped(ScheduleEntry entry) {
         if (entry.isCompletedToday()) {
@@ -140,7 +140,7 @@ public class KidModeActivity extends AppCompatActivity {
         }
     }
 
-    // ── Cargar agenda ────────────────────────────────────────────────────────
+    // Cargar agenda
 
     private void cargarAgenda() {
         binding.progressBar.setVisibility(View.VISIBLE);
@@ -258,7 +258,7 @@ public class KidModeActivity extends AppCompatActivity {
         }
     }
 
-    // ── Marcar completado ─────────────────────────────────────────────────────
+    // Marcar completado
 
     private void mostrarPasos(ScheduleEntry entry) {
         api.getSteps(entry.activity.id).enqueue(new Callback<List<ActivityStep>>() {
@@ -303,7 +303,7 @@ public class KidModeActivity extends AppCompatActivity {
                 });
     }
 
-    // ── Timer ─────────────────────────────────────────────────────────────────
+    // Timer
 
     private void togglePausa() {
         if (!pausado) {
@@ -337,7 +337,7 @@ public class KidModeActivity extends AppCompatActivity {
         if (temporizador != null) { temporizador.cancel(); temporizador = null; }
     }
 
-    // ── Password para salir ───────────────────────────────────────────────────
+    // Password para salir
 
     private void pedirContrasenaSalida() {
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_exit_kid_mode, null);
@@ -379,7 +379,7 @@ public class KidModeActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    // ── TTS ───────────────────────────────────────────────────────────────────
+    // TTS
 
     private void inicializarTTS() {
         tts = new TextToSpeech(this, status -> {
@@ -394,7 +394,7 @@ public class KidModeActivity extends AppCompatActivity {
         if (tts != null) tts.speak(texto, TextToSpeech.QUEUE_FLUSH, null, null);
     }
 
-    // ── Clima ─────────────────────────────────────────────────────────────────
+    // Clima
 
     private void cargarClima() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -434,7 +434,7 @@ public class KidModeActivity extends AppCompatActivity {
         } catch (SecurityException ignored) {}
     }
 
-    // ── Utilidades ────────────────────────────────────────────────────────────
+    // Utilidades
 
     private boolean esCumpleanos() {
         if (child == null || child.dateOfBirth == null || child.dateOfBirth.isEmpty()) return false;
@@ -465,7 +465,7 @@ public class KidModeActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    // ── Adapter de entradas para modo niño ────────────────────────────────────
+    // Adapter de entradas para modo niño
 
     interface OnEntradaTap { void tap(ScheduleEntry e); }
 
@@ -523,7 +523,7 @@ public class KidModeActivity extends AppCompatActivity {
         }
     }
 
-    // ── Steps adapter ─────────────────────────────────────────────────────────
+    // Steps adapter
 
     static class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.VH> {
         private final List<ActivityStep> steps;

@@ -233,7 +233,7 @@ public class ActivityStepsActivity extends AppCompatActivity {
 
     @Override public boolean onSupportNavigateUp() { finish(); return true; }
 
-    // ── Modelos ────────────────────────────────────────────────────────────────
+    // Modelos
 
     static class StepDraft {
         String titulo, descripcion, imageBase64, pictogramUrl;
@@ -242,7 +242,7 @@ public class ActivityStepsActivity extends AppCompatActivity {
         }
     }
 
-    // ── Adapter ────────────────────────────────────────────────────────────────
+    // Adapter
 
     class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.VH> {
         private final List<StepDraft> items;
