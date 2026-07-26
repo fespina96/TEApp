@@ -13,9 +13,6 @@ import { AvatarPickerDialogComponent } from '../../../shared/components/avatar-p
 import { ChildService } from '../../../core/services/child.service';
 import { Child } from '../../../core/models/child.model';
 
-/**
- * Vista tabular de participantes con acciones de edición, eliminación y acceso a agenda.
- */
 @Component({
   selector: 'app-child-list',
   standalone: true,
@@ -29,11 +26,8 @@ import { Child } from '../../../core/models/child.model';
   styleUrl: './child-list.component.scss'
 })
 export class ChildListComponent implements OnInit {
-  /** Lista de participantes del padre autenticado */
   participantes: Child[] = [];
-  /** Indica si se está cargando la lista */
   cargando = true;
-  /** Columnas visibles en la tabla */
   columnasVisibles = ['avatar', 'name', 'age', 'actions'];
 
   constructor(
@@ -46,7 +40,6 @@ export class ChildListComponent implements OnInit {
     this.cargarParticipantes();
   }
 
-  /** Carga la lista de participantes desde el backend */
   cargarParticipantes(): void {
     this.cargando = true;
     this.childService.getAll().subscribe({
@@ -55,10 +48,6 @@ export class ChildListComponent implements OnInit {
     });
   }
 
-  /**
-   * Muestra confirmación y elimina el perfil de un participante.
-   * @param participante participante a eliminar
-   */
   eliminarParticipante(participante: Child): void {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       data: {
@@ -74,10 +63,6 @@ export class ChildListComponent implements OnInit {
     });
   }
 
-  /**
-   * Abre el diálogo para cambiar el avatar de un participante.
-   * @param participante participante cuyo avatar se va a editar
-   */
   editarAvatar(participante: Child): void {
     const ref = this.dialog.open(AvatarPickerDialogComponent, {
       width: '380px',
@@ -96,11 +81,6 @@ export class ChildListComponent implements OnInit {
     });
   }
 
-  /**
-   * Calcula la edad de un participante a partir de su fecha de nacimiento.
-   * @param fechaNacimiento fecha de nacimiento en formato string
-   * @returns edad en años
-   */
   calcularEdad(fechaNacimiento: string): number {
     const nacimiento = new Date(fechaNacimiento);
     const hoy = new Date();

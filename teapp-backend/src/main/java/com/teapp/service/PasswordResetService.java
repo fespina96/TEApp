@@ -43,6 +43,7 @@ public class PasswordResetService {
     private String frontendUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     /**
      * Solicita un reset de contraseña para el email indicado.
@@ -67,7 +68,7 @@ public class PasswordResetService {
 
         // Genera token seguro de 36 bytes → ~48 chars base64url
         byte[] bytesAleatorios = new byte[36];
-        new SecureRandom().nextBytes(bytesAleatorios);
+        RANDOM.nextBytes(bytesAleatorios);
         String token = Base64.getUrlEncoder().withoutPadding().encodeToString(bytesAleatorios);
 
         PasswordResetToken tokenReset = PasswordResetToken.builder()

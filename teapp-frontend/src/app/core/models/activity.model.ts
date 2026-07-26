@@ -1,6 +1,3 @@
-/**
- * Categorías de actividades disponibles en el sistema.
- */
 export type ActivityCategory =
   | 'HYGIENE'
   | 'MEAL'
@@ -12,7 +9,6 @@ export type ActivityCategory =
   | 'CUSTOM'
   | 'SPECIAL_EVENT';
 
-/** Etiquetas en español para cada categoría */
 export const CATEGORY_LABELS: Record<ActivityCategory, string> = {
   HYGIENE:   'Higiene',
   MEAL:      'Comidas',
@@ -25,7 +21,6 @@ export const CATEGORY_LABELS: Record<ActivityCategory, string> = {
   SPECIAL_EVENT: 'Evento especial'
 };
 
-/** Colores por defecto para cada categoría */
 export const CATEGORY_COLORS: Record<ActivityCategory, string> = {
   HYGIENE:   '#A8D8EA',
   MEAL:      '#FAF0BE',
@@ -38,9 +33,6 @@ export const CATEGORY_COLORS: Record<ActivityCategory, string> = {
   SPECIAL_EVENT: '#FFE082'
 };
 
-/**
- * Modelo de actividad (predefinida o personalizada).
- */
 export interface Activity {
   id: string;
   name: string;

@@ -20,11 +20,6 @@ import { AvatarPickerDialogComponent } from '../../shared/components/avatar-pick
 import { ChangePasswordDialogComponent } from '../../shared/components/change-password-dialog/change-password-dialog.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
-/**
- * Pantalla de perfil del usuario autenticado.
- * Permite editar nombre, fecha de nacimiento, avatar, contraseña
- * y eliminar la cuenta.
- */
 @Component({
   selector: 'app-profile',
   standalone: true,

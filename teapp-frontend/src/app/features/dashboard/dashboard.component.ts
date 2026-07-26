@@ -19,11 +19,6 @@ import { AuthService } from '../../core/services/auth.service';
 import { TherapistService, LinkedTherapist } from '../../core/services/therapist.service';
 import { Child } from '../../core/models/child.model';
 
-/**
- * Dashboard principal del padre.
- * Muestra la lista de participantes registrados con acceso rápido a sus agendas
- * y gestión de la vinculación con terapeutas.
- */
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -70,7 +65,6 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  /** Carga la lista de participantes desde el backend */
   cargarParticipantes(): void {
     this.cargando = true;
     this.childService.getAll().subscribe({
@@ -85,23 +79,14 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  /** Navega al formulario de creación de un nuevo participante */
   agregarParticipante(): void {
     this.router.navigate(['/app/children/new']);
   }
 
-  /**
-   * Navega al formulario de edición de un participante.
-   * @param participante participante a editar
-   */
   editarParticipante(participante: Child): void {
     this.router.navigate(['/app/children', participante.id, 'edit']);
   }
 
-  /**
-   * Abre el diálogo para cambiar el avatar de un participante.
-   * @param participante participante cuyo avatar se va a editar
-   */
   editarAvatarParticipante(participante: Child): void {
     const ref = this.dialog.open(AvatarPickerDialogComponent, {
       width: '380px',
@@ -120,10 +105,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  /**
-   * Muestra confirmación y elimina el perfil de un participante.
-   * @param participante participante a eliminar
-   */
   eliminarParticipante(participante: Child): void {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       data: {
@@ -146,7 +127,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  /** Carga la lista de terapeutas vinculados al padre */
   cargarTerapeutas(): void {
     this.therapistService.getMyTherapists().subscribe({
       next: (lista) => this.terapeutas = lista,
@@ -154,7 +134,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  /** Vincula al padre con el terapeuta usando el código ingresado */
   vincularTerapeuta(): void {
     const codigo = this.codigoTerapeuta.trim();
     if (!codigo) return;
@@ -172,10 +151,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  /**
-   * Desvincula al padre de un terapeuta específico previa confirmación.
-   * @param idTerapeuta identificador del terapeuta a desvincular
-   */
   desvincularTerapeuta(idTerapeuta: string): void {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       data: {
@@ -196,7 +171,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  /** Retorna el primer nombre del usuario autenticado */
   get nombreUsuario(): string {
     return this.authService.currentUser?.fullName?.split(' ')[0] || 'Papá/Mamá';
   }

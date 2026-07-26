@@ -10,16 +10,11 @@ export interface ArasaacPictogram {
 const ARASAAC_API  = 'https://api.arasaac.org/v1/pictograms';
 const ARASAAC_STATIC = 'https://static.arasaac.org/pictograms';
 
-/**
- * Servicio de búsqueda de pictogramas en la API pública de ARASAAC.
- * No requiere autenticación. Usa el CDN estático de ARASAAC para las imágenes.
- */
 @Injectable({ providedIn: 'root' })
 export class ArasaacService {
 
   constructor(private http: HttpClient) {}
 
-  /** Busca pictogramas por palabra clave (API pública, sin auth) */
   search(term: string): Observable<ArasaacPictogram[]> {
     return this.http
       .get<any[]>(`${ARASAAC_API}/es/search/${encodeURIComponent(term)}`)
@@ -33,12 +28,11 @@ export class ArasaacService {
       );
   }
 
-  /** URL de miniatura estática (CDN de ARASAAC, más fiable en <img>) */
+  // El CDN estático es más fiable dentro de <img> que el endpoint de la API.
   thumbUrl(id: number): string {
     return `${ARASAAC_STATIC}/${id}/${id}_300.png`;
   }
 
-  /** URL de imagen completa para guardar en la actividad */
   imageUrl(id: number): string {
     return `${ARASAAC_STATIC}/${id}/${id}_500.png`;
   }

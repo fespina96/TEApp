@@ -16,9 +16,6 @@ interface ActivityFormData {
   activity?: Activity;
 }
 
-/**
- * Formulario modal para crear o editar actividades personalizadas.
- */
 @Component({
   selector: 'app-activity-form',
   standalone: true,

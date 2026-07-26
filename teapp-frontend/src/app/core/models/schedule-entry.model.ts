@@ -1,13 +1,10 @@
 import { Activity } from './activity.model';
 
-/**
- * Días de la semana en el orden utilizado por el backend (Java DayOfWeek).
- */
+// El orden debe coincidir con el enum DayOfWeek de Java en el backend.
 export type DayOfWeek =
   | 'MONDAY' | 'TUESDAY' | 'WEDNESDAY'
   | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
 
-/** Etiquetas en español para cada día */
 export const DAY_LABELS: Record<DayOfWeek, string> = {
   MONDAY:    'Lunes',
   TUESDAY:   'Martes',
@@ -22,12 +19,8 @@ export const DAYS_OF_WEEK: DayOfWeek[] = [
   'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'
 ];
 
-/**
- * Franjas horarias del día.
- */
 export type TimeSlot = 'MORNING' | 'AFTERNOON' | 'NIGHT';
 
-/** Etiquetas en español para cada franja */
 export const TIME_SLOT_LABELS: Record<TimeSlot, string> = {
   MORNING:   'Mañana',
   AFTERNOON: 'Tarde',
@@ -36,9 +29,6 @@ export const TIME_SLOT_LABELS: Record<TimeSlot, string> = {
 
 export const TIME_SLOTS: TimeSlot[] = ['MORNING', 'AFTERNOON', 'NIGHT'];
 
-/**
- * Modelo de entrada en la agenda semanal.
- */
 export interface ScheduleEntry {
   id: string;
   activity: Activity;
@@ -67,9 +57,6 @@ export interface ScheduleEntryRequest {
   requireFullTimer?: boolean;
 }
 
-/**
- * Respuesta de agenda semanal completa del backend.
- */
 export interface WeeklySchedule {
   childId: string;
   week: Record<DayOfWeek, Record<TimeSlot, ScheduleEntry[]>>;

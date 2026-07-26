@@ -2,10 +2,6 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
 
-/**
- * Definición de rutas principal de la aplicación.
- * Las rutas protegidas requieren el guard de autenticación JWT.
- */
 export const routes: Routes = [
   {
     path: 'login',

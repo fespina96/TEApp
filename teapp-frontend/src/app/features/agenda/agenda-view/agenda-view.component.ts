@@ -24,10 +24,6 @@ import { VisualTimerDialogComponent } from '../../../shared/components/visual-ti
 import { StepViewerDialogComponent } from '../../../shared/components/step-viewer-dialog/step-viewer-dialog.component';
 import { ActivityService } from '../../../core/services/activity.service';
 
-/**
- * Vista principal de la agenda semanal de un participante.
- * Incluye modo participante: vista de hoy, solo lectura, con marca de tareas completadas.
- */
 @Component({
   selector: 'app-agenda-view',
   standalone: true,
@@ -42,18 +38,12 @@ import { ActivityService } from '../../../core/services/activity.service';
   styleUrl: './agenda-view.component.scss'
 })
 export class AgendaViewComponent implements OnInit {
-  /** Perfil del participante cuya agenda se está viendo */
   participante: Child | null = null;
-  /** Agenda semanal completa */
   agenda: WeeklySchedule | null = null;
-  /** Indica si se está cargando la información */
   cargando = true;
-  /** ID del participante obtenido de los parámetros de ruta */
   idParticipante!: string;
 
-  /** Modo participante: solo muestra las tareas de hoy, sin edición */
   modoNino = false;
-  /** Información del clima para el modo participante */
   clima: WeatherInfo | null = null;
 
   readonly days = DAYS_OF_WEEK;
@@ -61,7 +51,6 @@ export class AgendaViewComponent implements OnInit {
   readonly timeSlots = TIME_SLOTS;
   readonly slotLabels = TIME_SLOT_LABELS;
 
-  /** Íconos de Material asociados a cada franja horaria */
   readonly iconosFranja: Record<TimeSlot, string> = {
     MORNING:   'wb_sunny',
     AFTERNOON: 'wb_cloudy',
@@ -84,7 +73,6 @@ export class AgendaViewComponent implements OnInit {
     this.cargarDatos();
   }
 
-  /** Carga el perfil del participante y luego su agenda */
   cargarDatos(): void {
     this.cargando = true;
     this.childService.getById(this.idParticipante).subscribe({
@@ -99,7 +87,6 @@ export class AgendaViewComponent implements OnInit {
     });
   }
 
-  /** Carga la agenda semanal del participante desde el backend */
   cargarAgenda(): void {
     this.scheduleService.getWeeklySchedule(this.idParticipante).subscribe({
       next: (agenda) => {
@@ -113,11 +100,6 @@ export class AgendaViewComponent implements OnInit {
     });
   }
 
-  /**
-   * Obtiene las entradas de un día y franja horaria específicos.
-   * @param dia día de la semana
-   * @param franja franja horaria (MORNING, AFTERNOON, NIGHT)
-   */
   obtenerEntradas(dia: DayOfWeek, franja: TimeSlot): ScheduleEntry[] {
     return this.agenda?.week?.[dia]?.[franja] ?? [];
   }
@@ -130,17 +112,14 @@ export class AgendaViewComponent implements OnInit {
     return (new Date().getDay() + 6) % 7;
   }
 
-  /** Día de la semana actual como DayOfWeek */
   get diaActual(): DayOfWeek {
     return this.days[this.indiceDiaActual];
   }
 
-  /** Iniciales del nombre del participante para el avatar */
   get inicialesParticipante(): string {
     return this.participante?.name.charAt(0).toUpperCase() ?? '?';
   }
 
-  /** Retorna true si hoy es el cumpleaños del participante */
   get esCumpleanos(): boolean {
     if (!this.participante?.dateOfBirth) return false;
     const hoy = new Date();
@@ -148,7 +127,6 @@ export class AgendaViewComponent implements OnInit {
     return nacimiento.getMonth() === hoy.getMonth() && nacimiento.getDate() === hoy.getDate();
   }
 
-  /** Edad del participante calculada desde su fecha de nacimiento */
   get edadParticipante(): number | null {
     if (!this.participante?.dateOfBirth) return null;
     const hoy = new Date();
@@ -159,7 +137,6 @@ export class AgendaViewComponent implements OnInit {
     return edad;
   }
 
-  /** Activa el modo participante y carga el clima si aún no se cargó */
   activarModoNino(): void {
     this.modoNino = true;
     if (!this.clima) {
@@ -167,7 +144,6 @@ export class AgendaViewComponent implements OnInit {
     }
   }
 
-  /** Solicita contraseña para salir del modo participante */
   salirModoNino(): void {
     this.dialog.open(KidExitDialogComponent, { width: '360px', disableClose: true })
       .afterClosed().subscribe((confirmado: boolean) => {
@@ -175,12 +151,7 @@ export class AgendaViewComponent implements OnInit {
       });
   }
 
-  /**
-   * Alterna el estado completado de una entrada.
-   * Si la actividad tiene pasos, muestra el visor de pasos primero.
-   * Si tiene temporizador, lo muestra antes de marcar completado.
-   * @param entrada entrada de agenda a marcar/desmarcar
-   */
+  // Si la actividad tiene pasos o temporizador, se muestran antes de marcarla completada.
   alternarCompletada(entrada: ScheduleEntry): void {
     const fechaHoy = this.fechaHoyISO();
     if (this.estaCompletadaHoy(entrada)) {
@@ -235,15 +206,10 @@ export class AgendaViewComponent implements OnInit {
       .subscribe({ next: () => this.cargarAgenda() });
   }
 
-  /**
-   * Retorna true si la entrada fue completada hoy.
-   * @param entrada entrada de agenda a verificar
-   */
   estaCompletadaHoy(entrada: ScheduleEntry): boolean {
     return entrada.completedDates?.includes(this.fechaHoyISO()) ?? false;
   }
 
-  /** Resetea todas las completitudes de la semana actual */
   resetearSemana(): void {
     this.scheduleService.resetCurrentWeek(this.idParticipante).subscribe({
       next: () => {
@@ -253,30 +219,22 @@ export class AgendaViewComponent implements OnInit {
     });
   }
 
-  /** Retorna la fecha de hoy en formato ISO (YYYY-MM-DD) */
   private fechaHoyISO(): string {
     return new Date().toISOString().split('T')[0];
   }
 
-  /**
-   * Retorna las entradas de hoy para una franja horaria específica.
-   * @param franja franja horaria a consultar
-   */
   obtenerEntradasHoy(franja: TimeSlot): ScheduleEntry[] {
     return this.obtenerEntradas(this.diaActual, franja);
   }
 
-  /** Todas las entradas de hoy en orden de franja horaria */
   get todasEntradasHoy(): ScheduleEntry[] {
     return TIME_SLOTS.flatMap(franja => this.obtenerEntradasHoy(franja));
   }
 
-  /** Primera actividad pendiente de hoy (Ahora) */
   get entradaActual(): ScheduleEntry | null {
     return this.todasEntradasHoy.find(e => !this.estaCompletadaHoy(e)) ?? null;
   }
 
-  /** Segunda actividad pendiente de hoy (Después) */
   get entradaSiguiente(): ScheduleEntry | null {
     const pendientes = this.todasEntradasHoy.filter(e => !this.estaCompletadaHoy(e));
     return pendientes[1] ?? null;

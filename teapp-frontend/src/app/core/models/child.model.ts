@@ -1,6 +1,3 @@
-/**
- * Modelo de perfil de niño administrado por un padre.
- */
 export interface Child {
   id: string;
   name: string;
@@ -18,7 +15,6 @@ export interface ChildRequest {
   notes?: string;
 }
 
-/** Colores predefinidos para el avatar del niño */
 export const AVATAR_COLORS = [
   { value: '#A8D8EA', label: 'Azul' },
   { value: '#B8E0C8', label: 'Verde' },

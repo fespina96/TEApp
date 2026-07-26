@@ -8,9 +8,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../../core/services/auth.service';
 
-/**
- * Diálogo que solicita la contraseña del padre para salir del modo niño.
- */
 @Component({
   selector: 'app-kid-exit-dialog',
   standalone: true,

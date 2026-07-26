@@ -17,34 +17,23 @@ export class AuthService {
   private readonly apiUrl    = `${environment.apiUrl}/auth`;
 
   private currentUserSubject = new BehaviorSubject<User | null>(this.loadUserFromStorage());
-  /** Observable del usuario autenticado actual. null si no hay sesión. */
   currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  /**
-   * Inicia sesión del padre y almacena el token JWT.
-   * @param request credenciales de login
-   * @param rememberMe si true, persiste en localStorage; si false, usa sessionStorage
-   */
   login(request: LoginRequest, rememberMe = false): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, request).pipe(
       tap(response => this.storeSession(response, rememberMe))
     );
   }
 
-  /**
-   * Registra un nuevo padre y almacena el token JWT (siempre recuerda al registrarse).
-   */
+  // El registro siempre persiste la sesión (rememberMe = true).
   register(request: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, request).pipe(
       tap(response => this.storeSession(response, true))
     );
   }
 
-  /**
-   * Cierra la sesión, limpia ambos storages y redirige al login.
-   */
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
@@ -62,33 +51,24 @@ export class AuthService {
     return this.http.post<void>(`${this.apiUrl}/reset-password`, { token, newPassword });
   }
 
-  /**
-   * Retorna true si hay un token válido (no expirado) en cualquier storage.
-   */
   isAuthenticated(): boolean {
     const token = this.getToken();
     if (!token) return false;
     return !this.isTokenExpired(token);
   }
 
-  /**
-   * Retorna el token JWT almacenado (localStorage tiene prioridad), o null si no hay sesión.
-   */
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY) ?? sessionStorage.getItem(this.TOKEN_KEY);
   }
 
-  /** Retorna el snapshot del usuario actual. */
   get currentUser(): User | null {
     return this.currentUserSubject.value;
   }
 
-  /** Retorna true si el usuario autenticado tiene rol THERAPIST. */
   isTherapist(): boolean {
     return this.currentUserSubject.value?.role === 'THERAPIST';
   }
 
-  /** Actualiza el avatar del usuario en el storage activo y en el BehaviorSubject. */
   updateLocalAvatar(avatarBase64: string | null): void {
     const user = this.currentUserSubject.value;
     if (!user) return;
@@ -119,7 +99,7 @@ export class AuthService {
     return stored ? JSON.parse(stored) : null;
   }
 
-  /** Decodifica el campo `exp` del JWT y verifica si ya venció. */
+  // Decodifica el payload del JWT (base64url) y compara el campo exp con la hora actual.
   private isTokenExpired(token: string): boolean {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));

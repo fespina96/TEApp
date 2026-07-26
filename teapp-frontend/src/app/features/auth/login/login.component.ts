@@ -13,10 +13,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { AuthService } from '../../../core/services/auth.service';
 
-/**
- * Página de inicio de sesión y registro de padres.
- * Contiene dos pestañas: Login y Registro.
- */
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -68,14 +64,12 @@ export class LoginComponent {
     }, { validators: this.validadorContrasenasIguales });
   }
 
-  /** Validador que verifica que password y confirmPassword sean iguales */
   private validadorContrasenasIguales(grupo: AbstractControl): ValidationErrors | null {
     const pw  = grupo.get('password')?.value;
     const cpw = grupo.get('confirmPassword')?.value;
     return pw && cpw && pw !== cpw ? { passwordsMismatch: true } : null;
   }
 
-  /** Envía las credenciales de login */
   onLogin(): void {
     if (this.loginForm.invalid) return;
     this.cargando = true;
@@ -100,7 +94,6 @@ export class LoginComponent {
     });
   }
 
-  /** Envía los datos de registro de nuevo usuario */
   onRegister(): void {
     if (this.registerForm.invalid) return;
     this.cargando = true;

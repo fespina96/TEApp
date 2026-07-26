@@ -6,11 +6,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Child } from '../../../core/models/child.model';
 
-/**
- * Tarjeta presentacional para el perfil de un niño.
- * Muestra el nombre, edad calculada y color del avatar.
- * Emite eventos para editar, eliminar y ver la agenda.
- */
 @Component({
   selector: 'app-child-card',
   standalone: true,
@@ -19,17 +14,12 @@ import { Child } from '../../../core/models/child.model';
   styleUrl: './child-card.component.scss'
 })
 export class ChildCardComponent {
-  /** Perfil del niño a mostrar */
   @Input({ required: true }) child!: Child;
 
-  /** Emitido cuando el padre quiere editar el perfil */
   @Output() edit        = new EventEmitter<Child>();
-  /** Emitido cuando el padre quiere editar el avatar */
   @Output() editAvatar  = new EventEmitter<Child>();
-  /** Emitido cuando el padre quiere eliminar el perfil */
   @Output() delete      = new EventEmitter<Child>();
 
-  /** Calcula la edad en años a partir de la fecha de nacimiento */
   get age(): number {
     const birth = new Date(this.child.dateOfBirth);
     const today = new Date();
@@ -39,7 +29,6 @@ export class ChildCardComponent {
     return age;
   }
 
-  /** Retorna la primera letra del nombre en mayúscula para el avatar */
   get avatarLetter(): string {
     return this.child.name.charAt(0).toUpperCase();
   }

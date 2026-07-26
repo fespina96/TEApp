@@ -14,10 +14,6 @@ import { User } from '../../../core/models/user.model';
 import { AvatarPickerDialogComponent } from '../avatar-picker-dialog/avatar-picker-dialog.component';
 import { ChangePasswordDialogComponent } from '../change-password-dialog/change-password-dialog.component';
 
-/**
- * Barra de navegación superior de la aplicación.
- * Muestra el logo, navegación principal y menú de usuario con opciones de perfil.
- */
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -38,7 +34,6 @@ import { ChangePasswordDialogComponent } from '../change-password-dialog/change-
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent implements OnInit {
-  /** Usuario autenticado actualmente */
   usuarioActual: User | null = null;
 
   constructor(
@@ -52,12 +47,10 @@ export class HeaderComponent implements OnInit {
     this.authService.currentUser$.subscribe(usuario => this.usuarioActual = usuario);
   }
 
-  /** Cierra la sesión del usuario actual */
   logout(): void {
     this.authService.logout();
   }
 
-  /** Abre el diálogo para cambiar la contraseña del usuario */
   abrirCambioContrasena(): void {
     const ref = this.dialog.open(ChangePasswordDialogComponent, {
       width: '420px',
@@ -70,7 +63,6 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  /** Abre el selector de avatar para actualizar la foto de perfil del usuario */
   abrirSelectorAvatar(): void {
     const ref = this.dialog.open(AvatarPickerDialogComponent, {
       width: '380px',
@@ -89,7 +81,6 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  /** Iniciales del nombre del usuario para el avatar */
   get iniciales(): string {
     if (!this.usuarioActual?.fullName) return '?';
     return this.usuarioActual.fullName

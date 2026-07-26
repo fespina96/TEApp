@@ -7,13 +7,10 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 export interface AvatarPickerData {
-  /** Nombre del sujeto (para mostrar en el diálogo) */
   name: string;
-  /** Avatar actual (base64 / data URL) para previsualización */
   currentAvatar?: string;
 }
 
-/** Catálogo de avatares predefinidos: emoji + color de fondo */
 const CATALOG: { emoji: string; bg: string }[] = [
   { emoji: '🦋', bg: '#C9B8E8' },
   { emoji: '🌟', bg: '#FAF0BE' },

@@ -2,10 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-/**
- * Guard funcional de autenticación.
- * Redirige al login si el usuario no tiene sesión activa (sin token JWT).
- */
+// Bloquea el acceso a rutas privadas: redirige al login si no hay sesión activa.
 export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);

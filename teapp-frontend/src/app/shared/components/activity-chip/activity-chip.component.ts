@@ -3,10 +3,6 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { Activity } from '../../../core/models/activity.model';
 
-/**
- * Componente presentacional tipo chip/etiqueta para una actividad.
- * Muestra el icono de Material Icons y el nombre sobre el color de la actividad.
- */
 @Component({
   selector: 'app-activity-chip',
   standalone: true,
@@ -34,6 +30,5 @@ import { Activity } from '../../../core/models/activity.model';
   `]
 })
 export class ActivityChipComponent {
-  /** Actividad a mostrar como chip */
   @Input({ required: true }) activity!: Activity;
 }

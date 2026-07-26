@@ -9,10 +9,6 @@ export interface ConfirmDialogData {
   cancelLabel?: string;
 }
 
-/**
- * Diálogo de confirmación genérico para acciones destructivas.
- * Retorna true si el usuario confirma, false si cancela.
- */
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,

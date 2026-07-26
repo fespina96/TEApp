@@ -14,7 +14,7 @@ export class WeatherService {
 
   constructor(private http: HttpClient) {}
 
-  /** Obtiene el clima actual usando geolocalización + Open-Meteo (sin API key). */
+  // Geolocaliza al usuario y consulta Open-Meteo (API abierta, sin key). Devuelve null si algo falla.
   getWeather(): Observable<WeatherInfo | null> {
     return new Observable(observer => {
       if (!navigator.geolocation) {

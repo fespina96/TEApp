@@ -12,10 +12,6 @@ import { Activity } from '../../../core/models/activity.model';
 import { EntryCardComponent } from '../entry-card/entry-card.component';
 import { ActivityPickerDialogComponent } from '../activity-picker-dialog/activity-picker-dialog.component';
 
-/**
- * Columna de franja horaria dentro de la agenda semanal.
- * Muestra las entradas de un slot (Mañana/Tarde/Noche) con drag-and-drop para reordenar.
- */
 @Component({
   selector: 'app-time-slot-column',
   standalone: true,
@@ -34,10 +30,9 @@ export class TimeSlotColumnComponent implements OnChanges {
   @Input({ required: true }) slot!: TimeSlot;
   @Input() entries: ScheduleEntry[] = [];
 
-  /** Copia local mutable para reordenar sin recargar */
+  // Copia mutable local para reordenar por drag-and-drop sin recargar del backend.
   localEntries: ScheduleEntry[] = [];
 
-  /** Emitido cuando la agenda cambia (añadir/eliminar) */
   @Output() scheduleChanged = new EventEmitter<void>();
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -69,7 +64,6 @@ export class TimeSlotColumnComponent implements OnChanges {
     return map[this.slot];
   }
 
-  /** Maneja el reorden por drag-and-drop */
   onDrop(event: CdkDragDrop<ScheduleEntry[]>): void {
     if (event.previousContainer !== event.container) return;
     if (event.previousIndex === event.currentIndex) return;
@@ -94,7 +88,6 @@ export class TimeSlotColumnComponent implements OnChanges {
     });
   }
 
-  /** Abre el selector de actividad para agregar una nueva entrada */
   openActivityPicker(): void {
     const dialogRef = this.dialog.open(ActivityPickerDialogComponent, {
       width: '480px',
@@ -138,7 +131,6 @@ export class TimeSlotColumnComponent implements OnChanges {
     return entry.completedDates?.includes(today) ?? false;
   }
 
-  /** Elimina una entrada de la agenda */
   onDeleteEntry(entry: ScheduleEntry): void {
     this.scheduleService.deleteEntry(this.childId, entry.id).subscribe({
       next: () => {

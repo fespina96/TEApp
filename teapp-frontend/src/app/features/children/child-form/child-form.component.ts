@@ -13,10 +13,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ChildService } from '../../../core/services/child.service';
 import { AVATAR_COLORS } from '../../../core/models/child.model';
 
-/**
- * Formulario de creación y edición de perfil de niño.
- * Detecta el modo (crear vs editar) según la presencia del parámetro idParticipante en la ruta.
- */
+// El modo (crear vs editar) se detecta según la presencia del parámetro de ruta idParticipante.
 @Component({
   selector: 'app-child-form',
   standalone: true,

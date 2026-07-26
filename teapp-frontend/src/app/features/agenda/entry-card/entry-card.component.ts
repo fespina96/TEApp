@@ -6,10 +6,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivityChipComponent } from '../../../shared/components/activity-chip/activity-chip.component';
 import { ScheduleEntry } from '../../../core/models/schedule-entry.model';
 
-/**
- * Tarjeta que representa una entrada individual en la agenda semanal.
- * Muestra la actividad como chip y permite eliminarla del slot.
- */
 @Component({
   selector: 'app-entry-card',
   standalone: true,

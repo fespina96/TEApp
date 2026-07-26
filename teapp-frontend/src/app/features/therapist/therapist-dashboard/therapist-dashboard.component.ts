@@ -14,10 +14,6 @@ import { TherapistService, SupervisedParent } from '../../../core/services/thera
 import { AuthService } from '../../../core/services/auth.service';
 import { DAY_LABELS, TIME_SLOT_LABELS, DAYS_OF_WEEK, TIME_SLOTS } from '../../../core/models/schedule-entry.model';
 
-/**
- * Panel principal del terapeuta.
- * Permite visualizar los padres supervisados, sus participantes y sus agendas en modo solo lectura.
- */
 @Component({
   selector: 'app-therapist-dashboard',
   standalone: true,
@@ -38,24 +34,15 @@ import { DAY_LABELS, TIME_SLOT_LABELS, DAYS_OF_WEEK, TIME_SLOTS } from '../../..
   styleUrl: './therapist-dashboard.component.scss'
 })
 export class TherapistDashboardComponent implements OnInit {
-  /** Código de invitación del terapeuta para compartir con padres */
   codigoInvitacion = '';
-  /** Lista de padres supervisados por el terapeuta */
   padres: SupervisedParent[] = [];
-  /** Indica si se está cargando la lista de padres */
   cargando = true;
 
-  /** Padre actualmente seleccionado */
   padreSeleccionado: SupervisedParent | null = null;
-  /** Participantes del padre seleccionado */
   participantesDePadre: any[] = [];
-  /** Participante actualmente seleccionado */
   participanteSeleccionado: any | null = null;
-  /** Agenda del participante seleccionado */
   agendaParticipante: any | null = null;
-  /** Indica si se están cargando los participantes del padre */
   cargandoParticipantes = false;
-  /** Indica si se está cargando la agenda del participante */
   cargandoAgenda = false;
 
   readonly days = DAYS_OF_WEEK;
@@ -75,7 +62,6 @@ export class TherapistDashboardComponent implements OnInit {
     this.cargarPadres();
   }
 
-  /** Carga la lista de padres supervisados desde el backend */
   cargarPadres(): void {
     this.cargando = true;
     this.therapistService.getSupervisedParents().subscribe({
@@ -84,10 +70,6 @@ export class TherapistDashboardComponent implements OnInit {
     });
   }
 
-  /**
-   * Selecciona o deselecciona un padre y carga sus participantes.
-   * @param padre padre supervisado a seleccionar
-   */
   seleccionarPadre(padre: SupervisedParent): void {
     if (this.padreSeleccionado?.id === padre.id) {
       this.padreSeleccionado = null;
@@ -106,10 +88,6 @@ export class TherapistDashboardComponent implements OnInit {
     });
   }
 
-  /**
-   * Selecciona o deselecciona un participante y carga su agenda.
-   * @param participante participante a seleccionar
-   */
   seleccionarParticipante(participante: any): void {
     if (this.participanteSeleccionado?.id === participante.id) {
       this.participanteSeleccionado = null;
@@ -124,47 +102,28 @@ export class TherapistDashboardComponent implements OnInit {
     });
   }
 
-  /**
-   * Obtiene las entradas de un día y franja horaria de la agenda del participante seleccionado.
-   * @param dia día de la semana
-   * @param franja franja horaria
-   */
   obtenerEntradas(dia: string, franja: string): any[] {
     return this.agendaParticipante?.week?.[dia]?.[franja] ?? [];
   }
 
-  /** Copia el código de invitación al portapapeles */
   copiarCodigo(): void {
     navigator.clipboard.writeText(this.codigoInvitacion).then(() => {
       this.snackBar.open('Código copiado', '', { duration: 2000 });
     });
   }
 
-  /**
-   * Retorna la inicial del nombre en mayúscula.
-   * @param nombre nombre completo
-   */
   obtenerIniciales(nombre: string): string {
     return nombre.charAt(0).toUpperCase();
   }
 
-  /**
-   * Retorna el estilo de fondo del avatar de un participante.
-   * @param participante participante del que se obtiene el color
-   */
   estiloAvatar(participante: any): { [key: string]: string } {
     return { background: participante.avatarColor || '#A8D8EA' };
   }
 
-  /** Retorna la fecha de hoy en formato ISO (YYYY-MM-DD) */
   fechaHoyISO(): string {
     return new Date().toISOString().split('T')[0];
   }
 
-  /**
-   * Retorna true si la entrada fue completada hoy.
-   * @param entrada entrada de agenda a verificar
-   */
   estaCompletadaHoy(entrada: any): boolean {
     return entrada.completedDates?.includes(this.fechaHoyISO()) ?? false;
   }

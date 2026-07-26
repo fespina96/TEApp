@@ -1,6 +1,3 @@
-/**
- * Modelo de usuario (padre/tutor o terapeuta) autenticado.
- */
 export interface User {
   id: string;
   email: string;
