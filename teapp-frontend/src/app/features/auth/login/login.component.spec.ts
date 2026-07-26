@@ -45,7 +45,7 @@ describe('LoginComponent', () => {
   });
 
   it('loginForm: email y contraseña válidos → formulario válido', () => {
-    component.loginForm.setValue({ email: 'padre@test.com', password: 'Pass1234' });
+    component.loginForm.setValue({ email: 'padre@test.com', password: 'Pass1234', rememberMe: false });
     expect(component.loginForm.valid).toBeTrue();
   });
 
