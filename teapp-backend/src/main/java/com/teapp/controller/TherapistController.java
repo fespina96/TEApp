@@ -1,8 +1,6 @@
 package com.teapp.controller;
 
 import com.teapp.service.TherapistService;
-import com.teapp.service.ChildService;
-import com.teapp.service.ScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,8 +26,6 @@ import java.util.UUID;
 public class TherapistController {
 
     private final TherapistService therapistService;
-    private final ChildService childService;
-    private final ScheduleService scheduleService;
 
     @PostMapping("/link")
     @Operation(summary = "Vincular padre a terapeuta",
@@ -63,7 +59,7 @@ public class TherapistController {
     @GetMapping("/supervised/{parentId}/children")
     @Operation(summary = "Obtener participantes de un padre supervisado")
     public ResponseEntity<?> obtenerParticipantesDePadre(@PathVariable UUID parentId) {
-        return ResponseEntity.ok(childService.getChildrenByParentId(parentId));
+        return ResponseEntity.ok(therapistService.getSupervisedChildren(parentId));
     }
 
     @GetMapping("/supervised/{parentId}/children/{childId}/schedule")
@@ -71,6 +67,6 @@ public class TherapistController {
     public ResponseEntity<?> obtenerAgendaSupervisada(
             @PathVariable UUID parentId,
             @PathVariable UUID childId) {
-        return ResponseEntity.ok(scheduleService.getWeeklySchedule(childId));
+        return ResponseEntity.ok(therapistService.getSupervisedSchedule(parentId, childId));
     }
 }

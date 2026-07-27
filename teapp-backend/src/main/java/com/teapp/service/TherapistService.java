@@ -1,9 +1,12 @@
 package com.teapp.service;
 
+import com.teapp.dto.child.ChildResponse;
+import com.teapp.dto.schedule.WeeklyScheduleResponse;
 import com.teapp.entity.User;
 import com.teapp.enums.UserRole;
 import com.teapp.exception.ResourceNotFoundException;
 import com.teapp.exception.UnauthorizedException;
+import com.teapp.repository.ChildRepository;
 import com.teapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,7 +24,9 @@ import java.util.*;
 public class TherapistService {
 
     private final UserRepository userRepository;
+    private final ChildRepository childRepository;
     private final ChildService childService;
+    private final ScheduleService scheduleService;
 
     /**
      * Vincula al padre autenticado con un terapeuta usando su código de invitación.
@@ -103,6 +108,50 @@ public class TherapistService {
             datos.put("avatarBase64", terapeuta.getAvatarBase64());
             return datos;
         }).toList();
+    }
+
+    /**
+     * Retorna los participantes de un padre supervisado.
+     *
+     * @param idPadre identificador del padre
+     * @throws UnauthorizedException si el usuario actual no es un terapeuta vinculado a ese padre
+     */
+    @Transactional(readOnly = true)
+    public List<ChildResponse> getSupervisedChildren(UUID idPadre) {
+        verificarSupervision(idPadre);
+        return childService.getChildrenByParentId(idPadre);
+    }
+
+    /**
+     * Retorna la agenda semanal de un participante de un padre supervisado.
+     *
+     * @param idPadre        identificador del padre supervisado
+     * @param idParticipante identificador del participante
+     * @throws UnauthorizedException     si el usuario actual no es un terapeuta vinculado a ese padre
+     * @throws ResourceNotFoundException si el participante no pertenece a ese padre
+     */
+    @Transactional(readOnly = true)
+    public WeeklyScheduleResponse getSupervisedSchedule(UUID idPadre, UUID idParticipante) {
+        verificarSupervision(idPadre);
+        childRepository.findByIdAndUserId(idParticipante, idPadre)
+                .orElseThrow(() -> new ResourceNotFoundException("Niño", idParticipante));
+        return scheduleService.getWeeklySchedule(idParticipante);
+    }
+
+    /**
+     * Verifica que el usuario autenticado sea un terapeuta con vínculo activo sobre el padre indicado.
+     * Sin esta comprobación cualquier usuario podría leer los datos de participantes ajenos.
+     */
+    private void verificarSupervision(UUID idPadre) {
+        User terapeuta = obtenerUsuarioActual();
+        if (terapeuta.getRole() != UserRole.THERAPIST) {
+            throw new UnauthorizedException("Solo los terapeutas pueden consultar datos de padres supervisados");
+        }
+        boolean vinculado = terapeuta.getSupervisedParents().stream()
+                .anyMatch(padre -> padre.getId().equals(idPadre));
+        if (!vinculado) {
+            throw new UnauthorizedException("No tenés acceso a los datos de este padre");
+        }
     }
 
     private User obtenerUsuarioActual() {
