@@ -278,12 +278,22 @@ TEApp/
 
 ## Migraciones de base de datos (Flyway)
 
-`V1__init.sql` crea el schema completo y carga los datos iniciales; `V2__add_soft_delete_and_profile.sql` agrega el borrado lógico y los campos de perfil:
+- `V1__init.sql` — schema completo y datos iniciales
+- `V2__add_soft_delete_and_profile.sql` — borrado lógico y campos de perfil
+- `V3__seed_demo_data.sql` — datos de demostración para la evaluación
+
+Contenido:
 
 - Tablas: `users`, `children`, `activities`, `activity_steps`, `schedule_entries`, `activity_completions`, `therapist_parent_links`, `password_reset_tokens`
 - ~30 actividades predefinidas con pictogramas ARASAAC
 - Pasos detallados para actividades de higiene y vestimenta
-- No se cargan usuarios de ejemplo: hay que registrarlos desde la app
+
+### Usuarios de demostración
+
+| Email | Contraseña | Rol |
+|-------|-----------|-----|
+| `padre@teapp.com` | `Test1234!` | Padre — con la participante Sofía y su agenda semanal cargada |
+| `terapeuta@teapp.com` | `Test1234!` | Terapeuta — vinculado al padre, acceso de solo lectura |
 
 ---
 
