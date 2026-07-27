@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { AuthService } from '../../../core/services/auth.service';
+import { fechaISOLocal } from '../../../core/utils/fecha.util';
 
 @Component({
   selector: 'app-login',
@@ -101,7 +102,7 @@ export class LoginComponent {
 
     const { confirmPassword, dateOfBirth, ...datosRegistro } = this.registerForm.value;
     const fechaNacimiento = dateOfBirth instanceof Date
-      ? dateOfBirth.toISOString().split('T')[0]
+      ? fechaISOLocal(dateOfBirth)
       : dateOfBirth;
     this.authService.register({ ...datosRegistro, dateOfBirth: fechaNacimiento, role: this.rolSeleccionado }).subscribe({
       next: (respuesta) => {

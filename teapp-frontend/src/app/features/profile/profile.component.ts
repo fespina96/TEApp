@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -19,6 +20,7 @@ import { User } from '../../core/models/user.model';
 import { AvatarPickerDialogComponent } from '../../shared/components/avatar-picker-dialog/avatar-picker-dialog.component';
 import { ChangePasswordDialogComponent } from '../../shared/components/change-password-dialog/change-password-dialog.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { fechaISOLocal } from '../../core/utils/fecha.util';
 
 @Component({
   selector: 'app-profile',
@@ -36,6 +38,7 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
 })
 export class ProfileComponent implements OnInit {
   usuario: User | null = null;
+  private destroyRef = inject(DestroyRef);
   form!: FormGroup;
   guardando = false;
   cargando = true;
@@ -55,7 +58,9 @@ export class ProfileComponent implements OnInit {
       dateOfBirth: [null]
     });
 
-    this.authService.currentUser$.subscribe(u => {
+    this.authService.currentUser$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(u => {
       this.usuario = u;
       if (u) {
         this.form.patchValue({
@@ -110,7 +115,7 @@ export class ProfileComponent implements OnInit {
     if (this.form.invalid) return;
     this.guardando = true;
     const { fullName, dateOfBirth } = this.form.value;
-    const dob = dateOfBirth ? (dateOfBirth as Date).toISOString().split('T')[0] : undefined;
+    const dob = dateOfBirth ? fechaISOLocal(dateOfBirth as Date) : undefined;
 
     this.userService.updateProfile(fullName, dob).subscribe({
       next: res => {

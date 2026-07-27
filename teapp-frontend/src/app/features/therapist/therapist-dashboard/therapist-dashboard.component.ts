@@ -13,6 +13,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { TherapistService, SupervisedParent } from '../../../core/services/therapist.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { DAY_LABELS, TIME_SLOT_LABELS, DAYS_OF_WEEK, TIME_SLOTS } from '../../../core/models/schedule-entry.model';
+import { fechaISOLocal } from '../../../core/utils/fecha.util';
 
 @Component({
   selector: 'app-therapist-dashboard',
@@ -121,7 +122,7 @@ export class TherapistDashboardComponent implements OnInit {
   }
 
   fechaHoyISO(): string {
-    return new Date().toISOString().split('T')[0];
+    return fechaISOLocal();
   }
 
   estaCompletadaHoy(entrada: any): boolean {

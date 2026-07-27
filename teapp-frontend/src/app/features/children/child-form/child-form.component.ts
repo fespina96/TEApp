@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ChildService } from '../../../core/services/child.service';
 import { AVATAR_COLORS } from '../../../core/models/child.model';
+import { fechaISOLocal } from '../../../core/utils/fecha.util';
 
 // El modo (crear vs editar) se detecta según la presencia del parámetro de ruta idParticipante.
 @Component({
@@ -89,7 +90,7 @@ export class ChildFormComponent implements OnInit {
     const value = this.form.value;
     const request = {
       name:        value.name,
-      dateOfBirth: (value.dateOfBirth as Date).toISOString().split('T')[0],
+      dateOfBirth: fechaISOLocal(value.dateOfBirth as Date),
       avatarColor: value.avatarColor,
       notes:       value.notes || undefined
     };

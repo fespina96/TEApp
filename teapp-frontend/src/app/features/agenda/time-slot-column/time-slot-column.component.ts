@@ -11,6 +11,7 @@ import { DayOfWeek, TimeSlot, ScheduleEntry, TIME_SLOT_LABELS, DAYS_OF_WEEK } fr
 import { Activity } from '../../../core/models/activity.model';
 import { EntryCardComponent } from '../entry-card/entry-card.component';
 import { ActivityPickerDialogComponent } from '../activity-picker-dialog/activity-picker-dialog.component';
+import { fechaISOLocal } from '../../../core/utils/fecha.util';
 
 @Component({
   selector: 'app-time-slot-column',
@@ -127,7 +128,7 @@ export class TimeSlotColumnComponent implements OnChanges {
   }
 
   estaCompletadaHoy(entry: ScheduleEntry): boolean {
-    const today = new Date().toISOString().split('T')[0];
+    const today = fechaISOLocal();
     return entry.completedDates?.includes(today) ?? false;
   }
 

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -35,6 +36,7 @@ import { ChangePasswordDialogComponent } from '../change-password-dialog/change-
 })
 export class HeaderComponent implements OnInit {
   usuarioActual: User | null = null;
+  private destroyRef = inject(DestroyRef);
 
   constructor(
     public authService: AuthService,
@@ -44,7 +46,9 @@ export class HeaderComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(usuario => this.usuarioActual = usuario);
+    this.authService.currentUser$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(usuario => this.usuarioActual = usuario);
   }
 
   logout(): void {

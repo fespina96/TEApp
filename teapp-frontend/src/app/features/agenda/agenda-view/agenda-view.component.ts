@@ -23,6 +23,7 @@ import { KidExitDialogComponent } from '../kid-exit-dialog/kid-exit-dialog.compo
 import { VisualTimerDialogComponent } from '../../../shared/components/visual-timer-dialog/visual-timer-dialog.component';
 import { StepViewerDialogComponent } from '../../../shared/components/step-viewer-dialog/step-viewer-dialog.component';
 import { ActivityService } from '../../../core/services/activity.service';
+import { fechaISOLocal } from '../../../core/utils/fecha.util';
 
 @Component({
   selector: 'app-agenda-view',
@@ -220,7 +221,7 @@ export class AgendaViewComponent implements OnInit {
   }
 
   private fechaHoyISO(): string {
-    return new Date().toISOString().split('T')[0];
+    return fechaISOLocal();
   }
 
   obtenerEntradasHoy(franja: TimeSlot): ScheduleEntry[] {

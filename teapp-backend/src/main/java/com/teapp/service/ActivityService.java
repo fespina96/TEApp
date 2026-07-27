@@ -113,7 +113,9 @@ public class ActivityService {
         actividad.setName(solicitud.name());
         actividad.setDescription(solicitud.description());
         actividad.setCategory(solicitud.category());
-        actividad.setIconName(solicitud.iconName());
+        // El ícono sólo se pisa si viene informado: los clientes que no lo envían
+        // (la app Android no tiene selector de íconos) no deben borrar el existente.
+        if (solicitud.iconName() != null) actividad.setIconName(solicitud.iconName());
         if (solicitud.color() != null) actividad.setColor(solicitud.color());
         actividad.setImageBase64(solicitud.imageBase64());
         actividad.setPictogramUrl(solicitud.pictogramUrl());
