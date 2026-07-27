@@ -310,8 +310,6 @@ Una única migración `V1__init.sql` crea el schema completo y carga los datos i
 
 | Integrante | Rol |
 |------------|-----|
-| Nunes Luciano | Desarrollo |
-| Sesa Matías | Desarrollo |
 | Espina Fernando | Desarrollo |
 
 Proyecto académico — Escuela Da Vinci.
