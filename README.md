@@ -28,7 +28,7 @@ Aplicación web y móvil (Android) full-stack para organizar la rutina semanal d
 | Capa | Tecnología |
 |------|-----------|
 | Backend | Spring Boot 3.2.3 · Java 17 · Spring Security + JWT (jjwt 0.12.5) · Spring Data JPA · Flyway |
-| Base de datos | PostgreSQL 16 |
+| Base de datos | PostgreSQL 18 |
 | Frontend | Angular 17 (standalone) · Angular Material 17 · CDK Drag-Drop |
 | Android  | App nativa Java · Retrofit 2 · Material Components · ViewBinding |
 | API Docs | Swagger UI / SpringDoc OpenAPI 2 |
@@ -41,7 +41,7 @@ Aplicación web y móvil (Android) full-stack para organizar la rutina semanal d
 - Java 17
 - Maven 3.9+
 - Node.js 20+ y npm
-- PostgreSQL 16
+- PostgreSQL 18
 - Android Studio (solo si se quiere generar APK)
 
 ---
@@ -165,81 +165,90 @@ TEApp/
 
 ## API REST — Endpoints
 
-> Todos los endpoints (excepto `/api/auth/**` y `/api/password-reset/**`) requieren el header:
+> Todos los endpoints (excepto `/api/v1/auth/**` y `/api/v1/auth/**`) requieren el header:
 > `Authorization: Bearer <token>`
 
 ### Autenticación
 
 | Método | URL | Descripción |
 |--------|-----|-------------|
-| POST | `/api/auth/register` | Registro de padre o terapeuta |
-| POST | `/api/auth/login` | Login, retorna JWT + datos del usuario |
+| POST | `/api/v1/auth/register` | Registro de padre o terapeuta |
+| POST | `/api/v1/auth/login` | Login, retorna JWT + datos del usuario |
 
 ### Recuperación de contraseña
 
 | Método | URL | Descripción |
 |--------|-----|-------------|
-| POST | `/api/password-reset/request` | Envía email con enlace de reset |
-| POST | `/api/password-reset/reset` | Cambia la contraseña con el token |
+| POST | `/api/v1/auth/forgot-password` | Envía email con enlace de reset |
+| POST | `/api/v1/auth/reset-password` | Cambia la contraseña con el token |
 
 ### Participantes (niños)
 
 | Método | URL | Descripción |
 |--------|-----|-------------|
-| GET | `/api/children` | Lista todos los participantes del padre |
-| POST | `/api/children` | Crea un nuevo participante |
-| GET | `/api/children/{id}` | Obtiene un participante |
-| PUT | `/api/children/{id}` | Actualiza datos del participante |
-| DELETE | `/api/children/{id}` | Elimina participante y su agenda |
-| PUT | `/api/children/{id}/avatar` | Actualiza avatar (base64) |
+| GET | `/api/v1/children` | Lista todos los participantes del padre |
+| POST | `/api/v1/children` | Crea un nuevo participante |
+| GET | `/api/v1/children/{id}` | Obtiene un participante |
+| PUT | `/api/v1/children/{id}` | Actualiza datos del participante |
+| DELETE | `/api/v1/children/{id}` | Elimina participante y su agenda |
+| PUT | `/api/v1/children/{id}/avatar` | Actualiza avatar (base64) |
 
 ### Actividades
 
 | Método | URL | Descripción |
 |--------|-----|-------------|
-| GET | `/api/activities` | Catálogo completo (predefinidas + propias) |
-| GET | `/api/activities?category=HYGIENE` | Filtrado por categoría |
-| GET | `/api/activities/predefined` | Solo actividades del sistema |
-| POST | `/api/activities` | Crea actividad personalizada |
-| PUT | `/api/activities/{id}` | Actualiza actividad |
-| DELETE | `/api/activities/{id}` | Elimina actividad |
-| GET | `/api/activities/{id}/steps` | Obtiene pasos de la actividad |
-| PUT | `/api/activities/{id}/steps` | Guarda/reemplaza todos los pasos |
+| GET | `/api/v1/activities` | Catálogo completo (predefinidas + propias) |
+| GET | `/api/v1/activities?category=HYGIENE` | Filtrado por categoría |
+| GET | `/api/v1/activities/predefined` | Solo actividades del sistema |
+| POST | `/api/v1/activities` | Crea actividad personalizada |
+| PUT | `/api/v1/activities/{id}` | Actualiza actividad |
+| DELETE | `/api/v1/activities/{id}` | Elimina actividad |
+| GET | `/api/v1/activities/{id}/steps` | Obtiene pasos de la actividad |
+| PUT | `/api/v1/activities/{id}/steps` | Guarda/reemplaza todos los pasos |
 
 ### Agenda semanal
 
 | Método | URL | Descripción |
 |--------|-----|-------------|
-| GET | `/api/children/{id}/schedule` | Agenda semanal completa |
-| POST | `/api/children/{id}/schedule` | Agrega una entrada a la agenda |
-| PUT | `/api/children/{id}/schedule/{entryId}` | Actualiza una entrada |
-| DELETE | `/api/children/{id}/schedule/{entryId}` | Elimina una entrada |
+| GET | `/api/v1/children/{id}/schedule` | Agenda semanal completa |
+| POST | `/api/v1/children/{id}/schedule` | Agrega una entrada a la agenda |
+| PUT | `/api/v1/children/{id}/schedule/{entryId}` | Actualiza una entrada |
+| DELETE | `/api/v1/children/{id}/schedule/{entryId}` | Elimina una entrada |
 
 ### Completitud de actividades
 
 | Método | URL | Descripción |
 |--------|-----|-------------|
-| POST | `/api/children/{id}/schedule/{entryId}/completions` | Marca como completada |
-| DELETE | `/api/children/{id}/schedule/{entryId}/completions` | Desmarca |
-| DELETE | `/api/children/{id}/completions/current-week` | Resetea toda la semana actual |
+| POST | `/api/v1/children/{id}/schedule/{entryId}/completions` | Marca como completada |
+| DELETE | `/api/v1/children/{id}/schedule/{entryId}/completions` | Desmarca |
+| DELETE | `/api/v1/children/{id}/completions/current-week` | Resetea toda la semana actual |
 
 ### Terapeutas
 
 | Método | URL | Descripción |
 |--------|-----|-------------|
-| POST | `/api/therapist/link` | El padre se vincula a un terapeuta (por código) |
-| DELETE | `/api/therapist/link/{therapistId}` | El padre se desvincula |
-| GET | `/api/therapist/my-therapists` | Terapeutas del padre autenticado |
-| GET | `/api/therapist/supervised` | Padres del terapeuta autenticado |
-| GET | `/api/therapist/supervised/{parentId}/children` | Niños de un padre supervisado |
-| GET | `/api/therapist/supervised/{parentId}/children/{childId}/schedule` | Agenda (solo lectura) |
+| POST | `/api/v1/therapist/link` | El padre se vincula a un terapeuta (por código) |
+| DELETE | `/api/v1/therapist/link/{therapistId}` | El padre se desvincula |
+| GET | `/api/v1/therapist/my-therapists` | Terapeutas del padre autenticado |
+| GET | `/api/v1/therapist/supervised` | Padres del terapeuta autenticado |
+| GET | `/api/v1/therapist/supervised/{parentId}/children` | Niños de un padre supervisado |
+| GET | `/api/v1/therapist/supervised/{parentId}/children/{childId}/schedule` | Agenda (solo lectura) |
 
 ### Usuario
 
 | Método | URL | Descripción |
 |--------|-----|-------------|
-| PUT | `/api/users/me/avatar` | Actualiza foto de perfil |
-| PUT | `/api/users/me/password` | Cambia contraseña |
+| GET | `/api/v1/users/me` | Perfil del usuario autenticado |
+| PUT | `/api/v1/users/me` | Actualiza nombre y fecha de nacimiento |
+| PUT | `/api/v1/users/me/avatar` | Actualiza foto de perfil |
+| PUT | `/api/v1/users/me/password` | Cambia contraseña |
+| DELETE | `/api/v1/users/me` | Elimina la cuenta (borrado lógico) |
+
+### Estado del servicio
+
+| Método | URL | Descripción |
+|--------|-----|-------------|
+| GET | `/api/v1/health` | Verifica que el servidor responde (público, sin token) |
 
 ---
 
@@ -299,7 +308,7 @@ Contenido:
 
 ## Seguridad
 
-- **JWT stateless**: token firmado con HMAC-SHA256, expiración 7 días
+- **JWT stateless**: token firmado con HMAC-SHA256, expiración 24 horas
 - **Almacenamiento del token**: `localStorage` (si "Recordar dispositivo" está activo) o `sessionStorage` (sesión temporal)
 - **Verificación de expiración**: el cliente decodifica el JWT localmente sin llamada al backend
 - **Contraseñas**: hasheadas con BCrypt
