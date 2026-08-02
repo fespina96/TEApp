@@ -193,12 +193,58 @@ public class AgendaActivity extends AppCompatActivity
                 .setPositiveButton("Eliminar", (d, w) ->
                         api.deleteEntry(childId, entry.id).enqueue(new Callback<Void>() {
                             @Override
-                            public void onResponse(Call<Void> c, Response<Void> r) { cargarAgenda(); }
+                            public void onResponse(Call<Void> c, Response<Void> r) {
+                                if (r.isSuccessful()) cargarAgenda();
+                                else Toast.makeText(AgendaActivity.this, R.string.error_red, Toast.LENGTH_SHORT).show();
+                            }
                             @Override
-                            public void onFailure(Call<Void> c, Throwable t) {}
+                            public void onFailure(Call<Void> c, Throwable t) {
+                                Toast.makeText(AgendaActivity.this, R.string.error_red, Toast.LENGTH_SHORT).show();
+                            }
                         }))
                 .setNegativeButton(R.string.cancelar, null)
                 .show();
+    }
+
+    /**
+     * Guarda el orden que quedó tras arrastrar: una actualización por entrada con su
+     * nueva posición. Si alguna falla se recarga la agenda, que vuelve al orden real.
+     */
+    @Override
+    public void onEntradasReordenadas(String day, String timeSlot, List<ScheduleEntry> ordenadas) {
+        if (ordenadas.isEmpty()) return;
+        final int total = ordenadas.size();
+        final int[] respuestas = {0};
+        final boolean[] huboError = {false};
+
+        for (int i = 0; i < total; i++) {
+            ScheduleEntry entrada = ordenadas.get(i);
+            if (entrada.sortOrder == i) {
+                // esta entrada ya estaba en su lugar: no hace falta actualizarla
+                if (++respuestas[0] == total) terminarReorden(huboError[0]);
+                continue;
+            }
+            ScheduleEntryRequest req = new ScheduleEntryRequest();
+            req.sortOrder = i;
+            api.updateEntry(childId, entrada.id, req).enqueue(new Callback<ScheduleEntry>() {
+                @Override
+                public void onResponse(Call<ScheduleEntry> c, Response<ScheduleEntry> r) {
+                    if (!r.isSuccessful()) huboError[0] = true;
+                    if (++respuestas[0] == total) terminarReorden(huboError[0]);
+                }
+                @Override
+                public void onFailure(Call<ScheduleEntry> c, Throwable t) {
+                    huboError[0] = true;
+                    if (++respuestas[0] == total) terminarReorden(true);
+                }
+            });
+        }
+    }
+
+    private void terminarReorden(boolean huboError) {
+        if (!huboError) return;
+        Toast.makeText(this, R.string.error_reordenar, Toast.LENGTH_SHORT).show();
+        cargarAgenda();
     }
 
     @Override
@@ -224,6 +270,10 @@ public class AgendaActivity extends AppCompatActivity
                     String durStr = etDuracion.getText().toString().trim();
                     if (!durStr.isEmpty()) {
                         try { req.durationMinutes = Integer.parseInt(durStr); } catch (Exception ignored) {}
+                        if (req.durationMinutes == null || req.durationMinutes < 1 || req.durationMinutes > 180) {
+                            Toast.makeText(this, R.string.error_duracion, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                     }
                     req.pausable        = swPausable.isChecked();
                     req.requireFullTimer = swRequire.isChecked();
@@ -233,7 +283,9 @@ public class AgendaActivity extends AppCompatActivity
                             if (response.isSuccessful()) cargarAgenda();
                         }
                         @Override
-                        public void onFailure(Call<ScheduleEntry> call, Throwable t) {}
+                        public void onFailure(Call<ScheduleEntry> call, Throwable t) {
+                            Toast.makeText(AgendaActivity.this, R.string.error_red, Toast.LENGTH_SHORT).show();
+                        }
                     });
                 })
                 .setNegativeButton(R.string.cancelar, null)

@@ -9,7 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.teapp.R;
 import com.teapp.databinding.FragmentAgendaDayBinding;
@@ -29,6 +31,10 @@ public class AgendaDayFragment extends Fragment implements ScheduleEntryAdapter.
         void onEntryDelete(ScheduleEntry entry);
         void onEntrySettings(ScheduleEntry entry);
         Map<String, List<ScheduleEntry>> getEntriesForDay(String day);
+        /** Nuevo orden de una franja, ya reacomodado. La agenda supervisada no lo implementa. */
+        default void onEntradasReordenadas(String day, String timeSlot, List<ScheduleEntry> ordenadas) {}
+        /** La agenda de sólo lectura no muestra el asa de arrastre. */
+        default boolean permiteReordenar() { return true; }
     }
 
     private FragmentAgendaDayBinding binding;
@@ -42,6 +48,8 @@ public class AgendaDayFragment extends Fragment implements ScheduleEntryAdapter.
     private ScheduleEntryAdapter adapterManana;
     private ScheduleEntryAdapter adapterTarde;
     private ScheduleEntryAdapter adapterNoche;
+
+    private ItemTouchHelper touchManana, touchTarde, touchNoche;
 
     public static AgendaDayFragment newInstance(String day) {
         AgendaDayFragment f = new AgendaDayFragment();
@@ -82,7 +90,48 @@ public class AgendaDayFragment extends Fragment implements ScheduleEntryAdapter.
         binding.rvTarde.setAdapter(adapterTarde);
         binding.rvNoche.setAdapter(adapterNoche);
 
+        if (host == null || host.permiteReordenar()) {
+            adapterManana.setReordenable(true);
+            adapterTarde.setReordenable(true);
+            adapterNoche.setReordenable(true);
+            touchManana = engancharArrastre(binding.rvManana, adapterManana, manana, "MORNING");
+            touchTarde  = engancharArrastre(binding.rvTarde,  adapterTarde,  tarde,  "AFTERNOON");
+            touchNoche  = engancharArrastre(binding.rvNoche,  adapterNoche,  noche,  "NIGHT");
+        }
+
         cargarEntradas();
+    }
+
+    /**
+     * El arrastre no se dispara con una pulsación larga: eso abre el menú de la entrada.
+     * Arranca al tocar el asa, y el nuevo orden se guarda recién al soltar.
+     */
+    private ItemTouchHelper engancharArrastre(RecyclerView rv, ScheduleEntryAdapter adapter,
+                                              List<ScheduleEntry> lista, String timeSlot) {
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+            @Override
+            public boolean isLongPressDragEnabled() { return false; }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView r,
+                                  @NonNull RecyclerView.ViewHolder origen,
+                                  @NonNull RecyclerView.ViewHolder destino) {
+                adapter.moverItem(origen.getBindingAdapterPosition(), destino.getBindingAdapterPosition());
+                return true;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder holder, int direction) { }
+
+            @Override
+            public void clearView(@NonNull RecyclerView r, @NonNull RecyclerView.ViewHolder holder) {
+                super.clearView(r, holder);
+                if (host != null) host.onEntradasReordenadas(day, timeSlot, new ArrayList<>(lista));
+            }
+        });
+        helper.attachToRecyclerView(rv);
+        return helper;
     }
 
     public void cargarEntradas() {
@@ -107,7 +156,9 @@ public class AgendaDayFragment extends Fragment implements ScheduleEntryAdapter.
 
     @Override
     public void onEntryClick(ScheduleEntry entry) {
-        if (host != null) host.onEntrySelected(entry);
+        // En la vista del adulto el toque abre la configuración de la entrada.
+        // Marcar y desmarcar como completada es propio del modo participante.
+        if (host != null) host.onEntrySettings(entry);
     }
 
     @Override
@@ -123,6 +174,14 @@ public class AgendaDayFragment extends Fragment implements ScheduleEntryAdapter.
                     else            host.onEntryDelete(entry);
                 })
                 .show();
+    }
+
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder holder) {
+        RecyclerView rv = (RecyclerView) holder.itemView.getParent();
+        if (rv == binding.rvManana && touchManana != null)      touchManana.startDrag(holder);
+        else if (rv == binding.rvTarde && touchTarde != null)   touchTarde.startDrag(holder);
+        else if (rv == binding.rvNoche && touchNoche != null)   touchNoche.startDrag(holder);
     }
 
     @Override

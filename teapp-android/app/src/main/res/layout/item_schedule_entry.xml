@@ -64,6 +64,17 @@
             android:contentDescription="Completado"
             android:visibility="gone" />
 
+        <!-- El arrastre arranca desde acá: mantener apretada la tarjeta abre el menú -->
+        <ImageView
+            android:id="@+id/iv_drag"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:padding="4dp"
+            android:src="@drawable/ic_drag_handle"
+            android:contentDescription="Arrastrar para reordenar"
+            android:visibility="gone" />
+
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
