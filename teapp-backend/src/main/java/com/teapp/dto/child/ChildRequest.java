@@ -2,6 +2,7 @@ package com.teapp.dto.child;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -21,6 +22,7 @@ public record ChildRequest(
     String name,
 
     @NotNull(message = "La fecha de nacimiento es obligatoria")
+    @Past(message = "La fecha de nacimiento debe ser en el pasado")
     LocalDate dateOfBirth,
 
     @Pattern(regexp = "^#[0-9A-Fa-f]{6}$", message = "El color debe ser un hexadecimal válido (ej: #A8D8EA)")

@@ -3,7 +3,6 @@ package com.teapp.dto.schedule;
 import com.teapp.enums.TimeSlot;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
@@ -12,28 +11,24 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 /**
- * Petición para crear o actualizar una entrada en la agenda semanal de un niño.
+ * Petición para actualizar una entrada de agenda.
  *
- * @param activityId identificador de la actividad
- * @param dayOfWeek  día de la semana (MONDAY..SUNDAY)
- * @param timeSlot   franja horaria (MORNING, AFTERNOON, NIGHT)
- * @param startTime  hora de inicio opcional
- * @param endTime    hora de fin opcional
- * @param sortOrder  orden de visualización dentro del slot
- * @param notes      notas específicas de esta entrada
+ * A diferencia de {@link ScheduleEntryRequest}, todos los campos son opcionales:
+ * los clientes envían sólo lo que cambian (la web reordena mandando el orden y la
+ * app móvil edita duración y notas). Los valores que sí llegan deben respetar los
+ * mismos rangos que en el alta.
  */
-public record ScheduleEntryRequest(
-    @NotNull(message = "La actividad es obligatoria")
+public record ScheduleEntryUpdateRequest(
     UUID activityId,
 
-    @NotNull(message = "El día de la semana es obligatorio")
     DayOfWeek dayOfWeek,
 
-    @NotNull(message = "La franja horaria es obligatoria")
     TimeSlot timeSlot,
 
     LocalTime startTime,
+
     LocalTime endTime,
+
     @PositiveOrZero(message = "El orden no puede ser negativo")
     Integer sortOrder,
 
@@ -43,6 +38,8 @@ public record ScheduleEntryRequest(
     @Min(value = 1, message = "La duración debe ser de al menos 1 minuto")
     @Max(value = 180, message = "La duración no puede superar los 180 minutos")
     Integer durationMinutes,
+
     Boolean pausable,
+
     Boolean requireFullTimer
 ) {}

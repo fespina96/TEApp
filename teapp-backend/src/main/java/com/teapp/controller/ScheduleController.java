@@ -2,6 +2,7 @@ package com.teapp.controller;
 
 import com.teapp.dto.schedule.ScheduleEntryRequest;
 import com.teapp.dto.schedule.ScheduleEntryResponse;
+import com.teapp.dto.schedule.ScheduleEntryUpdateRequest;
 import com.teapp.dto.schedule.WeeklyScheduleResponse;
 import com.teapp.service.ScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,7 +52,7 @@ public class ScheduleController {
     public ResponseEntity<ScheduleEntryResponse> updateEntry(
             @PathVariable UUID childId,
             @PathVariable UUID entryId,
-            @RequestBody ScheduleEntryRequest request) {
+            @Valid @RequestBody ScheduleEntryUpdateRequest request) {
         return ResponseEntity.ok(scheduleService.updateEntry(childId, entryId, request));
     }
 

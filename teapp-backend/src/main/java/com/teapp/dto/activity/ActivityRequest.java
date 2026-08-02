@@ -1,6 +1,8 @@
 package com.teapp.dto.activity;
 
 import com.teapp.enums.ActivityCategory;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -36,6 +38,8 @@ public record ActivityRequest(
 
     String pictogramUrl,
 
+    @Min(value = 1, message = "La duración debe ser de al menos 1 minuto")
+    @Max(value = 180, message = "La duración no puede superar los 180 minutos")
     Integer durationMinutes,
 
     Boolean pausable
