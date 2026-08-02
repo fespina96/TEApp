@@ -3,6 +3,7 @@ package com.teapp.service;
 import com.teapp.dto.activity.ActivityResponse;
 import com.teapp.dto.schedule.ScheduleEntryRequest;
 import com.teapp.dto.schedule.ScheduleEntryResponse;
+import com.teapp.dto.schedule.ScheduleEntryUpdateRequest;
 import com.teapp.dto.schedule.WeeklyScheduleResponse;
 import com.teapp.entity.Activity;
 import com.teapp.entity.Child;
@@ -119,7 +120,7 @@ public class ScheduleService {
      * @return entrada actualizada
      */
     @Transactional
-    public ScheduleEntryResponse updateEntry(UUID idParticipante, UUID idEntrada, ScheduleEntryRequest solicitud) {
+    public ScheduleEntryResponse updateEntry(UUID idParticipante, UUID idEntrada, ScheduleEntryUpdateRequest solicitud) {
         verificarAccesoParticipante(idParticipante);
 
         ScheduleEntry entrada = scheduleEntryRepository.findByIdAndChildId(idEntrada, idParticipante)
@@ -136,6 +137,9 @@ public class ScheduleService {
         if (solicitud.endTime() != null) entrada.setEndTime(solicitud.endTime());
         if (solicitud.sortOrder() != null) entrada.setSortOrder(solicitud.sortOrder());
         if (solicitud.notes() != null) entrada.setNotes(solicitud.notes());
+        if (solicitud.durationMinutes() != null) entrada.setDurationMinutes(solicitud.durationMinutes());
+        if (solicitud.pausable() != null) entrada.setPausable(solicitud.pausable());
+        if (solicitud.requireFullTimer() != null) entrada.setRequireFullTimer(solicitud.requireFullTimer());
 
         return aRespuesta(scheduleEntryRepository.save(entrada));
     }
@@ -157,9 +161,7 @@ public class ScheduleService {
     // ---- Helpers privados ----
 
     private Child verificarAccesoParticipante(UUID idParticipante) {
-        UUID idUsuario = securityUtils.idUsuarioActual();
-        return childRepository.findByIdAndUserId(idParticipante, idUsuario)
-                .orElseThrow(() -> new ResourceNotFoundException("Niño", idParticipante));
+        return securityUtils.participanteAccesible(idParticipante);
     }
 
     private WeeklyScheduleResponse construirRespuestaSemanal(UUID idParticipante, List<ScheduleEntry> entradas) {

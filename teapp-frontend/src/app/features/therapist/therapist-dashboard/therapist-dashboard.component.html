@@ -103,7 +103,11 @@
       <h2 class="panel-title">
         <mat-icon>calendar_month</mat-icon>
         Agenda de {{ participanteSeleccionado.name }}
-        <span class="readonly-badge">Solo lectura</span>
+        <button mat-flat-button color="primary" class="manage-btn"
+                (click)="gestionarAgenda()">
+          <mat-icon>edit_calendar</mat-icon>
+          Gestionar agenda
+        </button>
       </h2>
 
       <div class="loading-small" *ngIf="cargandoAgenda">

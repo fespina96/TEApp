@@ -96,7 +96,7 @@ public class ManageTherapistActivity extends AppCompatActivity {
                     Toast.makeText(ManageTherapistActivity.this,
                             "Terapeuta vinculado correctamente.", Toast.LENGTH_SHORT).show();
                     cargarTerapeutas();
-                } else if (response.code() == 404) {
+                } else if (response.code() == 400) {
                     binding.tilCodigo.setError("Código no encontrado");
                 } else {
                     Toast.makeText(ManageTherapistActivity.this,

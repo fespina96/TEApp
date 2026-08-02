@@ -9,9 +9,8 @@ import com.teapp.exception.UnauthorizedException;
 import com.teapp.repository.ActivityCompletionRepository;
 import com.teapp.repository.ChildRepository;
 import com.teapp.repository.ScheduleEntryRepository;
-import com.teapp.repository.UserRepository;
+import com.teapp.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +29,7 @@ public class CompletionService {
     private final ActivityCompletionRepository completionRepository;
     private final ScheduleEntryRepository scheduleEntryRepository;
     private final ChildRepository childRepository;
-    private final UserRepository userRepository;
+    private final SecurityUtils securityUtils;
 
     /**
      * Marca una entrada de agenda como completada en una fecha específica.
@@ -97,15 +96,7 @@ public class CompletionService {
     // ---- Helpers privados ----
 
     private void verificarAccesoParticipante(UUID idParticipante) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        UUID idUsuario = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario", email))
-                .getId();
-        Child participante = childRepository.findById(idParticipante)
-                .orElseThrow(() -> new ResourceNotFoundException("Perfil", idParticipante));
-        if (!participante.getUser().getId().equals(idUsuario)) {
-            throw new UnauthorizedException("No tenés acceso a este perfil");
-        }
+        securityUtils.participanteAccesible(idParticipante);
     }
 
     private CompletionResponse aRespuesta(ActivityCompletion completitud) {

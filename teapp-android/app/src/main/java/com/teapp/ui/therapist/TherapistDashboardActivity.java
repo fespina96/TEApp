@@ -26,6 +26,7 @@ import com.teapp.model.Child;
 import com.teapp.ui.auth.LoginActivity;
 import com.teapp.ui.profile.ProfileActivity;
 import com.teapp.util.ConnectionChecker;
+import com.teapp.util.Constants;
 import com.teapp.util.PrefsManager;
 
 import java.util.ArrayList;
@@ -75,6 +76,7 @@ public class TherapistDashboardActivity extends AppCompatActivity {
         // Botón copiar (igual que Angular)
         binding.btnCopiarCodigo.setOnClickListener(v -> {
             ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            if (codigo == null) return;
             cm.setPrimaryClip(ClipData.newPlainText("codigo", codigo));
             Toast.makeText(this, "Código copiado", Toast.LENGTH_SHORT).show();
         });
@@ -95,17 +97,12 @@ public class TherapistDashboardActivity extends AppCompatActivity {
             intent.putExtra(SupervisedAgendaActivity.EXTRA_PARENT_ID, padreId.toString());
             intent.putExtra(SupervisedAgendaActivity.EXTRA_CHILD_ID, child.id);
             intent.putExtra(SupervisedAgendaActivity.EXTRA_CHILD_NAME, child.name);
+            intent.putExtra(Constants.EXTRA_CHILD, child);
             startActivity(intent);
         });
 
         binding.rvParticipantes.setLayoutManager(new LinearLayoutManager(this));
         binding.rvParticipantes.setAdapter(childAdapter);
-
-        binding.btnLogout.setOnClickListener(v -> {
-            prefs.clear();
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
-        });
 
         connectionChecker.check();
         cargarPadres();
@@ -176,7 +173,9 @@ public class TherapistDashboardActivity extends AppCompatActivity {
                 }
             }
             @Override
-            public void onFailure(Call<List<Child>> call, Throwable t) {}
+            public void onFailure(Call<List<Child>> call, Throwable t) {
+                Toast.makeText(TherapistDashboardActivity.this, R.string.error_red, Toast.LENGTH_SHORT).show();
+            }
         });
     }
 

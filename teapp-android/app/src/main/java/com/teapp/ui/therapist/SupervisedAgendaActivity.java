@@ -1,5 +1,6 @@
 package com.teapp.ui.therapist;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -12,9 +13,12 @@ import com.teapp.R;
 import com.teapp.api.ApiClient;
 import com.teapp.api.ApiService;
 import com.teapp.databinding.ActivitySupervisedAgendaBinding;
+import com.teapp.model.Child;
 import com.teapp.model.ScheduleEntry;
 import com.teapp.model.WeeklySchedule;
+import com.teapp.ui.agenda.AgendaActivity;
 import com.teapp.ui.agenda.AgendaDayFragment;
+import com.teapp.util.Constants;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,7 +45,8 @@ public class SupervisedAgendaActivity extends AppCompatActivity
 
     private ActivitySupervisedAgendaBinding binding;
     private ApiService api;
-    private String parentId, childId;
+    private String parentId, childId, childName;
+    private Child child;
     private WeeklySchedule agenda;
     private final List<AgendaDayFragment> fragmentos = new ArrayList<>();
 
@@ -53,7 +58,8 @@ public class SupervisedAgendaActivity extends AppCompatActivity
 
         parentId = getIntent().getStringExtra(EXTRA_PARENT_ID);
         childId  = getIntent().getStringExtra(EXTRA_CHILD_ID);
-        String childName = getIntent().getStringExtra(EXTRA_CHILD_NAME);
+        childName = getIntent().getStringExtra(EXTRA_CHILD_NAME);
+        child = (Child) getIntent().getSerializableExtra(Constants.EXTRA_CHILD);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(childName != null ? childName : getString(R.string.agenda_supervisada));
@@ -64,6 +70,7 @@ public class SupervisedAgendaActivity extends AppCompatActivity
         api = ApiClient.getInstance(this).getApi();
         configurarViewPager();
         binding.swipeRefresh.setOnRefreshListener(this::cargarAgenda);
+        binding.fabGestionar.setOnClickListener(v -> abrirAgendaEditable());
         cargarAgenda();
     }
 
@@ -81,6 +88,21 @@ public class SupervisedAgendaActivity extends AppCompatActivity
         int hoy = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         int idx = hoy == Calendar.SUNDAY ? 6 : hoy - 2;
         binding.viewPager.setCurrentItem(Math.max(0, idx), false);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cargarAgenda();
+    }
+
+    /** Abre la misma pantalla de gestion que usa el padre sobre este participante. */
+    private void abrirAgendaEditable() {
+        Intent intent = new Intent(this, AgendaActivity.class);
+        intent.putExtra(Constants.EXTRA_CHILD_ID, childId);
+        intent.putExtra(Constants.EXTRA_CHILD_NAME, childName);
+        intent.putExtra(Constants.EXTRA_CHILD, child);
+        startActivity(intent);
     }
 
     private void cargarAgenda() {
@@ -109,6 +131,8 @@ public class SupervisedAgendaActivity extends AppCompatActivity
         if (agenda == null || agenda.week == null) return null;
         return agenda.week.get(day);
     }
+
+    @Override public boolean permiteReordenar() { return false; }
 
     @Override public void onEntrySelected(ScheduleEntry entry) { /* solo lectura */ }
     @Override public void onEntryDelete(ScheduleEntry entry)   { /* solo lectura */ }

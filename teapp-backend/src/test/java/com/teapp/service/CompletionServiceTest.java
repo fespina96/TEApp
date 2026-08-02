@@ -3,15 +3,13 @@ package com.teapp.service;
 import com.teapp.dto.completion.CompletionResponse;
 import com.teapp.entity.*;
 import com.teapp.enums.UserRole;
-import com.teapp.exception.UnauthorizedException;
+import com.teapp.exception.ResourceNotFoundException;
 import com.teapp.repository.*;
+import com.teapp.util.SecurityUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.*;
 import java.util.*;
@@ -27,9 +25,7 @@ class CompletionServiceTest {
     @Mock ActivityCompletionRepository completionRepository;
     @Mock ScheduleEntryRepository scheduleEntryRepository;
     @Mock ChildRepository childRepository;
-    @Mock UserRepository userRepository;
-    @Mock Authentication authentication;
-    @Mock SecurityContext securityContext;
+    @Mock SecurityUtils securityUtils;
 
     @InjectMocks CompletionService completionService;
 
@@ -45,18 +41,6 @@ class CompletionServiceTest {
         parent = User.builder().id(UUID.randomUUID()).email("padre@test.com").role(UserRole.PARENT).build();
         child  = Child.builder().id(childId).user(parent).name("Tomás").dateOfBirth(LocalDate.of(2018, 3, 10)).build();
         entry  = ScheduleEntry.builder().id(entryId).child(child).build();
-
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getName()).thenReturn("padre@test.com");
-        SecurityContextHolder.setContext(securityContext);
-
-        when(userRepository.findByEmail("padre@test.com")).thenReturn(Optional.of(parent));
-        when(childRepository.findById(childId)).thenReturn(Optional.of(child));
-    }
-
-    @AfterEach
-    void teardown() {
-        SecurityContextHolder.clearContext();
     }
 
     // markCompleted
@@ -93,19 +77,14 @@ class CompletionServiceTest {
     }
 
     @Test
-    @DisplayName("markCompleted: padre no es dueño del perfil → lanza UnauthorizedException")
-    void markCompleted_notOwner_throwsUnauthorized() {
-        User otherParent = User.builder().id(UUID.randomUUID()).email("padre@test.com").build();
-        Child childOfOther = Child.builder().id(childId).user(otherParent).name("Pedro").dateOfBirth(LocalDate.now()).build();
-
-        // Override setup: el childId pertenece a otro padre
-        when(childRepository.findById(childId)).thenReturn(Optional.of(childOfOther));
-        // El usuario autenticado es "padre@test.com" pero su ID es diferente al dueño del child
-        User authUser = User.builder().id(UUID.randomUUID()).email("padre@test.com").build();
-        when(userRepository.findByEmail("padre@test.com")).thenReturn(Optional.of(authUser));
+    @DisplayName("markCompleted: sin acceso al participante → no registra nada")
+    void markCompleted_sinAcceso_noRegistra() {
+        doThrow(new ResourceNotFoundException("Niño", childId))
+                .when(securityUtils).participanteAccesible(childId);
 
         assertThatThrownBy(() -> completionService.markCompleted(childId, entryId, today))
-                .isInstanceOf(UnauthorizedException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
+        verify(completionRepository, never()).save(any());
     }
 
     // unmarkCompleted
@@ -143,5 +122,16 @@ class CompletionServiceTest {
         completionService.resetCurrentWeek(childId);
 
         verify(completionRepository).deleteByChildIdAndCompletedDateBetween(childId, monday, sunday);
+    }
+
+    @Test
+    @DisplayName("resetCurrentWeek: sin acceso al participante → no borra nada")
+    void resetCurrentWeek_sinAcceso_noBorra() {
+        doThrow(new ResourceNotFoundException("Niño", childId))
+                .when(securityUtils).participanteAccesible(childId);
+
+        assertThatThrownBy(() -> completionService.resetCurrentWeek(childId))
+                .isInstanceOf(ResourceNotFoundException.class);
+        verify(completionRepository, never()).deleteByChildIdAndCompletedDateBetween(any(), any(), any());
     }
 }

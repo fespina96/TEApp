@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -54,8 +55,15 @@ export class TherapistDashboardComponent implements OnInit {
   constructor(
     private therapistService: TherapistService,
     private authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {}
+
+  /** Abre la agenda del participante supervisado en la misma vista que usa el padre. */
+  gestionarAgenda(): void {
+    if (!this.participanteSeleccionado) return;
+    this.router.navigate(['/children', this.participanteSeleccionado.id, 'agenda']);
+  }
 
   ngOnInit(): void {
     const usuario = this.authService.currentUser;

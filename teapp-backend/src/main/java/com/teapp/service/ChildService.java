@@ -48,7 +48,7 @@ public class ChildService {
      */
     @Transactional(readOnly = true)
     public ChildResponse getById(UUID idParticipante) {
-        return aRespuesta(buscarParticipantePropio(idParticipante));
+        return aRespuesta(securityUtils.participanteAccesible(idParticipante));
     }
 
     /**
@@ -82,7 +82,7 @@ public class ChildService {
      */
     @Transactional
     public ChildResponse update(UUID idParticipante, ChildRequest solicitud) {
-        Child participante = buscarParticipantePropio(idParticipante);
+        Child participante = securityUtils.participanteAccesible(idParticipante);
         participante.setName(solicitud.name());
         participante.setDateOfBirth(solicitud.dateOfBirth());
         if (solicitud.avatarColor() != null) participante.setAvatarColor(solicitud.avatarColor());
@@ -92,6 +92,8 @@ public class ChildService {
 
     /**
      * Elimina el perfil de un participante y todas sus entradas de agenda en cascada.
+     * Sólo puede hacerlo el padre/tutor dueño del perfil: es irreversible y el
+     * terapeuta supervisor no debe poder borrar datos que no son suyos.
      *
      * @param idParticipante identificador del participante a eliminar
      */
@@ -110,7 +112,7 @@ public class ChildService {
      */
     @Transactional
     public void updateAvatar(UUID idParticipante, String avatarBase64) {
-        Child participante = buscarParticipantePropio(idParticipante);
+        Child participante = securityUtils.participanteAccesible(idParticipante);
         participante.setAvatarBase64(avatarBase64 == null || avatarBase64.isBlank() ? null : avatarBase64);
         childRepository.save(participante);
     }
