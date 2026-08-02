@@ -86,7 +86,7 @@ public class DashboardActivity extends AppCompatActivity implements ChildAdapter
                 startActivity(new Intent(this, ManageTherapistActivity.class)));
 
         // Adapter terapeutas
-        terapeutaAdapter = new TerapeutaAdapter(terapeutas);
+        terapeutaAdapter = new TerapeutaAdapter(terapeutas, this::confirmarDesvinculacion);
         binding.rvTerapeutas.setLayoutManager(new LinearLayoutManager(this));
         binding.rvTerapeutas.setAdapter(terapeutaAdapter);
 
@@ -128,6 +128,33 @@ public class DashboardActivity extends AppCompatActivity implements ChildAdapter
         cargarTerapeutas();
     }
 
+    private void confirmarDesvinculacion(TherapistInfo terapeuta) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.desvincular_terapeuta)
+                .setMessage(getString(R.string.confirmar_desvincular, terapeuta.fullName))
+                .setPositiveButton(R.string.desvincular, (d, w) ->
+                        api.unlinkTherapist(terapeuta.id).enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                if (response.isSuccessful()) {
+                                    Toast.makeText(DashboardActivity.this,
+                                            R.string.terapeuta_desvinculado, Toast.LENGTH_SHORT).show();
+                                    cargarTerapeutas();
+                                } else {
+                                    Toast.makeText(DashboardActivity.this,
+                                            R.string.error_red, Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                Toast.makeText(DashboardActivity.this,
+                                        R.string.error_red, Toast.LENGTH_SHORT).show();
+                            }
+                        }))
+                .setNegativeButton(R.string.cancelar, null)
+                .show();
+    }
+
     private void cargarTerapeutas() {
         api.getMyTherapists().enqueue(new Callback<List<TherapistInfo>>() {
             @Override
@@ -137,9 +164,14 @@ public class DashboardActivity extends AppCompatActivity implements ChildAdapter
                     terapeutas.addAll(response.body());
                     terapeutaAdapter.notifyDataSetChanged();
                     binding.tvSinTerapeutas.setVisibility(terapeutas.isEmpty() ? View.VISIBLE : View.GONE);
+                    // Sólo se admite un terapeuta a la vez: mientras haya uno vinculado
+                    // se oculta la opción de vincular, hasta que se desvincule.
+                    binding.btnVincularTerapeuta.setVisibility(terapeutas.isEmpty() ? View.VISIBLE : View.GONE);
                 }
             }
-            @Override public void onFailure(Call<List<TherapistInfo>> call, Throwable t) {}
+            @Override public void onFailure(Call<List<TherapistInfo>> call, Throwable t) {
+                Toast.makeText(DashboardActivity.this, R.string.error_red, Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -157,14 +189,15 @@ public class DashboardActivity extends AppCompatActivity implements ChildAdapter
                 bmp.compress(Bitmap.CompressFormat.JPEG, 75, baos);
                 String b64 = "data:image/jpeg;base64," + Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP);
                 Glide.with(this).load(b64).circleCrop().into(binding.imgAvatarUsuario);
-                String json = "{\"avatarBase64\":\"" + b64 + "\"}";
-                RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
+                RequestBody body = RequestBody.create(MediaType.parse("text/plain"), b64);
                 api.updateUserAvatar(body).enqueue(new Callback<Void>() {
                     @Override public void onResponse(Call<Void> call, Response<Void> r2) {
                         if (r2.isSuccessful())
                             Toast.makeText(DashboardActivity.this, "Foto actualizada.", Toast.LENGTH_SHORT).show();
                     }
-                    @Override public void onFailure(Call<Void> call, Throwable t) {}
+                    @Override public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(DashboardActivity.this, R.string.error_red, Toast.LENGTH_SHORT).show();
+                    }
                 });
             } catch (Exception e) {
                 Toast.makeText(this, "Error al cargar la imagen.", Toast.LENGTH_SHORT).show();
@@ -233,8 +266,14 @@ public class DashboardActivity extends AppCompatActivity implements ChildAdapter
     }
 
     static class TerapeutaAdapter extends RecyclerView.Adapter<TerapeutaAdapter.VH> {
+        interface Listener { void onDesvincular(TherapistInfo terapeuta); }
+
         private final List<TherapistInfo> items;
-        TerapeutaAdapter(List<TherapistInfo> items) { this.items = items; }
+        private final Listener listener;
+        TerapeutaAdapter(List<TherapistInfo> items, Listener listener) {
+            this.items = items;
+            this.listener = listener;
+        }
 
         @Override
         public VH onCreateViewHolder(android.view.ViewGroup parent, int viewType) {
@@ -248,7 +287,8 @@ public class DashboardActivity extends AppCompatActivity implements ChildAdapter
             TherapistInfo t = items.get(pos);
             h.tvNombre.setText(t.fullName);
             h.tvEmail.setText(t.email);
-            h.btnDesvincular.setVisibility(android.view.View.GONE); // Solo lectura en dashboard
+            h.btnDesvincular.setVisibility(android.view.View.VISIBLE);
+            h.btnDesvincular.setOnClickListener(v -> listener.onDesvincular(t));
         }
 
         @Override public int getItemCount() { return items.size(); }

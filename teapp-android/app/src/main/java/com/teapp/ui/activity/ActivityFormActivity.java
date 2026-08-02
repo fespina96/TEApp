@@ -1,5 +1,6 @@
 package com.teapp.ui.activity;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,17 +40,19 @@ public class ActivityFormActivity extends AppCompatActivity {
 
     public static final String EXTRA_ACTIVITY = "activity";
 
+    // Deben coincidir con el enum ActivityCategory del backend.
     private static final String[] CATEGORIAS_KEYS = {
             "HYGIENE", "MEAL", "EDUCATION", "PLAY", "THERAPY",
-            "CHORES", "SOCIAL", "REST", "SPECIAL_EVENT", "OTHER"
+            "REST", "OUTDOOR", "CUSTOM", "SPECIAL_EVENT"
     };
     private static final String[] CATEGORIAS_LABELS = {
-            "Higiene personal", "Comidas", "Educación", "Juego", "Terapia",
-            "Tareas del hogar", "Social", "Descanso", "Evento especial", "Otro"
+            "Higiene", "Comidas", "Educación", "Juego", "Terapia",
+            "Descanso", "Aire libre", "Personalizada", "Evento especial"
     };
+    // Mismos colores por categoría que usa la web (CATEGORY_COLORS).
     private static final String[] CATEGORIAS_COLORS = {
             "#A8D8EA", "#FAF0BE", "#B8E0C8", "#C9B8E8", "#D4E8C8",
-            "#F9D8C0", "#C9B8E8", "#E0D8F0", "#FAF0BE", "#F9D8C0"
+            "#E0D8F0", "#C8E8D0", "#F9D8C0", "#FFE082"
     };
 
     private ActivityActivityFormBinding binding;
@@ -111,7 +114,8 @@ public class ActivityFormActivity extends AppCompatActivity {
 
     private void configurarArasaac() {
         arasaacAdapter = new ArasaacAdapter(resultadosArasaac, item -> {
-            pictogramUrl = "https://static.arasaac.org/pictograms/" + item.id + "/" + item.id + "_300.png";
+            // Se guarda la versión de 500 px, igual que la web; la de 300 es sólo para la grilla.
+            pictogramUrl = "https://static.arasaac.org/pictograms/" + item.id + "/" + item.id + "_500.png";
             Glide.with(this).load(pictogramUrl).into(binding.imgPictogramaSeleccionado);
             binding.layoutPictogramaSeleccionado.setVisibility(View.VISIBLE);
         });
@@ -130,7 +134,7 @@ public class ActivityFormActivity extends AppCompatActivity {
         if (termino.isEmpty()) return;
 
         binding.progressArasaac.setVisibility(View.VISIBLE);
-        String url = "https://api.arasaac.org/v1/pictograms/es/search/" + termino;
+        String url = "https://api.arasaac.org/v1/pictograms/es/search/" + Uri.encode(termino);
 
         Request request = new Request.Builder().url(url).build();
         httpClient.newCall(request).enqueue(new Callback() {
@@ -206,7 +210,12 @@ public class ActivityFormActivity extends AppCompatActivity {
         String durStr = binding.etDuracion.getText().toString().trim();
         if (!durStr.isEmpty()) {
             try { duracion = Integer.parseInt(durStr); } catch (NumberFormatException ignored) {}
+            if (duracion == null || duracion < 1 || duracion > 180) {
+                binding.tilDuracion.setError(getString(R.string.error_duracion));
+                return;
+            }
         }
+        binding.tilDuracion.setError(null);
 
         ActivityRequest req = new ActivityRequest(nombre, descripcion, categoria,
                 colorActividad, pictogramUrl, duracion, pausable);

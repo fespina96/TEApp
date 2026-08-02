@@ -173,17 +173,20 @@ public class ActivityStepsActivity extends AppCompatActivity {
     void abrirArasaac(int idx) {
         pendingImageIdx = idx;
         String termino = pasos.get(idx).titulo.isEmpty() ? "manos" : pasos.get(idx).titulo;
-        String url = "https://api.arasaac.org/v1/pictograms/es/search/" + termino;
+        String url = "https://api.arasaac.org/v1/pictograms/es/search/" + Uri.encode(termino);
         Request req = new Request.Builder().url(url).build();
         http.newCall(req).enqueue(new Callback() {
-            @Override public void onFailure(Call call, IOException e) {}
+            @Override public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> Toast.makeText(ActivityStepsActivity.this,
+                        R.string.error_red, Toast.LENGTH_SHORT).show());
+            }
             @Override public void onResponse(Call call, Response response) throws IOException {
                 try {
                     String body = response.body().string();
                     JSONArray arr = new JSONArray(body);
                     if (arr.length() > 0) {
                         int id = arr.getJSONObject(0).getInt("_id");
-                        String picUrl = "https://static.arasaac.org/pictograms/" + id + "/" + id + "_300.png";
+                        String picUrl = "https://static.arasaac.org/pictograms/" + id + "/" + id + "_500.png";
                         runOnUiThread(() -> {
                             if (pendingImageIdx >= 0 && pendingImageIdx < pasos.size()) {
                                 pasos.get(pendingImageIdx).pictogramUrl = picUrl;

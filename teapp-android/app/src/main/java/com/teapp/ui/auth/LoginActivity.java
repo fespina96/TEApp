@@ -53,10 +53,13 @@ public class LoginActivity extends AppCompatActivity {
 
         binding.etFechaNac.setOnClickListener(v -> {
             Calendar c = Calendar.getInstance();
-            new DatePickerDialog(this, (dp, y, m, d) -> {
+            DatePickerDialog selector = new DatePickerDialog(this, (dp, y, m, d) -> {
                 fechaNacApiFormat = String.format("%04d-%02d-%02d", y, m + 1, d);
                 binding.etFechaNac.setText(String.format("%02d/%02d/%04d", d, m + 1, y));
-            }, c.get(Calendar.YEAR) - 25, c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
+            }, c.get(Calendar.YEAR) - 25, c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+            // Una fecha de nacimiento no puede ser futura.
+            selector.getDatePicker().setMaxDate(System.currentTimeMillis());
+            selector.show();
         });
 
         binding.btnSubmit.setOnClickListener(v -> onSubmit());
@@ -84,6 +87,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void actualizarFormulario() {
+        binding.tilConfirmPassword.setVisibility(modoRegistro ? View.VISIBLE : View.GONE);
         binding.tilNombre.setVisibility(modoRegistro ? View.VISIBLE : View.GONE);
         binding.tilFechaNac.setVisibility(modoRegistro ? View.VISIBLE : View.GONE);
         binding.radioGroup.setVisibility(modoRegistro ? View.VISIBLE : View.GONE);
@@ -111,10 +115,64 @@ public class LoginActivity extends AppCompatActivity {
                 setLoading(false);
                 return;
             }
+            if (!validarRegistro(email, pass)) {
+                setLoading(false);
+                return;
+            }
             api.register(new RegisterRequest(email, pass, nombre, fechaNacApiFormat, rol))
                     .enqueue(authCallback);
         } else {
             api.login(new LoginRequest(email, pass)).enqueue(authCallback);
+        }
+    }
+
+    /**
+     * Aplica las mismas reglas que el formulario web: email con formato válido,
+     * contraseña de 8 caracteres con al menos una mayúscula y un número, y
+     * confirmación coincidente. Evita depender del rechazo del backend.
+     */
+    private boolean validarRegistro(String email, String pass) {
+        binding.tilEmail.setError(null);
+        binding.tilPassword.setError(null);
+        binding.tilConfirmPassword.setError(null);
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.tilEmail.setError(getString(R.string.error_email_invalido));
+            return false;
+        }
+        if (pass.length() < 8) {
+            binding.tilPassword.setError(getString(R.string.error_password_corta));
+            return false;
+        }
+        if (!pass.matches("^(?=.*[A-Z])(?=.*\\d).+$")) {
+            binding.tilPassword.setError(getString(R.string.error_password_patron));
+            return false;
+        }
+
+        String confirmacion = binding.etConfirmPassword.getText().toString();
+        if (confirmacion.isEmpty()) {
+            binding.tilConfirmPassword.setError(getString(R.string.error_password_confirmar));
+            return false;
+        }
+        if (!pass.equals(confirmacion)) {
+            binding.tilConfirmPassword.setError(getString(R.string.error_password_no_coincide));
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Extrae el campo "message" del cuerpo de error del backend, que explica el
+     * motivo concreto del rechazo. Si no se puede leer, usa el texto por defecto.
+     */
+    private String mensajeDeError(Response<?> response, String porDefecto) {
+        if (response.errorBody() == null) return porDefecto;
+        try {
+            String cuerpo = response.errorBody().string();
+            String mensaje = new org.json.JSONObject(cuerpo).optString("message", "");
+            return mensaje.isEmpty() ? porDefecto : mensaje;
+        } catch (Exception e) {
+            return porDefecto;
         }
     }
 
@@ -126,16 +184,17 @@ public class LoginActivity extends AppCompatActivity {
                 AuthResponse body = response.body();
                 prefs.saveToken(body.token);
                 prefs.saveUser(body.id, body.email, body.fullName, body.role, body.inviteCode);
-                prefs.saveRememberDevice(!modoRegistro && binding.switchRecordar.isChecked());
+                // Al registrarse la sesión queda recordada, igual que en la versión web.
+                prefs.saveRememberDevice(modoRegistro || binding.switchRecordar.isChecked());
                 Class<?> dest = "THERAPIST".equals(body.role)
                         ? TherapistDashboardActivity.class
                         : DashboardActivity.class;
                 startActivity(new Intent(LoginActivity.this, dest));
                 finish();
             } else {
-                Toast.makeText(LoginActivity.this,
-                        modoRegistro ? "Error al registrarse. Verificá los datos."
-                                     : "Credenciales incorrectas.",
+                String porDefecto = modoRegistro ? "Error al registrarse. Verificá los datos."
+                                                 : "Credenciales incorrectas.";
+                Toast.makeText(LoginActivity.this, mensajeDeError(response, porDefecto),
                         Toast.LENGTH_LONG).show();
             }
         }

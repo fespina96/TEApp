@@ -11,6 +11,7 @@ import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -97,9 +98,9 @@ public class KidModeActivity extends AppCompatActivity {
         }
 
         // Adapters por franja
-        adapterManana = new KidEntryAdapter(listaManana, this::onEntradaTapped);
-        adapterTarde  = new KidEntryAdapter(listaTarde,  this::onEntradaTapped);
-        adapterNoche  = new KidEntryAdapter(listaNoche,  this::onEntradaTapped);
+        adapterManana = new KidEntryAdapter(listaManana, this::onEntradaTapped, this::estaHabilitada);
+        adapterTarde  = new KidEntryAdapter(listaTarde,  this::onEntradaTapped, this::estaHabilitada);
+        adapterNoche  = new KidEntryAdapter(listaNoche,  this::onEntradaTapped, this::estaHabilitada);
 
         binding.rvMananaKid.setLayoutManager(new LinearLayoutManager(this));
         binding.rvTardeKid.setLayoutManager(new LinearLayoutManager(this));
@@ -125,14 +126,32 @@ public class KidModeActivity extends AppCompatActivity {
     // Entrada tapeada → completar/descompletar
 
     private void onEntradaTapped(ScheduleEntry entry) {
+        // La rutina se recorre de a una: hacia adelante completando y hacia atrás desmarcando.
+        if (!estaHabilitada(entry)) {
+            Toast.makeText(this, entry.isCompletedToday()
+                    ? R.string.desmarcar_en_orden
+                    : R.string.completar_en_orden, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (entry.isCompletedToday()) {
             api.unmarkCompleted(childId, entry.id, new CompletionRequest(ScheduleEntry.todayIso()))
                     .enqueue(new Callback<Void>() {
                         @Override public void onResponse(Call<Void> c, Response<Void> r) { cargarAgenda(); }
-                        @Override public void onFailure(Call<Void> c, Throwable t) {}
+                        @Override public void onFailure(Call<Void> c, Throwable t) {
+                            Toast.makeText(KidModeActivity.this, R.string.error_red, Toast.LENGTH_SHORT).show();
+                        }
                     });
             return;
         }
+        // Si el padre marcó que hay que cumplir el temporizador, no se puede terminar antes.
+        if (Boolean.TRUE.equals(entry.requireFullTimer)
+                && entry.durationMinutes != null && entry.durationMinutes > 0
+                && !temporizadorCumplido(entry)) {
+            Toast.makeText(this, R.string.esperar_temporizador, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (entry.activity != null && entry.activity.stepCount != null && entry.activity.stepCount > 0) {
             mostrarPasos(entry);
         } else {
@@ -234,6 +253,8 @@ public class KidModeActivity extends AppCompatActivity {
         // Timer
         if (ahora.durationMinutes != null && ahora.durationMinutes > 0 && !ahora.isCompletedToday()) {
             duracionTotalMs = ahora.durationMinutes * 60 * 1000L;
+            // El botón de pausa sólo se ofrece si el padre lo habilitó para esta actividad.
+            binding.btnPausar.setVisibility(Boolean.FALSE.equals(ahora.pausable) ? View.GONE : View.VISIBLE);
             iniciarTemporizador(duracionTotalMs);
         } else {
             binding.layoutTimer.setVisibility(View.GONE);
@@ -265,22 +286,81 @@ public class KidModeActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<ActivityStep>> call, Response<List<ActivityStep>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    View view = LayoutInflater.from(KidModeActivity.this).inflate(R.layout.dialog_steps, null);
-                    RecyclerView rv = view.findViewById(R.id.rv_pasos);
-                    ((TextView) view.findViewById(R.id.tv_titulo_actividad)).setText(entry.activity != null ? entry.activity.name : "");
-                    rv.setLayoutManager(new LinearLayoutManager(KidModeActivity.this));
-                    rv.setAdapter(new StepsAdapter(response.body()));
-                    new AlertDialog.Builder(KidModeActivity.this)
-                            .setView(view)
-                            .setPositiveButton("Marcar completado", (d, w) -> marcarCompletado(entry))
-                            .setNegativeButton(R.string.cancelar, null)
-                            .show();
+                    mostrarVisorDePasos(entry, response.body());
                 } else {
                     marcarCompletado(entry);
                 }
             }
             @Override public void onFailure(Call<List<ActivityStep>> call, Throwable t) { marcarCompletado(entry); }
         });
+    }
+
+    /**
+     * Muestra los pasos de a uno y en orden: el botón para dar la actividad por
+     * terminada recién aparece en el último, igual que en la versión web.
+     */
+    private void mostrarVisorDePasos(ScheduleEntry entry, List<ActivityStep> pasos) {
+        View vista = LayoutInflater.from(this).inflate(R.layout.dialog_step_viewer, null);
+        TextView tvActividad   = vista.findViewById(R.id.tv_actividad);
+        TextView tvContador    = vista.findViewById(R.id.tv_contador);
+        TextView tvNumero      = vista.findViewById(R.id.tv_numero);
+        TextView tvTitulo      = vista.findViewById(R.id.tv_titulo);
+        TextView tvDescripcion = vista.findViewById(R.id.tv_descripcion);
+        ImageView imgPaso      = vista.findViewById(R.id.img_paso);
+        Button btnAnterior     = vista.findViewById(R.id.btn_anterior);
+        Button btnSiguiente    = vista.findViewById(R.id.btn_siguiente);
+        Button btnListo        = vista.findViewById(R.id.btn_listo);
+
+        tvActividad.setText(entry.activity != null ? entry.activity.name : "");
+
+        final int[] indice = {0};
+        Runnable pintarPaso = () -> {
+            ActivityStep paso = pasos.get(indice[0]);
+            tvContador.setText(getString(R.string.paso_de, indice[0] + 1, pasos.size()));
+            tvNumero.setText(String.valueOf(indice[0] + 1));
+            tvTitulo.setText(paso.title);
+
+            if (paso.description != null && !paso.description.isEmpty()) {
+                tvDescripcion.setText(paso.description);
+                tvDescripcion.setVisibility(View.VISIBLE);
+            } else {
+                tvDescripcion.setVisibility(View.GONE);
+            }
+
+            String img = paso.pictogramUrl != null ? paso.pictogramUrl : paso.imageBase64;
+            if (img != null) {
+                Glide.with(KidModeActivity.this).load(img).into(imgPaso);
+                imgPaso.setVisibility(View.VISIBLE);
+            } else {
+                imgPaso.setVisibility(View.GONE);
+            }
+
+            boolean esUltimo = indice[0] == pasos.size() - 1;
+            btnAnterior.setEnabled(indice[0] > 0);
+            btnSiguiente.setVisibility(esUltimo ? View.GONE : View.VISIBLE);
+            btnListo.setVisibility(esUltimo ? View.VISIBLE : View.GONE);
+
+            if (paso.title != null) hablar(paso.title);
+        };
+        pintarPaso.run();
+
+        AlertDialog dialogo = new AlertDialog.Builder(this)
+                .setView(vista)
+                .setNegativeButton(R.string.cancelar, null)
+                .create();
+
+        btnAnterior.setOnClickListener(v -> {
+            if (indice[0] > 0) { indice[0]--; pintarPaso.run(); }
+        });
+        btnSiguiente.setOnClickListener(v -> {
+            if (indice[0] < pasos.size() - 1) { indice[0]++; pintarPaso.run(); }
+        });
+        btnListo.setOnClickListener(v -> {
+            dialogo.dismiss();
+            marcarCompletado(entry);
+        });
+
+        dialogo.show();
     }
 
     private void marcarCompletado(ScheduleEntry entry) {
@@ -290,10 +370,7 @@ public class KidModeActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         if (response.isSuccessful()) {
-                            // Avanzar al siguiente pendiente
-                            indiceCurrent++;
-                            while (indiceCurrent < entradasHoy.size() && entradasHoy.get(indiceCurrent).isCompletedToday())
-                                indiceCurrent++;
+                            // cargarAgenda() recalcula el índice de la actividad actual
                             cargarAgenda();
                         }
                     }
@@ -335,6 +412,31 @@ public class KidModeActivity extends AppCompatActivity {
 
     private void detenerTemporizador() {
         if (temporizador != null) { temporizador.cancel(); temporizador = null; }
+    }
+
+    /**
+     * La rutina avanza y retrocede de a una: sólo se puede completar la siguiente
+     * actividad pendiente, y sólo se puede desmarcar la última completada.
+     */
+    private boolean estaHabilitada(ScheduleEntry entry) {
+        if (entradasHoy.isEmpty() || entry.id == null) return false;
+
+        if (indiceCurrent < entradasHoy.size()
+                && entry.id.equals(entradasHoy.get(indiceCurrent).id)) {
+            return true;
+        }
+        // indiceCurrent - 1 es la última completada, incluso cuando ya no quedan pendientes.
+        return indiceCurrent > 0 && entry.id.equals(entradasHoy.get(indiceCurrent - 1).id);
+    }
+
+    /**
+     * El temporizador sólo corre para la actividad que se muestra en "Ahora",
+     * así que se considera cumplido cuando esa es la entrada tocada y ya llegó a cero.
+     */
+    private boolean temporizadorCumplido(ScheduleEntry entry) {
+        if (entradasHoy.isEmpty() || indiceCurrent >= entradasHoy.size()) return false;
+        ScheduleEntry actual = entradasHoy.get(indiceCurrent);
+        return actual.id != null && actual.id.equals(entry.id) && tiempoRestanteMs <= 0;
     }
 
     // Password para salir
@@ -469,11 +571,15 @@ public class KidModeActivity extends AppCompatActivity {
 
     interface OnEntradaTap { void tap(ScheduleEntry e); }
 
+    /** Decide si una entrada puede tocarse: la rutina se completa en orden. */
+    interface EstadoEntrada { boolean habilitada(ScheduleEntry e); }
+
     static class KidEntryAdapter extends RecyclerView.Adapter<KidEntryAdapter.VH> {
         private final List<ScheduleEntry> items;
         private final OnEntradaTap listener;
-        KidEntryAdapter(List<ScheduleEntry> items, OnEntradaTap listener) {
-            this.items = items; this.listener = listener;
+        private final EstadoEntrada estado;
+        KidEntryAdapter(List<ScheduleEntry> items, OnEntradaTap listener, EstadoEntrada estado) {
+            this.items = items; this.listener = listener; this.estado = estado;
         }
         @Override
         public VH onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -505,8 +611,12 @@ public class KidModeActivity extends AppCompatActivity {
                     ? android.R.drawable.checkbox_on_background
                     : android.R.drawable.checkbox_off_background);
 
-            // Opacidad si completada
-            h.itemView.setAlpha(e.isCompletedToday() ? 0.55f : 1.0f);
+            // Las que aún no llegaron en la rutina se ven apagadas. El toque se mantiene
+            // activo para poder explicar por qué todavía no se pueden marcar.
+            boolean habilitada = estado.habilitada(e);
+            if (e.isCompletedToday())      h.itemView.setAlpha(0.55f);
+            else if (!habilitada)          h.itemView.setAlpha(0.35f);
+            else                           h.itemView.setAlpha(1.0f);
 
             h.itemView.setOnClickListener(v -> listener.tap(e));
         }
@@ -523,41 +633,4 @@ public class KidModeActivity extends AppCompatActivity {
         }
     }
 
-    // Steps adapter
-
-    static class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.VH> {
-        private final List<ActivityStep> steps;
-        StepsAdapter(List<ActivityStep> steps) { this.steps = steps; }
-        @Override
-        public VH onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_step, parent, false);
-            return new VH(v);
-        }
-        @Override
-        public void onBindViewHolder(VH h, int pos) {
-            ActivityStep step = steps.get(pos);
-            h.tvNumero.setText(String.valueOf(step.stepOrder));
-            h.tvTitulo.setText(step.title);
-            if (step.description != null && !step.description.isEmpty()) {
-                h.tvDescripcion.setText(step.description);
-                h.tvDescripcion.setVisibility(View.VISIBLE);
-            }
-            String imgUrl = step.pictogramUrl != null ? step.pictogramUrl : step.imageBase64;
-            if (imgUrl != null) {
-                Glide.with(h.imgStep.getContext()).load(imgUrl).into(h.imgStep);
-                h.imgStep.setVisibility(View.VISIBLE);
-            }
-        }
-        @Override public int getItemCount() { return steps.size(); }
-        static class VH extends RecyclerView.ViewHolder {
-            TextView tvNumero, tvTitulo, tvDescripcion; ImageView imgStep;
-            VH(View v) {
-                super(v);
-                tvNumero = v.findViewById(R.id.tv_numero);
-                tvTitulo = v.findViewById(R.id.tv_titulo);
-                tvDescripcion = v.findViewById(R.id.tv_descripcion);
-                imgStep = v.findViewById(R.id.img_step);
-            }
-        }
-    }
 }

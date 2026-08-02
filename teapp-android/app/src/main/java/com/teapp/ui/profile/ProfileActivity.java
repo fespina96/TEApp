@@ -22,7 +22,6 @@ import com.teapp.databinding.ActivityProfileBinding;
 import com.teapp.model.AuthResponse;
 import com.teapp.ui.auth.ChangePasswordActivity;
 import com.teapp.ui.auth.LoginActivity;
-import com.teapp.ui.therapist.ManageTherapistActivity;
 import com.teapp.util.PrefsManager;
 
 import org.json.JSONObject;
@@ -67,8 +66,6 @@ public class ProfileActivity extends AppCompatActivity {
         binding.btnGuardar.setOnClickListener(v -> guardarPerfil());
         binding.btnContrasena.setOnClickListener(v ->
                 startActivity(new Intent(this, ChangePasswordActivity.class)));
-        binding.btnTerapeutas.setOnClickListener(v ->
-                startActivity(new Intent(this, ManageTherapistActivity.class)));
         binding.btnEliminarCuenta.setOnClickListener(v -> confirmarEliminarCuenta());
 
         cargarPerfil();
@@ -126,10 +123,6 @@ public class ProfileActivity extends AppCompatActivity {
             binding.tvInitials.setText(inicial);
         }
 
-        // Ocultar terapeutas si el usuario es terapeuta
-        if ("THERAPIST".equals(r.role)) {
-            binding.btnTerapeutas.setVisibility(View.GONE);
-        }
     }
 
     private void configurarFechaPicker() {
@@ -146,10 +139,13 @@ public class ProfileActivity extends AppCompatActivity {
                     d = Integer.parseInt(p[2]);
                 } catch (Exception ignored) {}
             }
-            new DatePickerDialog(this, (dp, yr, mo, da) -> {
+            DatePickerDialog selector = new DatePickerDialog(this, (dp, yr, mo, da) -> {
                 fechaApiFormat = String.format("%04d-%02d-%02d", yr, mo + 1, da);
                 binding.etFecha.setText(String.format("%02d/%02d/%04d", da, mo + 1, yr));
-            }, y, m, d).show();
+            }, y, m, d);
+            // Una fecha de nacimiento no puede ser futura.
+            selector.getDatePicker().setMaxDate(System.currentTimeMillis());
+            selector.show();
         });
     }
 
@@ -226,14 +222,15 @@ public class ProfileActivity extends AppCompatActivity {
                 binding.imgAvatar.setVisibility(View.VISIBLE);
                 binding.tvInitials.setVisibility(View.GONE);
 
-                String json = "{\"avatarBase64\":\"" + b64 + "\"}";
-                RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
+                RequestBody body = RequestBody.create(MediaType.parse("text/plain"), b64);
                 api.updateUserAvatar(body).enqueue(new Callback<Void>() {
                     @Override public void onResponse(Call<Void> call, Response<Void> response) {
                         if (response.isSuccessful())
                             Toast.makeText(ProfileActivity.this, "Foto actualizada.", Toast.LENGTH_SHORT).show();
                     }
-                    @Override public void onFailure(Call<Void> call, Throwable t) {}
+                    @Override public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(ProfileActivity.this, R.string.error_red, Toast.LENGTH_SHORT).show();
+                    }
                 });
             } catch (Exception e) {
                 Toast.makeText(this, "Error al cargar la imagen.", Toast.LENGTH_SHORT).show();

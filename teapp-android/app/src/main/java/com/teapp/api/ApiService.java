@@ -23,6 +23,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -86,7 +87,8 @@ public interface ApiService {
                              @Path("entryId") String entryId,
                              @Body CompletionRequest body);
 
-    @DELETE("children/{childId}/schedule/{entryId}/completions")
+    // Retrofit no admite @Body en @DELETE: hay que declararlo con @HTTP y hasBody.
+    @HTTP(method = "DELETE", path = "children/{childId}/schedule/{entryId}/completions", hasBody = true)
     Call<Void> unmarkCompleted(@Path("childId") String childId,
                                @Path("entryId") String entryId,
                                @Body CompletionRequest body);

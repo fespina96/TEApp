@@ -212,14 +212,6 @@
                     android:textColor="@color/on_primary"
                     android:layout_marginBottom="8dp" />
 
-                <Button
-                    android:id="@+id/btn_terapeutas"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="Mis terapeutas"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:textColor="@color/on_primary" />
-
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

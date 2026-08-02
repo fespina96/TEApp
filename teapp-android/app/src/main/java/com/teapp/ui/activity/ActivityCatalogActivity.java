@@ -30,8 +30,8 @@ public class ActivityCatalogActivity extends AppCompatActivity implements Activi
     private static final int REQUEST_FORM  = 1;
     private static final int REQUEST_STEPS = 2;
 
-    private static final String[] CAT_KEYS   = {"HYGIENE","MEAL","EDUCATION","PLAY","THERAPY","CHORES","SOCIAL","REST","SPECIAL_EVENT","OTHER"};
-    private static final String[] CAT_LABELS = {"Higiene","Comidas","Educación","Juego","Terapia","Tareas","Social","Descanso","Evento especial","Otro"};
+    private static final String[] CAT_KEYS   = {"HYGIENE","MEAL","EDUCATION","PLAY","THERAPY","REST","OUTDOOR","CUSTOM","SPECIAL_EVENT"};
+    private static final String[] CAT_LABELS = {"Higiene","Comidas","Educación","Juego","Terapia","Descanso","Aire libre","Personalizada","Evento especial"};
 
     private ActivityActivityCatalogBinding binding;
     private ApiService api;

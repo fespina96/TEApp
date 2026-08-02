@@ -144,10 +144,13 @@ public class ChildFormActivity extends AppCompatActivity {
                     diaInicial = Integer.parseInt(partes[2]);
                 } catch (Exception ignored) {}
             }
-            new DatePickerDialog(this, (dp, y, m, d) -> {
+            DatePickerDialog selector = new DatePickerDialog(this, (dp, y, m, d) -> {
                 fechaApiFormat = String.format("%04d-%02d-%02d", y, m + 1, d);
                 binding.etFecha.setText(String.format("%02d/%02d/%04d", d, m + 1, y));
-            }, anoInicial, mesInicial, diaInicial).show();
+            }, anoInicial, mesInicial, diaInicial);
+            // Una fecha de nacimiento no puede ser futura.
+            selector.getDatePicker().setMaxDate(System.currentTimeMillis());
+            selector.show();
         });
     }
 
@@ -221,9 +224,8 @@ public class ChildFormActivity extends AppCompatActivity {
     }
 
     private void subirAvatar(String childId) {
-        String json = "{\"avatarBase64\":\"" + avatarBase64Nueva + "\"}";
         RequestBody body = RequestBody.create(
-                MediaType.parse("application/json"), json);
+                MediaType.parse("text/plain"), avatarBase64Nueva);
 
         api.updateChildAvatar(childId, body).enqueue(new Callback<Void>() {
             @Override

@@ -25,6 +25,12 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
 
     private final List<ActivityItem> items;
     private final Listener listener;
+    /** El distintivo de actividad del sistema sólo se muestra en el catálogo, no al armar la agenda. */
+    private boolean mostrarDistintivoPredefinida = true;
+
+    public void setMostrarDistintivoPredefinida(boolean mostrar) {
+        this.mostrarDistintivoPredefinida = mostrar;
+    }
 
     public ActivityAdapter(List<ActivityItem> items, Listener listener) {
         this.items    = items;
@@ -59,7 +65,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
             h.tvSteps.setText("Sin pasos");
         }
 
-        h.ivPredefined.setVisibility(act.predefined ? View.VISIBLE : View.GONE);
+        h.ivPredefined.setVisibility(mostrarDistintivoPredefinida && act.predefined ? View.VISIBLE : View.GONE);
 
         // Color de fondo de la card
         if (act.color != null) {

@@ -121,7 +121,9 @@
     <string name="sin_terapeutas">Sin terapeutas vinculados</string>
 
     <!-- Supervised agenda -->
-    <string name="agenda_supervisada">Agenda (solo lectura)</string>
+    <string name="agenda_supervisada">Agenda supervisada</string>
+    <string name="gestionar_agenda">Gestionar agenda</string>
+    <string name="error_reordenar">No se pudo guardar el nuevo orden</string>
 
     <!-- Dashboard -->
     <string name="opciones">Opciones</string>
@@ -146,4 +148,27 @@
     <string name="sin_conexion">Sin conexión al servidor</string>
     <string name="reintentar">Reintentar conexión</string>
     <string name="volver_inicio">Volver al inicio</string>
+    <string name="esperar_temporizador">Esperá a que termine el temporizador.</string>
+
+    <!-- Validaciones del registro, con los mismos textos que la versión web -->
+    <string name="error_email_invalido">Email no válido</string>
+    <string name="error_password_corta">Mínimo 8 caracteres</string>
+    <string name="error_password_patron">Debe incluir al menos una mayúscula y un número</string>
+    <string name="error_password_confirmar">Debes confirmar la contraseña</string>
+    <string name="error_password_no_coincide">Las contraseñas no coinciden</string>
+    <string name="agregar_todos_los_dias">Agregar a todos los días</string>
+    <string name="agregar">Agregar</string>
+    <string name="desvincular_terapeuta">Desvincular terapeuta</string>
+    <string name="confirmar_desvincular">¿Querés desvincular a %1$s? Dejará de acceder a las agendas de tus participantes.</string>
+    <string name="terapeuta_desvinculado">Terapeuta desvinculado.</string>
+
+    <!-- Rutina del modo participante: se completa en orden -->
+    <string name="completar_en_orden">Primero hay que terminar la actividad anterior.</string>
+    <string name="desmarcar_en_orden">Para volver atrás hay que desmarcar primero la última actividad.</string>
+    <string name="paso">Paso</string>
+    <string name="anterior">Anterior</string>
+    <string name="siguiente">Siguiente</string>
+    <string name="listo">¡Listo!</string>
+    <string name="paso_de">Paso %1$d de %2$d</string>
+    <string name="error_duracion">La duración debe estar entre 1 y 180 minutos.</string>
 </resources>
