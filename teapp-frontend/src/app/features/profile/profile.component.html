@@ -41,7 +41,8 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Fecha de nacimiento</mat-label>
-          <input matInput [matDatepicker]="dpPerfil" formControlName="dateOfBirth" readonly>
+          <input matInput [matDatepicker]="dpPerfil" formControlName="dateOfBirth"
+                 [max]="fechaMaxima" readonly>
           <mat-datepicker-toggle matSuffix [for]="dpPerfil"></mat-datepicker-toggle>
           <mat-datepicker #dpPerfil startView="multi-year"></mat-datepicker>
         </mat-form-field>

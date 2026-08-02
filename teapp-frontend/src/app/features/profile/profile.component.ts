@@ -41,6 +41,7 @@ export class ProfileComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   form!: FormGroup;
   guardando = false;
+  fechaMaxima = new Date();
   cargando = true;
 
   constructor(

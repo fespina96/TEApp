@@ -41,6 +41,8 @@
       <input matInput type="number" formControlName="durationMinutes" min="1" max="180"
              placeholder="Ej: 15">
       <mat-icon matSuffix>timer</mat-icon>
+      <mat-error *ngIf="form.get('durationMinutes')?.hasError('min')">La duración mínima es 1 minuto</mat-error>
+      <mat-error *ngIf="form.get('durationMinutes')?.hasError('max')">La duración máxima es 180 minutos</mat-error>
     </mat-form-field>
 
     <div class="pausable-row" *ngIf="form.get('durationMinutes')?.value">

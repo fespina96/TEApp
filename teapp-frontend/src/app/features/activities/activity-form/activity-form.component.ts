@@ -62,7 +62,7 @@ export class ActivityFormComponent implements OnInit {
       category:        ['CUSTOM', Validators.required],
       iconName:        ['toys'],
       color:           ['#F9D8C0'],
-      durationMinutes: [null],
+      durationMinutes: [null, [Validators.min(1), Validators.max(180)]],
       pausable:        [true]
     });
   }

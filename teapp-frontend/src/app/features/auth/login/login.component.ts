@@ -42,6 +42,7 @@ export class LoginComponent {
   ocultarContrasena = true;
   ocultarConfirmacion = true;
   rolSeleccionado: 'PARENT' | 'THERAPIST' = 'PARENT';
+  fechaMaxima = new Date();
   pestanaActiva: 'login' | 'register' = 'login';
 
   constructor(
