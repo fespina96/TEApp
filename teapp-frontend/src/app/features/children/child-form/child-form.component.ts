@@ -58,7 +58,9 @@ export class ChildFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.idParticipante = this.route.snapshot.paramMap.get('idParticipante');
+    // El parámetro se llama childId en app.routes.ts; leerlo con otro nombre
+    // devolvía null y el formulario se abría siempre en modo alta.
+    this.idParticipante = this.route.snapshot.paramMap.get('childId');
     this.modoEdicion = !!this.idParticipante;
 
     if (this.modoEdicion && this.idParticipante) {

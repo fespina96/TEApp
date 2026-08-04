@@ -62,7 +62,8 @@ export class TherapistDashboardComponent implements OnInit {
   /** Abre la agenda del participante supervisado en la misma vista que usa el padre. */
   gestionarAgenda(): void {
     if (!this.participanteSeleccionado) return;
-    this.router.navigate(['/children', this.participanteSeleccionado.id, 'agenda']);
+    // La ruta cuelga de 'app': sin ese prefijo no matchea ninguna y no pasa nada.
+    this.router.navigate(['/app/children', this.participanteSeleccionado.id, 'agenda']);
   }
 
   ngOnInit(): void {
