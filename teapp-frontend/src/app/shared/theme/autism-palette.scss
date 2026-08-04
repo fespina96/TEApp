@@ -21,6 +21,10 @@
   --color-text-muted:   #ADB5BD;  // Texto muy secundario
 
   // --- Estados semánticos ---
+  // Contrapartida legible del azul cielo de marca: el celeste sirve como fondo,
+  // pero con 1.54 de contraste no se puede usar para texto ni bordes. Este teal
+  // oscuro llega a 5.89 sobre blanco, así que cumple AA en ambos casos.
+  --color-primary:      #2C6E6E; // Texto y bordes de estado: activo, foco, hover
   --color-teal:         #78C1C8; // Activo / enfocado / enlaces
   --color-muted-purple: #9B7EC8; // Secundario / visitado
   --color-amber:        #E8C56B; // Precaución / pendiente
