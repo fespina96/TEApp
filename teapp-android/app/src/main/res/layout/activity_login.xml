@@ -8,19 +8,24 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:clipChildren="false">
 
+        <!-- Sin recorte y con margen suficiente: la sombra de la tarjeta es de
+             16dp y se cortaba contra los bordes del contenedor -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:gravity="center_horizontal"
             android:paddingTop="36dp"
-            android:paddingBottom="36dp">
+            android:paddingBottom="36dp"
+            android:clipToPadding="false"
+            android:clipChildren="false">
 
-            <!-- Card blanca (igual que Angular) -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,7 +76,7 @@
 
                     </LinearLayout>
 
-                    <!-- Pill tab switcher (igual que Angular) -->
+                    <!-- Ingresar / Registrarse -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -117,6 +122,51 @@
                         android:paddingEnd="24dp"
                         android:paddingTop="12dp">
 
+                        <!-- Nombre (solo registro, oculto por defecto) -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/til_nombre"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:hint="@string/nombre_completo"
+                            android:visibility="gone"
+                            app:hintTextColor="@color/text_input_hint"
+                            app:boxStrokeColor="@color/text_input_stroke"
+                            app:boxBackgroundColor="#EEF7FB">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/et_nombre"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/on_primary"
+                                android:inputType="textPersonName" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Rol (solo registro) -->
+                        <RadioGroup
+                            android:id="@+id/radio_group"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:visibility="gone"
+                            android:layout_marginBottom="12dp">
+                            <RadioButton
+                                android:id="@+id/rb_padre"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:textColor="@color/on_primary"
+                                android:text="@string/soy_padre"
+                                android:checked="true" />
+                            <RadioButton
+                                android:id="@+id/rb_terapeuta"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:textColor="@color/on_primary"
+                                android:text="@string/soy_terapeuta" />
+                        </RadioGroup>
+
                         <!-- Email -->
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/til_email"
@@ -135,6 +185,45 @@
                                 android:textColor="@color/on_primary"
                                 android:inputType="textEmailAddress" />
                         </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Fecha nacimiento (solo registro) -->
+                        <LinearLayout
+                            android:id="@+id/til_fecha_nac"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/fecha_nacimiento"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_input_hint"
+                                android:layout_marginStart="4dp"
+                                android:layout_marginBottom="2dp" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/til_fecha_nac_inner"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp"
+                                app:hintEnabled="false"
+                                app:boxBackgroundColor="#EEF7FB"
+                                app:boxStrokeColor="@color/text_input_stroke">
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/et_fecha_nac"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/on_primary"
+                                    android:textColorHint="@color/text_input_hint"
+                                    android:hint="Seleccioná una fecha"
+                                    android:focusable="false"
+                                    android:clickable="true" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                        </LinearLayout>
 
                         <!-- Contraseña -->
                         <com.google.android.material.textfield.TextInputLayout
@@ -187,90 +276,6 @@
                             android:textSize="13sp"
                             android:checked="true"
                             android:layout_marginBottom="4dp" />
-
-                        <!-- Nombre (solo registro, oculto por defecto) -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/til_nombre"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp"
-                            android:hint="@string/nombre_completo"
-                            android:visibility="gone"
-                            app:hintTextColor="@color/text_input_hint"
-                            app:boxStrokeColor="@color/text_input_stroke"
-                            app:boxBackgroundColor="#EEF7FB">
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/et_nombre"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/on_primary"
-                                android:inputType="textPersonName" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <!-- Fecha nacimiento (solo registro) -->
-                        <LinearLayout
-                            android:id="@+id/til_fecha_nac"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:visibility="gone">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/fecha_nacimiento"
-                                android:textSize="12sp"
-                                android:textColor="@color/text_input_hint"
-                                android:layout_marginStart="4dp"
-                                android:layout_marginBottom="2dp" />
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:id="@+id/til_fecha_nac_inner"
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="12dp"
-                                app:hintEnabled="false"
-                                app:boxBackgroundColor="#EEF7FB"
-                                app:boxStrokeColor="@color/text_input_stroke">
-                                <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/et_fecha_nac"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/on_primary"
-                                    android:textColorHint="@color/text_input_hint"
-                                    android:hint="Seleccioná una fecha"
-                                    android:focusable="false"
-                                    android:clickable="true" />
-                            </com.google.android.material.textfield.TextInputLayout>
-
-                        </LinearLayout>
-
-                        <!-- Rol (solo registro) -->
-                        <RadioGroup
-                            android:id="@+id/radio_group"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:visibility="gone"
-                            android:layout_marginBottom="12dp">
-                            <RadioButton
-                                android:id="@+id/rb_padre"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:textColor="@color/on_primary"
-                                android:text="@string/soy_padre"
-                                android:checked="true" />
-                            <RadioButton
-                                android:id="@+id/rb_terapeuta"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:textColor="@color/on_primary"
-                                android:text="@string/soy_terapeuta" />
-                        </RadioGroup>
 
                         <!-- Botón principal -->
                         <Button

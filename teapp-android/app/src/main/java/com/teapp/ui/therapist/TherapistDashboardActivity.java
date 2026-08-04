@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import android.widget.PopupMenu;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,6 +27,7 @@ import com.teapp.model.Child;
 import com.teapp.ui.auth.LoginActivity;
 import com.teapp.ui.profile.ProfileActivity;
 import com.teapp.util.ConnectionChecker;
+import com.teapp.util.AvatarUtils;
 import com.teapp.util.Constants;
 import com.teapp.util.PrefsManager;
 
@@ -67,13 +69,12 @@ public class TherapistDashboardActivity extends AppCompatActivity {
         binding.tvUsuario.setText(nombre);
         String inicial = (!nombre.isEmpty()) ? String.valueOf(nombre.charAt(0)).toUpperCase() : "T";
         binding.tvInitials.setText(inicial);
-        try { binding.tvInitials.setBackgroundColor(Color.parseColor("#C9B8E8")); } catch (Exception ignored) {}
+        AvatarUtils.pintarCirculo(binding.tvInitials, "#C9B8E8");
 
         // Código de invitación
         String codigo = prefs.getInviteCode();
         binding.tvCodigo.setText(codigo != null ? codigo : "—");
 
-        // Botón copiar (igual que Angular)
         binding.btnCopiarCodigo.setOnClickListener(v -> {
             ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
             if (codigo == null) return;
@@ -81,13 +82,7 @@ public class TherapistDashboardActivity extends AppCompatActivity {
             Toast.makeText(this, "Código copiado", Toast.LENGTH_SHORT).show();
         });
 
-        // Perfil y logout
-        binding.btnPerfil.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
-        binding.btnLogout.setOnClickListener(v -> {
-            prefs.clear();
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
-        });
+        binding.btnMenu.setOnClickListener(this::mostrarMenu);
 
         childAdapter = new ChildAdapter(participantesActuales, child -> {
             if (padreSeleccionadoIdx < 0 || padreSeleccionadoIdx >= padres.size()) return;
@@ -130,9 +125,11 @@ public class TherapistDashboardActivity extends AppCompatActivity {
                         nombresPadres.add(fn != null ? fn.toString() : "—");
                     }
 
+                    // Fila propia en vez de la de Android: la de sistema no deja aire
+                    // para el borde ni para la flecha del desplegable.
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(
                             TherapistDashboardActivity.this,
-                            android.R.layout.simple_spinner_item, nombresPadres);
+                            R.layout.item_spinner_padre, nombresPadres);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     binding.spinnerPadres.setAdapter(adapter);
 
@@ -216,7 +213,10 @@ public class TherapistDashboardActivity extends AppCompatActivity {
 
         static class VH extends RecyclerView.ViewHolder {
             TextView tvName, tvInitials;
-            android.widget.ImageButton btnAgenda, btnEdit, btnDelete;
+            // btn_agenda es un Button en item_child.xml; declararlo como ImageButton
+            // hacía que findViewById reventara con ClassCastException al dibujar.
+            android.widget.Button btnAgenda;
+            android.widget.ImageButton btnEdit, btnDelete;
             VH(View v) {
                 super(v);
                 tvName     = v.findViewById(R.id.tv_name);
@@ -226,5 +226,27 @@ public class TherapistDashboardActivity extends AppCompatActivity {
                 btnDelete  = v.findViewById(R.id.btn_delete);
             }
         }
+    }
+
+    /** Mismo menú desplegable que el panel del padre. */
+    private void mostrarMenu(View anchor) {
+        PopupMenu popup = new PopupMenu(this, anchor);
+        popup.getMenuInflater().inflate(R.menu.menu_therapist, popup.getMenu());
+        popup.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.action_perfil) {
+                startActivity(new Intent(this, ProfileActivity.class));
+            } else if (id == R.id.action_logout) {
+                cerrarSesion();
+            }
+            return true;
+        });
+        popup.show();
+    }
+
+    private void cerrarSesion() {
+        prefs.clear();
+        startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 }

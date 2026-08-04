@@ -41,13 +41,20 @@
 
         </LinearLayout>
 
+        <!-- Contorneado y no plano: con estilo de texto no se leía como algo
+             que se pueda tocar. -->
         <Button
             android:id="@+id/btn_desvincular"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
+            android:minWidth="0dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
             android:text="@string/desvincular"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:textColor="@color/text_secondary" />
+            android:textSize="13sp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:strokeColor="@color/border"
+            android:textColor="@color/on_background" />
 
     </LinearLayout>
 

@@ -50,22 +50,15 @@
                 android:textColor="@color/text_secondary" />
         </LinearLayout>
 
+        <!-- Un solo menú desplegable, como en el panel del padre: dos íconos
+             sueltos no dejaban claro qué hacía cada uno -->
         <ImageButton
-            android:id="@+id/btn_perfil"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/ic_settings"
+            android:id="@+id/btn_menu"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_more_vert"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Mi perfil"
-            android:layout_marginEnd="4dp" />
-
-        <ImageButton
-            android:id="@+id/btn_logout"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/ic_close"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Cerrar sesión" />
+            android:contentDescription="@string/opciones" />
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -78,7 +71,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Card de código de invitación (igual que Angular: blanco + borde sky-blue) -->
+            <!-- Código de invitación -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -92,8 +85,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <!-- Borde izquierdo sky-blue (igual que Angular border-left) -->
-                    <View
+                            <View
                         android:layout_width="4dp"
                         android:layout_height="match_parent"
                         android:background="@color/primary" />
@@ -138,8 +130,7 @@
 
                     </LinearLayout>
 
-                    <!-- Botón Copiar (igual que Angular) -->
-                    <Button
+                            <Button
                         android:id="@+id/btn_copiar_codigo"
                         android:layout_width="wrap_content"
                         android:layout_height="36dp"
@@ -186,6 +177,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/spinner_background"
+                android:minHeight="52dp"
+                android:elevation="1dp"
                 android:visibility="gone" />
 
             <!-- Participantes del padre seleccionado -->

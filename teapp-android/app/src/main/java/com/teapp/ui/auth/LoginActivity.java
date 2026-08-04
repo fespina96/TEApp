@@ -56,11 +56,21 @@ public class LoginActivity extends AppCompatActivity {
             DatePickerDialog selector = new DatePickerDialog(this, (dp, y, m, d) -> {
                 fechaNacApiFormat = String.format("%04d-%02d-%02d", y, m + 1, d);
                 binding.etFechaNac.setText(String.format("%02d/%02d/%04d", d, m + 1, y));
+                // La fecha se completa desde el diálogo, no escribiendo, así que hay
+                // que reevaluar a mano: si no, el botón se quedaba deshabilitado.
+                actualizarEstadoDelBoton();
             }, c.get(Calendar.YEAR) - 25, c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
             // Una fecha de nacimiento no puede ser futura.
             selector.getDatePicker().setMaxDate(System.currentTimeMillis());
             selector.show();
         });
+
+        android.text.TextWatcher observador = observadorDeCampos();
+        binding.etNombre.addTextChangedListener(observador);
+        binding.etEmail.addTextChangedListener(observador);
+        binding.etPassword.addTextChangedListener(observador);
+        binding.etConfirmPassword.addTextChangedListener(observador);
+        actualizarEstadoDelBoton();
 
         binding.btnSubmit.setOnClickListener(v -> onSubmit());
     }
@@ -94,34 +104,24 @@ public class LoginActivity extends AppCompatActivity {
         binding.btnOlvide.setVisibility(modoRegistro ? View.GONE : View.VISIBLE);
         binding.switchRecordar.setVisibility(modoRegistro ? View.GONE : View.VISIBLE);
         binding.btnSubmit.setText(getString(modoRegistro ? R.string.registrarse : R.string.iniciar_sesion));
+        limpiarErrores();
+        actualizarEstadoDelBoton();
     }
 
     private void onSubmit() {
         String email = binding.etEmail.getText().toString().trim();
         String pass  = binding.etPassword.getText().toString().trim();
 
-        if (email.isEmpty() || pass.isEmpty()) {
-            Toast.makeText(this, R.string.campos_requeridos, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        setLoading(true);
-
         if (modoRegistro) {
+            if (!validarRegistro(email, pass)) return;
+
             String nombre = binding.etNombre.getText().toString().trim();
             String rol    = binding.rbPadre.isChecked() ? "PARENT" : "THERAPIST";
-            if (nombre.isEmpty() || fechaNacApiFormat.isEmpty()) {
-                Toast.makeText(this, R.string.campos_requeridos, Toast.LENGTH_SHORT).show();
-                setLoading(false);
-                return;
-            }
-            if (!validarRegistro(email, pass)) {
-                setLoading(false);
-                return;
-            }
+            setLoading(true);
             api.register(new RegisterRequest(email, pass, nombre, fechaNacApiFormat, rol))
-                    .enqueue(authCallback);
+                    .enqueue(registroCallback(email));
         } else {
+            setLoading(true);
             api.login(new LoginRequest(email, pass)).enqueue(authCallback);
         }
     }
@@ -132,12 +132,27 @@ public class LoginActivity extends AppCompatActivity {
      * confirmación coincidente. Evita depender del rechazo del backend.
      */
     private boolean validarRegistro(String email, String pass) {
-        binding.tilEmail.setError(null);
-        binding.tilPassword.setError(null);
-        binding.tilConfirmPassword.setError(null);
+        limpiarErrores();
 
+        String nombre = binding.etNombre.getText().toString().trim();
+        if (nombre.isEmpty()) {
+            binding.tilNombre.setError(getString(R.string.error_nombre_obligatorio));
+            return false;
+        }
+        if (email.isEmpty()) {
+            binding.tilEmail.setError(getString(R.string.error_email_obligatorio));
+            return false;
+        }
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             binding.tilEmail.setError(getString(R.string.error_email_invalido));
+            return false;
+        }
+        if (fechaNacApiFormat.isEmpty()) {
+            binding.tilFechaNacInner.setError(getString(R.string.error_fecha_obligatoria));
+            return false;
+        }
+        if (pass.isEmpty()) {
+            binding.tilPassword.setError(getString(R.string.error_password_obligatoria));
             return false;
         }
         if (pass.length() < 8) {
@@ -159,6 +174,49 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    private void limpiarErrores() {
+        binding.tilNombre.setError(null);
+        binding.tilEmail.setError(null);
+        binding.tilFechaNacInner.setError(null);
+        binding.tilPassword.setError(null);
+        binding.tilConfirmPassword.setError(null);
+    }
+
+    /**
+     * El botón queda deshabilitado mientras falte algo, igual que en la web, donde
+     * el submit lleva [disabled]="registerForm.invalid". La comprobación es silenciosa:
+     * los mensajes por campo aparecen recién al intentar enviar, para no ir marcando
+     * errores mientras la persona todavía está escribiendo.
+     */
+    private void actualizarEstadoDelBoton() {
+        binding.btnSubmit.setEnabled(modoRegistro ? registroCompleto() : loginCompleto());
+    }
+
+    private boolean loginCompleto() {
+        return !binding.etEmail.getText().toString().trim().isEmpty()
+                && !binding.etPassword.getText().toString().isEmpty();
+    }
+
+    private boolean registroCompleto() {
+        String pass = binding.etPassword.getText().toString();
+        return !binding.etNombre.getText().toString().trim().isEmpty()
+                && !binding.etEmail.getText().toString().trim().isEmpty()
+                && !fechaNacApiFormat.isEmpty()
+                && !pass.isEmpty()
+                && !binding.etConfirmPassword.getText().toString().isEmpty();
+    }
+
+    /** Un observador que sólo reevalúa si el botón puede habilitarse. */
+    private android.text.TextWatcher observadorDeCampos() {
+        return new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void afterTextChanged(android.text.Editable s) {
+                actualizarEstadoDelBoton();
+            }
+        };
     }
 
     /**
@@ -184,17 +242,16 @@ public class LoginActivity extends AppCompatActivity {
                 AuthResponse body = response.body();
                 prefs.saveToken(body.token);
                 prefs.saveUser(body.id, body.email, body.fullName, body.role, body.inviteCode);
-                // Al registrarse la sesión queda recordada, igual que en la versión web.
-                prefs.saveRememberDevice(modoRegistro || binding.switchRecordar.isChecked());
+                prefs.saveUserAvatar(body.avatarBase64);
+                prefs.saveRememberDevice(binding.switchRecordar.isChecked());
                 Class<?> dest = "THERAPIST".equals(body.role)
                         ? TherapistDashboardActivity.class
                         : DashboardActivity.class;
                 startActivity(new Intent(LoginActivity.this, dest));
                 finish();
             } else {
-                String porDefecto = modoRegistro ? "Error al registrarse. Verificá los datos."
-                                                 : "Credenciales incorrectas.";
-                Toast.makeText(LoginActivity.this, mensajeDeError(response, porDefecto),
+                Toast.makeText(LoginActivity.this,
+                        mensajeDeError(response, "Credenciales incorrectas."),
                         Toast.LENGTH_LONG).show();
             }
         }
@@ -205,6 +262,37 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(LoginActivity.this, R.string.error_red, Toast.LENGTH_LONG).show();
         }
     };
+
+    /**
+     * Crear la cuenta no inicia sesión: se vuelve al formulario de ingreso con el
+     * email ya cargado, para que la persona entre con las credenciales que eligió.
+     */
+    private Callback<AuthResponse> registroCallback(String email) {
+        return new Callback<AuthResponse>() {
+            @Override
+            public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+                setLoading(false);
+                if (!response.isSuccessful()) {
+                    Toast.makeText(LoginActivity.this,
+                            mensajeDeError(response, "Error al registrarse. Verificá los datos."),
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+                setTab(false);
+                binding.etEmail.setText(email);
+                binding.etPassword.setText("");
+                binding.etConfirmPassword.setText("");
+                binding.etNombre.setText("");
+                Toast.makeText(LoginActivity.this, R.string.cuenta_creada, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<AuthResponse> call, Throwable t) {
+                setLoading(false);
+                Toast.makeText(LoginActivity.this, R.string.error_red, Toast.LENGTH_LONG).show();
+            }
+        };
+    }
 
     private void setLoading(boolean loading) {
         binding.progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
