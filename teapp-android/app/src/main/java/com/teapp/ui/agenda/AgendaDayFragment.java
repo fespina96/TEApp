@@ -35,6 +35,8 @@ public class AgendaDayFragment extends Fragment implements ScheduleEntryAdapter.
         default void onEntradasReordenadas(String day, String timeSlot, List<ScheduleEntry> ordenadas) {}
         /** La agenda de sólo lectura no muestra el asa de arrastre. */
         default boolean permiteReordenar() { return true; }
+        /** Si no se puede editar, tocar una entrada no abre ningún menú. */
+        default boolean permiteEditar() { return true; }
     }
 
     private FragmentAgendaDayBinding binding;
@@ -134,6 +136,14 @@ public class AgendaDayFragment extends Fragment implements ScheduleEntryAdapter.
         return helper;
     }
 
+    /**
+     * Si el día todavía tiene contenido por encima. El SwipeRefreshLayout lo consulta para
+     * distinguir un desplazamiento normal de un gesto de recarga.
+     */
+    public boolean puedeDesplazarseHaciaArriba() {
+        return binding != null && binding.getRoot().canScrollVertically(-1);
+    }
+
     public void cargarEntradas() {
         if (host == null || binding == null) return;
         Map<String, List<ScheduleEntry>> slots = host.getEntriesForDay(day);
@@ -156,14 +166,16 @@ public class AgendaDayFragment extends Fragment implements ScheduleEntryAdapter.
 
     @Override
     public void onEntryClick(ScheduleEntry entry) {
-        // En la vista del adulto el toque abre la configuración de la entrada.
-        // Marcar y desmarcar como completada es propio del modo participante.
-        if (host != null) host.onEntrySettings(entry);
+        // Un toque abre el menú con las acciones, no la edición directa: así se
+        // puede elegir también eliminar sin tener que descubrir la pulsación larga.
+        onEntryLongClick(entry);
     }
 
     @Override
     public void onEntryLongClick(ScheduleEntry entry) {
-        if (host == null) return;
+        // En la agenda supervisada el menú no tenía ninguna acción con efecto:
+        // el terapeuta edita desde "Gestionar agenda", así que no se abre.
+        if (host == null || !host.permiteEditar()) return;
         new AlertDialog.Builder(requireContext())
                 .setTitle(entry.activity != null ? entry.activity.name : "Actividad")
                 .setItems(new String[]{

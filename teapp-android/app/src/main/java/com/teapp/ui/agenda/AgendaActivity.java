@@ -25,6 +25,7 @@ import com.teapp.model.ScheduleEntry;
 import com.teapp.model.ScheduleEntryRequest;
 import com.teapp.model.WeeklySchedule;
 import com.teapp.util.Constants;
+import com.teapp.util.PrefsManager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -74,11 +75,44 @@ public class AgendaActivity extends AppCompatActivity
         configurarViewPager();
 
         binding.fabAgregar.setOnClickListener(v -> abrirSelectorActividad());
-        binding.btnModoNino.setOnClickListener(v -> abrirModoNino());
+
+        // El modo participante es para que el padre le pase el dispositivo al
+        // niño; un terapeuta gestionando una agenda ajena no tiene por qué entrar.
+        if (new PrefsManager(this).isTherapist()) {
+            binding.btnModoNino.setVisibility(View.GONE);
+        } else {
+            binding.btnModoNino.setOnClickListener(v -> abrirModoNino());
+        }
         binding.btnReset.setOnClickListener(v -> confirmarResetSemana());
         binding.swipeRefresh.setOnRefreshListener(this::cargarAgenda);
+        binding.swipeRefresh.setOnChildScrollUpCallback((padre, hijo) -> {
+            AgendaDayFragment visible = diaVisible();
+            return visible != null && visible.puedeDesplazarseHaciaArriba();
+        });
+    }
 
+    /**
+     * Se recarga acá y no en onCreate porque al volver del modo participante las
+     * completitudes cambiaron: si no, la agenda seguía mostrando el estado viejo
+     * y las actividades recién marcadas aparecían sin tilde.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
         cargarAgenda();
+    }
+
+    /**
+     * El hijo directo del SwipeRefreshLayout es el ViewPager2, que al ser horizontal nunca
+     * se desplaza en vertical: sin esto el gesto de recarga se come cualquier arrastre hacia
+     * abajo y la agenda no se puede volver a subir. El adaptador deja en estado RESUMED
+     * únicamente la página que se está viendo.
+     */
+    private AgendaDayFragment diaVisible() {
+        for (Fragment f : getSupportFragmentManager().getFragments()) {
+            if (f instanceof AgendaDayFragment && f.isResumed()) return (AgendaDayFragment) f;
+        }
+        return null;
     }
 
     private void configurarViewPager() {
@@ -268,7 +302,11 @@ public class AgendaActivity extends AppCompatActivity
                     ScheduleEntryRequest req = new ScheduleEntryRequest();
                     req.notes = etNotas.getText().toString().trim();
                     String durStr = etDuracion.getText().toString().trim();
-                    if (!durStr.isEmpty()) {
+                    if (durStr.isEmpty()) {
+                        // 0 le pide al backend que quite el temporizador; un null lo dejaría
+                        // como estaba, porque los campos ausentes no se tocan.
+                        req.durationMinutes = 0;
+                    } else {
                         try { req.durationMinutes = Integer.parseInt(durStr); } catch (Exception ignored) {}
                         if (req.durationMinutes == null || req.durationMinutes < 1 || req.durationMinutes > 180) {
                             Toast.makeText(this, R.string.error_duracion, Toast.LENGTH_SHORT).show();

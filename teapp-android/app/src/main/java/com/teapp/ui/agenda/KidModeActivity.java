@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -35,6 +36,8 @@ import com.teapp.model.Child;
 import com.teapp.model.CompletionRequest;
 import com.teapp.model.ScheduleEntry;
 import com.teapp.model.WeeklySchedule;
+import com.teapp.util.AvatarUtils;
+import com.teapp.util.IconoActividad;
 import com.teapp.util.Constants;
 import com.teapp.model.LoginRequest;
 import com.teapp.model.AuthResponse;
@@ -90,11 +93,8 @@ public class KidModeActivity extends AppCompatActivity {
         // Header
         if (child != null) {
             binding.tvKidNombre.setText("¡Hola, " + child.name + "! 🌟");
-            binding.tvKidInitials.setText(child.getInitials());
-            try {
-                binding.tvKidInitials.setBackgroundColor(
-                        Color.parseColor(child.avatarColor != null ? child.avatarColor : "#A8D8EA"));
-            } catch (Exception ignored) {}
+            AvatarUtils.mostrarAvatar(binding.tvKidInitials, binding.ivKidAvatar,
+                    child.avatarBase64, child.avatarColor, child.getInitials());
         }
 
         // Adapters por franja
@@ -109,14 +109,32 @@ public class KidModeActivity extends AppCompatActivity {
         binding.rvTardeKid.setAdapter(adapterTarde);
         binding.rvNocheKid.setAdapter(adapterNoche);
 
-        // Card Ahora tappable
-        binding.cardAhora.setOnClickListener(v -> {
+        // La tarjeta "Ahora" es el pictograma: se toca para mirarlo. Terminar la
+        // actividad es cosa del botón, que además acompaña al temporizador.
+        binding.btnListo.setOnClickListener(v -> {
             if (indiceCurrent < entradasHoy.size())
                 onEntradaTapped(entradasHoy.get(indiceCurrent));
         });
 
+        binding.btnEscuchar.setOnClickListener(v -> {
+            if (indiceCurrent < entradasHoy.size()) {
+                ScheduleEntry actual = entradasHoy.get(indiceCurrent);
+                if (actual.activity != null) hablar(actual.activity.name);
+            }
+        });
+
         binding.btnPausar.setOnClickListener(v -> togglePausa());
         binding.btnSalir.setOnClickListener(v -> pedirContrasenaSalida());
+
+        // El botón atrás del sistema tiene que pedir la contraseña igual que el
+        // botón de salir: si no, el modo participante se abandona sin más y deja
+        // de cumplir su función, que es que el niño no salga solo.
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                pedirContrasenaSalida();
+            }
+        });
 
         inicializarTTS();
         cargarClima();
@@ -216,12 +234,16 @@ public class KidModeActivity extends AppCompatActivity {
             binding.ivCompletadoBadge.setVisibility(View.GONE);
             binding.cardAhora.setCardBackgroundColor(Color.parseColor("#F8F9FA"));
             binding.layoutTimer.setVisibility(View.GONE);
+            binding.btnListo.setVisibility(View.GONE);
+            binding.btnEscuchar.setVisibility(View.GONE);
             binding.tvNombreDespues.setText("—");
             binding.imgDespues.setVisibility(View.GONE);
             return;
         }
 
         ScheduleEntry ahora = entradasHoy.get(indiceCurrent);
+        binding.btnListo.setVisibility(View.VISIBLE);
+        binding.btnEscuchar.setVisibility(View.VISIBLE);
 
         // Cumpleaños
         if (esCumpleanos()) binding.tvAhora.setText("🎂 ¡Feliz cumpleaños!");
@@ -248,7 +270,7 @@ public class KidModeActivity extends AppCompatActivity {
 
         binding.ivCompletadoBadge.setVisibility(ahora.isCompletedToday() ? View.VISIBLE : View.GONE);
 
-        if (ahora.activity != null) hablar(ahora.activity.name);
+        // No se lee sola: se escucha al tocar el botón de la tarjeta.
 
         // Timer
         if (ahora.durationMinutes != null && ahora.durationMinutes > 0 && !ahora.isCompletedToday()) {
@@ -526,8 +548,11 @@ public class KidModeActivity extends AppCompatActivity {
                 final double lat = loc.getLatitude(), lon = loc.getLongitude();
                 WeatherHelper.fetch(lat, lon, new WeatherHelper.WeatherCallback() {
                     @Override
-                    public void onResult(String emoji, String label, int tempC) {
-                        binding.tvClima.setText(emoji + " " + tempC + "°C\n" + label);
+                    public void onResult(String frase, String pictogramaUrl) {
+                        binding.tvClima.setText(frase);
+                        Glide.with(KidModeActivity.this)
+                                .load(pictogramaUrl)
+                                .into(binding.ivClima);
                         binding.layoutClima.setVisibility(View.VISIBLE);
                     }
                     @Override public void onError() {}
@@ -599,17 +624,20 @@ public class KidModeActivity extends AppCompatActivity {
 
             // Pictograma
             String imgUrl = e.activity != null ? (e.activity.pictogramUrl != null ? e.activity.pictogramUrl : e.activity.imageBase64) : null;
+            // Sin pictograma propio se dibuja el icono de Material, igual que en la web.
             if (imgUrl != null) {
                 Glide.with(h.imgPictogram.getContext()).load(imgUrl).into(h.imgPictogram);
                 h.imgPictogram.setVisibility(View.VISIBLE);
+                IconoActividad.ocultar(h.tvIcono);
             } else {
                 h.imgPictogram.setVisibility(View.GONE);
+                IconoActividad.pintar(h.tvIcono,
+                        e.activity != null ? e.activity.iconName : null,
+                        e.activity != null ? e.activity.color : null);
             }
 
-            // Check
-            h.ivCheck.setImageResource(e.isCompletedToday()
-                    ? android.R.drawable.checkbox_on_background
-                    : android.R.drawable.checkbox_off_background);
+            // Check: los mismos iconos que la web
+            h.ivCheck.setText(e.isCompletedToday() ? "check_circle" : "radio_button_unchecked");
 
             // Las que aún no llegaron en la rutina se ven apagadas. El toque se mantiene
             // activo para poder explicar por qué todavía no se pueden marcar.
@@ -622,12 +650,13 @@ public class KidModeActivity extends AppCompatActivity {
         }
         @Override public int getItemCount() { return items.size(); }
         static class VH extends RecyclerView.ViewHolder {
-            TextView tvName; FrameLayout frameIcon; ImageView imgPictogram, ivCheck;
+            TextView tvName, tvIcono, ivCheck; FrameLayout frameIcon; ImageView imgPictogram;
             VH(View v) {
                 super(v);
                 tvName       = v.findViewById(R.id.tv_name);
                 frameIcon    = v.findViewById(R.id.frame_icon);
                 imgPictogram = v.findViewById(R.id.img_pictogram);
+                tvIcono      = v.findViewById(R.id.tv_icono);
                 ivCheck      = v.findViewById(R.id.iv_check);
             }
         }

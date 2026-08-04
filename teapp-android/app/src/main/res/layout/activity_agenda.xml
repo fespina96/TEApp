@@ -36,28 +36,42 @@
         android:orientation="horizontal"
         android:background="@color/primary"
         android:elevation="4dp"
-        android:padding="8dp">
+        android:padding="8dp"
+        android:gravity="center_vertical"
+        android:clipToPadding="false"
+        android:clipChildren="false">
 
+        <!-- Sólidos y no contorneados: sobre la barra celeste el contorno casi no
+             se veía. El de reinicio además llevaba sólo el glifo ↺, sin decir
+             qué hacía. -->
         <Button
             android:id="@+id/btn_modo_nino"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="46dp"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
+            android:layout_marginEnd="6dp"
             android:text="@string/modo_participante"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:strokeColor="@color/on_primary"
+            android:textSize="12sp"
+            android:letterSpacing="0"
+            android:textAllCaps="false"
+            style="@style/Widget.MaterialComponents.Button"
+            app:backgroundTint="@color/surface"
             android:textColor="@color/on_primary" />
 
         <Button
             android:id="@+id/btn_reset"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_marginEnd="4dp"
-            android:text="↺"
-            android:textSize="20sp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:strokeColor="@color/on_primary"
+            android:layout_height="46dp"
+            android:layout_marginEnd="6dp"
+            android:minWidth="0dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="@string/reiniciar_semana_corto"
+            android:textSize="12sp"
+            android:letterSpacing="0"
+            android:textAllCaps="false"
+            style="@style/Widget.MaterialComponents.Button"
+            app:backgroundTint="@color/surface"
             android:textColor="@color/on_primary" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

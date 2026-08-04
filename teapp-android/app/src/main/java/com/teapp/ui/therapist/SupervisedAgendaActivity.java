@@ -70,8 +70,25 @@ public class SupervisedAgendaActivity extends AppCompatActivity
         api = ApiClient.getInstance(this).getApi();
         configurarViewPager();
         binding.swipeRefresh.setOnRefreshListener(this::cargarAgenda);
+        binding.swipeRefresh.setOnChildScrollUpCallback((padre, hijo) -> {
+            AgendaDayFragment visible = diaVisible();
+            return visible != null && visible.puedeDesplazarseHaciaArriba();
+        });
         binding.fabGestionar.setOnClickListener(v -> abrirAgendaEditable());
         cargarAgenda();
+    }
+
+    /**
+     * El hijo directo del SwipeRefreshLayout es el ViewPager2, que al ser horizontal nunca
+     * se desplaza en vertical: sin esto el gesto de recarga se come cualquier arrastre hacia
+     * abajo y la agenda no se puede volver a subir. El adaptador deja en estado RESUMED
+     * únicamente la página que se está viendo.
+     */
+    private AgendaDayFragment diaVisible() {
+        for (Fragment f : getSupportFragmentManager().getFragments()) {
+            if (f instanceof AgendaDayFragment && f.isResumed()) return (AgendaDayFragment) f;
+        }
+        return null;
     }
 
     private void configurarViewPager() {
@@ -133,6 +150,7 @@ public class SupervisedAgendaActivity extends AppCompatActivity
     }
 
     @Override public boolean permiteReordenar() { return false; }
+    @Override public boolean permiteEditar()    { return false; }
 
     @Override public void onEntrySelected(ScheduleEntry entry) { /* solo lectura */ }
     @Override public void onEntryDelete(ScheduleEntry entry)   { /* solo lectura */ }
