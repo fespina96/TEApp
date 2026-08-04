@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Muestra de color del avatar. El borde aparece al estar seleccionada: antes la
+     única señal era que la muestra se ensanchaba, que casi no se notaba. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" />
+            <stroke android:width="3dp" android:color="@color/on_background" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" />
+            <stroke android:width="1dp" android:color="@color/border" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+</selector>

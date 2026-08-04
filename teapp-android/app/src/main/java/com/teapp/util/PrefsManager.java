@@ -37,6 +37,12 @@ public class PrefsManager {
     public String getUserId()     { return prefs.getString(Constants.PREF_USER_ID, ""); }
     public String getUserEmail()  { return prefs.getString(Constants.PREF_USER_EMAIL, ""); }
     public String getInviteCode() { return prefs.getString(Constants.PREF_USER_INVITE_CODE, ""); }
+    public String getUserAvatar() { return prefs.getString(Constants.PREF_USER_AVATAR, ""); }
+
+    /** Se guarda aparte porque el avatar cambia sin volver a iniciar sesión. */
+    public void saveUserAvatar(String avatarBase64) {
+        prefs.edit().putString(Constants.PREF_USER_AVATAR, avatarBase64).apply();
+    }
 
     public boolean isTherapist() { return "THERAPIST".equals(getUserRole()); }
 

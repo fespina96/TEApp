@@ -11,6 +11,7 @@ public final class Constants {
     public static final String PREF_USER_NAME = "user_name";
     public static final String PREF_USER_ROLE = "user_role";
     public static final String PREF_USER_INVITE_CODE = "user_invite_code";
+    public static final String PREF_USER_AVATAR = "user_avatar";
 
     public static final String EXTRA_CHILD_ID = "child_id";
     public static final String EXTRA_CHILD_NAME = "child_name";

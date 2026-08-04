@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.teapp.R;
 import com.teapp.model.Child;
+import com.teapp.util.AvatarUtils;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -54,25 +55,9 @@ public class ChildAdapter extends RecyclerView.Adapter<ChildAdapter.ViewHolder> 
         String edad = calcularEdad(child.dateOfBirth);
         h.tvAge.setText(edad);
 
-        // Avatar: foto o inicial con color
-        if (child.avatarBase64 != null && !child.avatarBase64.isEmpty()) {
-            h.tvInitials.setVisibility(View.GONE);
-            h.imgAvatar.setVisibility(View.VISIBLE);
-            Glide.with(h.imgAvatar.getContext())
-                    .load(child.avatarBase64)
-                    .circleCrop()
-                    .into(h.imgAvatar);
-        } else {
-            h.imgAvatar.setVisibility(View.GONE);
-            h.tvInitials.setVisibility(View.VISIBLE);
-            h.tvInitials.setText(child.getInitials());
-            try {
-                h.tvInitials.setBackgroundColor(
-                        Color.parseColor(child.avatarColor != null ? child.avatarColor : "#A8D8EA"));
-            } catch (Exception ignored) {
-                h.tvInitials.setBackgroundColor(Color.parseColor("#A8D8EA"));
-            }
-        }
+        // Avatar: emoji del catálogo, foto subida, o iniciales sobre el color
+        AvatarUtils.mostrarAvatar(h.tvInitials, h.imgAvatar,
+                child.avatarBase64, child.avatarColor, child.getInitials());
 
         h.btnAgenda.setOnClickListener(v -> listener.onAgenda(child));
         h.btnEdit.setOnClickListener(v -> listener.onEdit(child));

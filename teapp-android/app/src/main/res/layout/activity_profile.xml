@@ -54,15 +54,33 @@
 
                 </FrameLayout>
 
-                <Button
-                    android:id="@+id/btn_cambiar_foto"
+                <!-- Mismas dos opciones que en la web: catálogo o foto propia -->
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:text="Cambiar foto"
-                    android:textSize="13sp"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:textColor="@color/on_primary"
-                    android:layout_marginBottom="12dp" />
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
+
+                    <Button
+                        android:id="@+id/btn_elegir_avatar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/elegir_avatar"
+                        android:textSize="13sp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:textColor="@color/on_primary" />
+
+                    <Button
+                        android:id="@+id/btn_cambiar_foto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="@string/cambiar_foto"
+                        android:textSize="13sp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:textColor="@color/on_primary" />
+
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/tv_email"

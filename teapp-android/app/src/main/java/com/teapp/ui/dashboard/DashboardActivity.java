@@ -33,6 +33,7 @@ import com.teapp.ui.profile.ProfileActivity;
 import com.teapp.ui.therapist.ManageTherapistActivity;
 import com.teapp.util.ConnectionChecker;
 import com.teapp.util.Constants;
+import com.teapp.util.AvatarUtils;
 import com.teapp.util.PrefsManager;
 
 import java.io.ByteArrayOutputStream;
@@ -72,12 +73,13 @@ public class DashboardActivity extends AppCompatActivity implements ChildAdapter
 
         String nombre = prefs.getUserName();
         binding.tvUsuario.setText("¡Hola, " + (nombre.isEmpty() ? "!" : nombre + "! 👋"));
+        mostrarAvatarUsuario(prefs.getUserAvatar(), nombre);
 
         adapter = new ChildAdapter(participantes, this);
         binding.recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         binding.recyclerView.setAdapter(adapter);
 
-        binding.fabAgregar.setOnClickListener(v ->
+        binding.btnNuevoParticipante.setOnClickListener(v ->
                 startActivity(new Intent(this, ChildFormActivity.class)));
 
 
@@ -188,7 +190,8 @@ public class DashboardActivity extends AppCompatActivity implements ChildAdapter
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bmp.compress(Bitmap.CompressFormat.JPEG, 75, baos);
                 String b64 = "data:image/jpeg;base64," + Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP);
-                Glide.with(this).load(b64).circleCrop().into(binding.imgAvatarUsuario);
+                prefs.saveUserAvatar(b64);
+                mostrarAvatarUsuario(b64, prefs.getUserName());
                 RequestBody body = RequestBody.create(MediaType.parse("text/plain"), b64);
                 api.updateUserAvatar(body).enqueue(new Callback<Void>() {
                     @Override public void onResponse(Call<Void> call, Response<Void> r2) {
@@ -303,5 +306,13 @@ public class DashboardActivity extends AppCompatActivity implements ChildAdapter
                 btnDesvincular = v.findViewById(R.id.btn_desvincular);
             }
         }
+    }
+
+    /** Emoji del catálogo, foto subida o la inicial del nombre, en ese orden. */
+    private void mostrarAvatarUsuario(String avatarBase64, String nombre) {
+        String inicial = nombre != null && !nombre.isEmpty()
+                ? String.valueOf(nombre.charAt(0)).toUpperCase() : "?";
+        AvatarUtils.mostrarAvatar(binding.tvInicialesUsuario, binding.imgAvatarUsuario,
+                avatarBase64, "#A8D8EA", inicial);
     }
 }

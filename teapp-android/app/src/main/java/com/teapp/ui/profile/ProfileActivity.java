@@ -16,6 +16,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.teapp.R;
+import com.teapp.util.AvatarUtils;
+import com.teapp.util.AvatarEmoji;
+import com.teapp.ui.common.AvatarCatalogo;
 import com.teapp.api.ApiClient;
 import com.teapp.api.ApiService;
 import com.teapp.databinding.ActivityProfileBinding;
@@ -62,6 +65,11 @@ public class ProfileActivity extends AppCompatActivity {
         api   = ApiClient.getInstance(this).getApi();
 
         configurarFechaPicker();
+        binding.btnElegirAvatar.setOnClickListener(v -> AvatarCatalogo.mostrar(this, elegido -> {
+            String dataUri = AvatarEmoji.aDataUri(elegido[0], elegido[1]);
+            guardarAvatar(dataUri);
+            enviarAvatarAlServidor(dataUri);
+        }));
         binding.btnCambiarFoto.setOnClickListener(v -> abrirGaleria());
         binding.btnGuardar.setOnClickListener(v -> guardarPerfil());
         binding.btnContrasena.setOnClickListener(v ->
@@ -110,18 +118,11 @@ public class ProfileActivity extends AppCompatActivity {
             binding.etFecha.setText(p[2] + "/" + p[1] + "/" + p[0]);
         }
 
-        // Avatar
-        if (r.avatarBase64 != null && !r.avatarBase64.isEmpty()) {
-            Glide.with(this).load(r.avatarBase64).circleCrop().into(binding.imgAvatar);
-            binding.imgAvatar.setVisibility(View.VISIBLE);
-            binding.tvInitials.setVisibility(View.GONE);
-        } else {
-            binding.imgAvatar.setVisibility(View.GONE);
-            binding.tvInitials.setVisibility(View.VISIBLE);
-            String inicial = r.fullName != null && !r.fullName.isEmpty()
-                    ? String.valueOf(r.fullName.charAt(0)).toUpperCase() : "?";
-            binding.tvInitials.setText(inicial);
-        }
+        // Avatar: emoji del catálogo, foto subida, o la inicial del nombre
+        String inicial = r.fullName != null && !r.fullName.isEmpty()
+                ? String.valueOf(r.fullName.charAt(0)).toUpperCase() : "?";
+        AvatarUtils.mostrarAvatar(binding.tvInitials, binding.imgAvatar,
+                r.avatarBase64, "#A8D8EA", inicial);
 
     }
 
@@ -218,9 +219,7 @@ public class ProfileActivity extends AppCompatActivity {
                 bmp.compress(Bitmap.CompressFormat.JPEG, 75, baos);
                 String b64 = "data:image/jpeg;base64," + Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP);
 
-                Glide.with(this).load(b64).circleCrop().into(binding.imgAvatar);
-                binding.imgAvatar.setVisibility(View.VISIBLE);
-                binding.tvInitials.setVisibility(View.GONE);
+                guardarAvatar(b64);
 
                 RequestBody body = RequestBody.create(MediaType.parse("text/plain"), b64);
                 api.updateUserAvatar(body).enqueue(new Callback<Void>() {
@@ -270,4 +269,26 @@ public class ProfileActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() { finish(); return true; }
+
+    /** Dibuja el avatar en pantalla y lo recuerda para el resto de la app. */
+    private void guardarAvatar(String avatarBase64) {
+        String nombre = binding.etNombre.getText().toString().trim();
+        String inicial = !nombre.isEmpty() ? String.valueOf(nombre.charAt(0)).toUpperCase() : "?";
+        AvatarUtils.mostrarAvatar(binding.tvInitials, binding.imgAvatar,
+                avatarBase64, "#A8D8EA", inicial);
+        new PrefsManager(this).saveUserAvatar(avatarBase64);
+    }
+
+    private void enviarAvatarAlServidor(String avatarBase64) {
+        RequestBody body = RequestBody.create(MediaType.parse("text/plain"), avatarBase64);
+        api.updateUserAvatar(body).enqueue(new Callback<Void>() {
+            @Override public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful())
+                    Toast.makeText(ProfileActivity.this, "Avatar actualizado.", Toast.LENGTH_SHORT).show();
+            }
+            @Override public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(ProfileActivity.this, R.string.error_red, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

@@ -101,22 +101,55 @@
             android:gravity="center_vertical"
             android:layout_marginBottom="12dp">
 
-            <ImageView
-                android:id="@+id/img_avatar"
+            <FrameLayout
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:scaleType="centerCrop"
-                android:background="@drawable/circle_avatar"
-                android:contentDescription="Avatar del participante"
-                android:layout_marginEnd="16dp" />
+                android:layout_marginEnd="16dp">
 
-            <Button
-                android:id="@+id/btn_cambiar_foto"
-                android:layout_width="wrap_content"
+                <ImageView
+                    android:id="@+id/img_avatar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/circle_avatar"
+                    android:contentDescription="Avatar del participante" />
+
+                <!-- Vista previa del avatar del catálogo -->
+                <TextView
+                    android:id="@+id/tv_avatar_emoji"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/circle_avatar"
+                    android:gravity="center"
+                    android:textSize="38sp"
+                    android:visibility="gone" />
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/cambiar_foto"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:textColor="@color/on_primary" />
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btn_elegir_avatar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/elegir_avatar"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:textColor="@color/on_primary" />
+
+                <Button
+                    android:id="@+id/btn_cambiar_foto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/cambiar_foto"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:textColor="@color/on_primary" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -134,18 +167,54 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginBottom="24dp">
-            <View android:id="@+id/color1" android:layout_width="0dp" android:layout_height="40dp"
-                android:layout_weight="1" android:layout_margin="4dp" android:elevation="2dp" />
-            <View android:id="@+id/color2" android:layout_width="0dp" android:layout_height="40dp"
-                android:layout_weight="1" android:layout_margin="4dp" android:elevation="2dp" />
-            <View android:id="@+id/color3" android:layout_width="0dp" android:layout_height="40dp"
-                android:layout_weight="1" android:layout_margin="4dp" android:elevation="2dp" />
-            <View android:id="@+id/color4" android:layout_width="0dp" android:layout_height="40dp"
-                android:layout_weight="1" android:layout_margin="4dp" android:elevation="2dp" />
-            <View android:id="@+id/color5" android:layout_width="0dp" android:layout_height="40dp"
-                android:layout_weight="1" android:layout_margin="4dp" android:elevation="2dp" />
-            <View android:id="@+id/color6" android:layout_width="0dp" android:layout_height="40dp"
-                android:layout_weight="1" android:layout_margin="4dp" android:elevation="2dp" />
+            <TextView android:id="@+id/color1"
+                style="@style/IconoMaterial"
+                android:layout_width="0dp" android:layout_height="44dp"
+                android:layout_weight="1" android:layout_margin="4dp"
+                android:background="@drawable/bg_color_swatch"
+                android:textSize="20sp"
+                android:textColor="@color/on_background"
+                android:clickable="true" android:focusable="true" />
+            <TextView android:id="@+id/color2"
+                style="@style/IconoMaterial"
+                android:layout_width="0dp" android:layout_height="44dp"
+                android:layout_weight="1" android:layout_margin="4dp"
+                android:background="@drawable/bg_color_swatch"
+                android:textSize="20sp"
+                android:textColor="@color/on_background"
+                android:clickable="true" android:focusable="true" />
+            <TextView android:id="@+id/color3"
+                style="@style/IconoMaterial"
+                android:layout_width="0dp" android:layout_height="44dp"
+                android:layout_weight="1" android:layout_margin="4dp"
+                android:background="@drawable/bg_color_swatch"
+                android:textSize="20sp"
+                android:textColor="@color/on_background"
+                android:clickable="true" android:focusable="true" />
+            <TextView android:id="@+id/color4"
+                style="@style/IconoMaterial"
+                android:layout_width="0dp" android:layout_height="44dp"
+                android:layout_weight="1" android:layout_margin="4dp"
+                android:background="@drawable/bg_color_swatch"
+                android:textSize="20sp"
+                android:textColor="@color/on_background"
+                android:clickable="true" android:focusable="true" />
+            <TextView android:id="@+id/color5"
+                style="@style/IconoMaterial"
+                android:layout_width="0dp" android:layout_height="44dp"
+                android:layout_weight="1" android:layout_margin="4dp"
+                android:background="@drawable/bg_color_swatch"
+                android:textSize="20sp"
+                android:textColor="@color/on_background"
+                android:clickable="true" android:focusable="true" />
+            <TextView android:id="@+id/color6"
+                style="@style/IconoMaterial"
+                android:layout_width="0dp" android:layout_height="44dp"
+                android:layout_weight="1" android:layout_margin="4dp"
+                android:background="@drawable/bg_color_swatch"
+                android:textSize="20sp"
+                android:textColor="@color/on_background"
+                android:clickable="true" android:focusable="true" />
         </LinearLayout>
 
         <Button

@@ -7,10 +7,14 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -20,6 +24,9 @@ import com.teapp.api.ApiService;
 import com.teapp.databinding.ActivityChildFormBinding;
 import com.teapp.model.Child;
 import com.teapp.model.ChildRequest;
+import com.teapp.ui.common.AvatarCatalogo;
+import com.teapp.util.AvatarEmoji;
+import com.teapp.util.AvatarUtils;
 import com.teapp.util.Constants;
 
 import java.io.ByteArrayOutputStream;
@@ -40,6 +47,7 @@ public class ChildFormActivity extends AppCompatActivity {
     private ApiService api;
     private Child participanteExistente;
     private String colorSeleccionado = "#A8D8EA";
+
     private String fechaApiFormat    = "";
     private String avatarBase64Nueva = null;
 
@@ -72,8 +80,13 @@ public class ChildFormActivity extends AppCompatActivity {
             binding.etNotas.setText(participanteExistente.notes);
             colorSeleccionado = participanteExistente.avatarColor != null
                     ? participanteExistente.avatarColor : colorSeleccionado;
-            // Cargar avatar existente
-            if (participanteExistente.avatarBase64 != null && !participanteExistente.avatarBase64.isEmpty()) {
+            // Cargar avatar existente. Los del catálogo son un SVG que Glide no
+            // sabe decodificar, así que se dibujan aparte.
+            AvatarEmoji.Contenido delCatalogo = AvatarEmoji.leer(participanteExistente.avatarBase64);
+            if (delCatalogo != null) {
+                mostrarEmojiEnAvatar(delCatalogo.emoji, delCatalogo.colorHex);
+                binding.imgAvatar.setVisibility(View.GONE);
+            } else if (participanteExistente.avatarBase64 != null && !participanteExistente.avatarBase64.isEmpty()) {
                 Glide.with(this).load(participanteExistente.avatarBase64).circleCrop()
                         .into(binding.imgAvatar);
             } else {
@@ -85,8 +98,28 @@ public class ChildFormActivity extends AppCompatActivity {
 
         configurarSelectorFecha();
         configurarSelectorColor();
+        binding.btnElegirAvatar.setOnClickListener(v -> abrirCatalogoAvatares());
         binding.btnCambiarFoto.setOnClickListener(v -> abrirGaleria());
         binding.btnGuardar.setOnClickListener(v -> onSubmit());
+    }
+
+    /** Elegir uno de los avatares predefinidos, como en la web. */
+    private void abrirCatalogoAvatares() {
+        AvatarCatalogo.mostrar(this, elegido -> {
+            avatarBase64Nueva = AvatarEmoji.aDataUri(elegido[0], elegido[1]);
+            colorSeleccionado = elegido[1];
+            binding.imgAvatar.setVisibility(View.GONE);
+            mostrarEmojiEnAvatar(elegido[0], elegido[1]);
+            marcarColorSeleccionado();
+        });
+    }
+
+    /** Dibuja el emoji elegido en la vista previa del formulario. */
+    private void mostrarEmojiEnAvatar(String emoji, String color) {
+        binding.tvAvatarEmoji.setText(emoji);
+        AvatarUtils.pintarCirculo(binding.tvAvatarEmoji, color);
+        binding.tvAvatarEmoji.setVisibility(View.VISIBLE);
+        binding.imgAvatar.setVisibility(View.GONE);
     }
 
     private void abrirGaleria() {
@@ -108,6 +141,9 @@ public class ChildFormActivity extends AppCompatActivity {
                 scaled.compress(Bitmap.CompressFormat.JPEG, 75, baos);
                 byte[] bytes = baos.toByteArray();
                 avatarBase64Nueva = "data:image/jpeg;base64," + Base64.encodeToString(bytes, Base64.NO_WRAP);
+                // Si venía mostrándose un avatar del catálogo, tapa la foto: se oculta.
+                binding.tvAvatarEmoji.setVisibility(View.GONE);
+                binding.imgAvatar.setVisibility(View.VISIBLE);
                 Glide.with(this).load(avatarBase64Nueva).circleCrop().into(binding.imgAvatar);
             } catch (Exception e) {
                 Toast.makeText(this, "Error al cargar la imagen.", Toast.LENGTH_SHORT).show();
@@ -124,10 +160,9 @@ public class ChildFormActivity extends AppCompatActivity {
     }
 
     private void mostrarInicialEnAvatar(String inicial, String color) {
-        try {
-            int c = android.graphics.Color.parseColor(color);
-            binding.imgAvatar.setBackgroundColor(c);
-        } catch (Exception ignored) {}
+        binding.tvAvatarEmoji.setVisibility(View.GONE);
+        binding.imgAvatar.setVisibility(View.VISIBLE);
+        AvatarUtils.pintarCirculo(binding.imgAvatar, color);
     }
 
     private void configurarSelectorFecha() {
@@ -163,21 +198,35 @@ public class ChildFormActivity extends AppCompatActivity {
         }
     }
 
+    private android.widget.TextView[] muestrasDeColor;
+
     private void configurarSelectorColor() {
-        View[] botones = {
+        muestrasDeColor = new android.widget.TextView[]{
                 binding.color1, binding.color2, binding.color3,
                 binding.color4, binding.color5, binding.color6
         };
-        for (int i = 0; i < botones.length; i++) {
+        for (int i = 0; i < muestrasDeColor.length; i++) {
             final int idx = i;
-            try { botones[i].setBackgroundColor(android.graphics.Color.parseColor(COLORES[i])); }
-            catch (Exception ignored) {}
-            botones[i].setOnClickListener(v -> {
+            AvatarUtils.pintarCirculo(muestrasDeColor[i], COLORES[i]);
+            muestrasDeColor[i].setOnClickListener(v -> {
                 colorSeleccionado = COLORES[idx];
-                for (View b : botones) b.setScaleX(1f);
-                botones[idx].setScaleX(1.3f);
+                marcarColorSeleccionado();
                 if (avatarBase64Nueva == null) mostrarInicialEnAvatar("?", colorSeleccionado);
             });
+        }
+        marcarColorSeleccionado();
+    }
+
+    /**
+     * La elegida lleva borde y un tilde encima. Antes la única señal era que la
+     * muestra se ensanchaba un poco, que pasaba desapercibido.
+     */
+    private void marcarColorSeleccionado() {
+        if (muestrasDeColor == null) return;
+        for (int i = 0; i < muestrasDeColor.length; i++) {
+            boolean elegida = COLORES[i].equalsIgnoreCase(colorSeleccionado);
+            muestrasDeColor[i].setSelected(elegida);
+            muestrasDeColor[i].setText(elegida ? "check" : "");
         }
     }
 
