@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
+import { salidaModoParticipanteGuard } from './core/guards/salida-modo-participante.guard';
 
 export const routes: Routes = [
   {
@@ -47,6 +48,8 @@ export const routes: Routes = [
       },
       {
         path: 'children/:childId/agenda',
+        // Estando en modo participante, salir de la agenda pide la contraseña.
+        canDeactivate: [salidaModoParticipanteGuard],
         loadComponent: () =>
           import('./features/agenda/agenda-view/agenda-view.component').then(m => m.AgendaViewComponent)
       },
