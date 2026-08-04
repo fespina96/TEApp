@@ -17,6 +17,10 @@ import java.util.UUID;
  * los clientes envían sólo lo que cambian (la web reordena mandando el orden y la
  * app móvil edita duración y notas). Los valores que sí llegan deben respetar los
  * mismos rangos que en el alta.
+ *
+ * <p>Como un campo ausente significa "no lo toques", hace falta un valor explícito
+ * para poder borrar el temporizador de una entrada que ya lo tenía: una
+ * {@code durationMinutes} en 0 quita la duración y la deja sin temporizador.
  */
 public record ScheduleEntryUpdateRequest(
     UUID activityId,
@@ -35,7 +39,7 @@ public record ScheduleEntryUpdateRequest(
     @Size(max = 500, message = "Las notas no pueden superar 500 caracteres")
     String notes,
 
-    @Min(value = 1, message = "La duración debe ser de al menos 1 minuto")
+    @Min(value = 0, message = "La duración no puede ser negativa")
     @Max(value = 180, message = "La duración no puede superar los 180 minutos")
     Integer durationMinutes,
 

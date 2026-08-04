@@ -137,7 +137,11 @@ public class ScheduleService {
         if (solicitud.endTime() != null) entrada.setEndTime(solicitud.endTime());
         if (solicitud.sortOrder() != null) entrada.setSortOrder(solicitud.sortOrder());
         if (solicitud.notes() != null) entrada.setNotes(solicitud.notes());
-        if (solicitud.durationMinutes() != null) entrada.setDurationMinutes(solicitud.durationMinutes());
+        // 0 es la manera de pedir que se quite el temporizador: un null significaría
+        // "no lo toques", así que no serviría para borrar una duración ya guardada.
+        if (solicitud.durationMinutes() != null) {
+            entrada.setDurationMinutes(solicitud.durationMinutes() == 0 ? null : solicitud.durationMinutes());
+        }
         if (solicitud.pausable() != null) entrada.setPausable(solicitud.pausable());
         if (solicitud.requireFullTimer() != null) entrada.setRequireFullTimer(solicitud.requireFullTimer());
 
