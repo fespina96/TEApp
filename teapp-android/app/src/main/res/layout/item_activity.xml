@@ -16,14 +16,28 @@
         android:gravity="center"
         android:padding="12dp">
 
-        <!-- Pictograma -->
-        <ImageView
-            android:id="@+id/img_pictogram"
+        <!-- Pictograma propio o, si no tiene, el icono de la actividad -->
+        <FrameLayout
             android:layout_width="@dimen/pictogram_size"
-            android:layout_height="@dimen/pictogram_size"
-            android:scaleType="centerCrop"
-            android:contentDescription="Pictograma"
-            android:visibility="gone" />
+            android:layout_height="@dimen/pictogram_size">
+
+            <TextView
+                android:id="@+id/tv_icono"
+                style="@style/IconoMaterial"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/circle_avatar"
+                android:textSize="26sp" />
+
+            <ImageView
+                android:id="@+id/img_pictogram"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="Pictograma"
+                android:visibility="gone" />
+
+        </FrameLayout>
 
         <!-- Nombre -->
         <TextView
@@ -45,7 +59,6 @@
             android:textColor="@color/text_secondary"
             android:gravity="center" />
 
-        <!-- Descripción (igual que Angular) -->
         <TextView
             android:id="@+id/tv_description"
             android:layout_width="match_parent"
@@ -58,7 +71,6 @@
             android:layout_marginTop="3dp"
             android:visibility="gone" />
 
-        <!-- Conteo de pasos (igual que Angular "3 pasos / Sin pasos") -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -83,16 +95,38 @@
 
         </LinearLayout>
 
-        <!-- Badge predefinida (ícono verificado) -->
-        <ImageView
+        <!-- Distintivo de actividad del sistema: un tilde suelto no se entendía -->
+        <TextView
             android:id="@+id/iv_predefined"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:src="@android:drawable/checkbox_on_background"
-            android:contentDescription="Predefinida"
-            android:layout_marginTop="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:text="@string/del_sistema"
+            android:textSize="10sp"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:textColor="@color/text_secondary"
+            android:background="@drawable/bg_pill_tab_container"
             android:visibility="gone" />
 
     </LinearLayout>
+
+    <!-- Marcada, en la esquina y por encima del contenido -->
+    <TextView
+        android:id="@+id/iv_selected"
+        style="@style/IconoMaterial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="6dp"
+        android:text="check_circle"
+        android:textSize="22sp"
+        android:textColor="@color/success_green"
+        android:contentDescription="Seleccionada"
+        android:visibility="gone" />
 
 </androidx.cardview.widget.CardView>

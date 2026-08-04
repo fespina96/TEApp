@@ -35,4 +35,27 @@
         <item name="contentPaddingTop">12dp</item>
         <item name="contentPaddingBottom">12dp</item>
     </style>
+
+    <!-- Chip de selección múltiple: gris mientras no está marcado, para que se
+         distinga a simple vista cuáles quedaron elegidos. -->
+    <style name="ChipSeleccion" parent="Widget.MaterialComponents.Chip.Filter">
+        <item name="chipBackgroundColor">@color/chip_seleccion_fondo</item>
+        <item name="android:textColor">@color/chip_seleccion_texto</item>
+        <item name="chipStrokeColor">@color/chip_seleccion_borde</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="chipMinHeight">36dp</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <!-- Dibuja un icono de Material a partir de su nombre, usando las ligaduras de
+         la fuente. Es la misma familia que usa la version web, asi que el iconName
+         guardado en la base se ve igual en las dos plataformas. -->
+    <style name="IconoMaterial">
+        <item name="android:fontFamily">@font/material_icons</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
 </resources>

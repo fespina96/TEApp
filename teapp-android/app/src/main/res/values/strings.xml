@@ -34,6 +34,29 @@
     <string name="modo_participante">Modo participante</string>
     <string name="sin_actividades">Sin actividades para este día</string>
     <string name="lunes">Lunes</string>
+    <!-- Abreviaturas para los chips de seleccion de dias -->
+    <string name="dia_lun">Lun</string>
+    <string name="dia_mar">Mar</string>
+    <string name="dia_mie">Mié</string>
+    <string name="dia_jue">Jue</string>
+    <string name="dia_vie">Vie</string>
+    <string name="dia_sab">Sáb</string>
+    <string name="dia_dom">Dom</string>
+    <string name="rotulo_dias">¿Qué días?</string>
+    <string name="rotulo_franja">¿En qué momento del día?</string>
+    <string name="error_sin_dias">Elegí al menos un día</string>
+    <string name="error_sin_franjas">Elegí al menos un momento del día</string>
+    <string name="del_sistema">Del sistema</string>
+    <string name="cuenta_creada">Cuenta creada correctamente. Ingresá con tu email y contraseña.</string>
+    <!-- Resumen de lo que se va a crear, para que la seleccion quede a la vista -->
+    <plurals name="resumen_alta">
+        <item quantity="one">%1$s · %2$s\nSe agrega 1 actividad a la agenda.</item>
+        <item quantity="other">%1$s · %2$s\nSe agregan %3$d actividades a la agenda.</item>
+    </plurals>
+    <plurals name="alta_hecha">
+        <item quantity="one">Agregada a %1$s · %2$s</item>
+        <item quantity="other">Se agregaron %3$d entradas (%1$s · %2$s)</item>
+    </plurals>
     <string name="martes">Martes</string>
     <string name="miercoles">Miércoles</string>
     <string name="jueves">Jueves</string>
@@ -84,7 +107,11 @@
     <string name="categoria">Categoría</string>
     <string name="duracion_min">Duración (minutos)</string>
     <string name="pausable">Pausable</string>
+    <string name="buscar_actividad">Buscar actividad…</string>
     <string name="buscar_pictograma">Buscar pictograma ARASAAC…</string>
+    <string name="arasaac_sin_resultados">No se encontraron pictogramas para esa búsqueda</string>
+    <string name="elegir_avatar">Elegir avatar</string>
+    <string name="elegir_pictograma">Elegir pictograma</string>
     <string name="pictograma_seleccionado">Pictograma seleccionado</string>
 
     <!-- Steps -->
@@ -103,6 +130,7 @@
     <string name="editar_configuracion">Editar configuración</string>
 
     <!-- Reset week -->
+    <string name="reiniciar_semana_corto">↺  Reiniciar</string>
     <string name="resetear_semana">Resetear semana</string>
     <string name="confirmar_reset">¿Borrar todas las marcas de completado de esta semana?</string>
 
@@ -151,12 +179,16 @@
     <string name="esperar_temporizador">Esperá a que termine el temporizador.</string>
 
     <!-- Validaciones del registro, con los mismos textos que la versión web -->
+    <!-- Mismos textos que los mat-error del formulario web -->
+    <string name="error_nombre_obligatorio">El nombre es obligatorio</string>
+    <string name="error_email_obligatorio">El email es obligatorio</string>
+    <string name="error_fecha_obligatoria">La fecha de nacimiento es obligatoria</string>
+    <string name="error_password_obligatoria">La contraseña es obligatoria</string>
     <string name="error_email_invalido">Email no válido</string>
     <string name="error_password_corta">Mínimo 8 caracteres</string>
     <string name="error_password_patron">Debe incluir al menos una mayúscula y un número</string>
     <string name="error_password_confirmar">Debes confirmar la contraseña</string>
     <string name="error_password_no_coincide">Las contraseñas no coinciden</string>
-    <string name="agregar_todos_los_dias">Agregar a todos los días</string>
     <string name="agregar">Agregar</string>
     <string name="desvincular_terapeuta">Desvincular terapeuta</string>
     <string name="confirmar_desvincular">¿Querés desvincular a %1$s? Dejará de acceder a las agendas de tus participantes.</string>

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.teapp.R;
 import com.teapp.model.ActivityItem;
+import com.teapp.util.IconoActividad;
 
 import java.util.List;
 
@@ -27,6 +28,13 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
     private final Listener listener;
     /** El distintivo de actividad del sistema sólo se muestra en el catálogo, no al armar la agenda. */
     private boolean mostrarDistintivoPredefinida = true;
+    /** Id de la marcada, o null. Al armar la agenda se marca y recién después se agrega. */
+    private String idSeleccionada;
+
+    public void setSeleccionada(String id) {
+        this.idSeleccionada = id;
+        notifyDataSetChanged();
+    }
 
     public void setMostrarDistintivoPredefinida(boolean mostrar) {
         this.mostrarDistintivoPredefinida = mostrar;
@@ -73,7 +81,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
             catch (Exception ignored) {}
         }
 
-        // Pictograma
+        // Pictograma propio; si no tiene, el icono de Material de la actividad
         String imgUrl = act.pictogramUrl != null ? act.pictogramUrl : act.imageBase64;
         if (imgUrl != null) {
             Glide.with(h.imgPictogram.getContext())
@@ -81,9 +89,16 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
                     .placeholder(R.drawable.ic_activity_placeholder)
                     .into(h.imgPictogram);
             h.imgPictogram.setVisibility(View.VISIBLE);
+            IconoActividad.ocultar(h.tvIcono);
         } else {
             h.imgPictogram.setVisibility(View.GONE);
+            IconoActividad.pintar(h.tvIcono, act.iconName, act.color);
         }
+
+        // Marcada: borde grueso y tilde, para que se distinga sin depender del color
+        boolean marcada = act.id != null && act.id.equals(idSeleccionada);
+        h.ivSelected.setVisibility(marcada ? View.VISIBLE : View.GONE);
+        h.card.setCardElevation(marcada ? 8f : 2f);
 
         h.card.setOnClickListener(v -> listener.onSelect(act));
         h.card.setOnLongClickListener(v -> { listener.onSelect(act); return true; });
@@ -110,7 +125,8 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
     static class ViewHolder extends RecyclerView.ViewHolder {
         CardView card;
         TextView tvName, tvCategory, tvDescription, tvSteps;
-        ImageView imgPictogram, ivPredefined;
+        ImageView imgPictogram;
+        TextView ivPredefined, tvIcono, ivSelected;
 
         ViewHolder(View v) {
             super(v);
@@ -120,7 +136,9 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
             tvDescription = v.findViewById(R.id.tv_description);
             tvSteps       = v.findViewById(R.id.tv_steps);
             imgPictogram  = v.findViewById(R.id.img_pictogram);
+            tvIcono       = v.findViewById(R.id.tv_icono);
             ivPredefined  = v.findViewById(R.id.iv_predefined);
+            ivSelected    = v.findViewById(R.id.iv_selected);
         }
     }
 }

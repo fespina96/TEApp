@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.teapp.R;
 import com.teapp.model.ScheduleEntry;
+import com.teapp.util.IconoActividad;
 
 
 import java.util.Collections;
@@ -73,15 +74,19 @@ public class ScheduleEntryAdapter extends RecyclerView.Adapter<ScheduleEntryAdap
             } catch (Exception ignored) {}
         }
 
-        // Pictogram
+        // Pictograma propio; si no tiene, el icono de Material de la actividad
         if (entry.activity != null && entry.activity.pictogramUrl != null) {
             Glide.with(h.imgPictogram.getContext())
                     .load(entry.activity.pictogramUrl)
                     .placeholder(R.drawable.ic_activity_placeholder)
                     .into(h.imgPictogram);
             h.imgPictogram.setVisibility(View.VISIBLE);
+            IconoActividad.ocultar(h.tvIcono);
         } else {
             h.imgPictogram.setVisibility(View.GONE);
+            IconoActividad.pintar(h.tvIcono,
+                    entry.activity != null ? entry.activity.iconName : null,
+                    entry.activity != null ? entry.activity.color : null);
         }
 
         // Duration
@@ -112,8 +117,9 @@ public class ScheduleEntryAdapter extends RecyclerView.Adapter<ScheduleEntryAdap
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         CardView card;
-        TextView tvName, tvDuration;
-        ImageView imgPictogram, ivCompleted, ivDrag;
+        TextView tvName, tvDuration, tvIcono;
+        ImageView imgPictogram, ivDrag;
+        TextView ivCompleted;
 
         ViewHolder(View v) {
             super(v);
@@ -121,6 +127,7 @@ public class ScheduleEntryAdapter extends RecyclerView.Adapter<ScheduleEntryAdap
             tvName       = v.findViewById(R.id.tv_name);
             tvDuration   = v.findViewById(R.id.tv_duration);
             imgPictogram = v.findViewById(R.id.img_pictogram);
+            tvIcono      = v.findViewById(R.id.tv_icono);
             ivCompleted  = v.findViewById(R.id.iv_completed);
             ivDrag       = v.findViewById(R.id.iv_drag);
         }

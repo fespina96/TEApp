@@ -16,6 +16,7 @@
     <color name="background">#F8F9FA</color>
     <color name="surface">#FFFFFF</color>
     <color name="border">#E2E8EF</color>
+    <color name="chip_no_seleccionado">#E9ECEF</color>
 
     <!-- Texto -->
     <color name="on_primary">#343A40</color>         <!-- Texto primario — sobre fondos claros -->

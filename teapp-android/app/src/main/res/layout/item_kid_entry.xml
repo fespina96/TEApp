@@ -27,6 +27,14 @@
             android:layout_height="52dp"
             android:layout_marginEnd="12dp">
 
+            <TextView
+                android:id="@+id/tv_icono"
+                style="@style/IconoMaterial"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/circle_avatar"
+                android:textSize="24sp" />
+
             <ImageView
                 android:id="@+id/img_pictogram"
                 android:layout_width="match_parent"
@@ -48,11 +56,14 @@
             android:textColor="@color/on_primary" />
 
         <!-- Check circle (completado o no) -->
-        <ImageView
+        <TextView
             android:id="@+id/iv_check"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@android:drawable/checkbox_off_background"
+            style="@style/IconoMaterial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="radio_button_unchecked"
+            android:textSize="26sp"
+            android:textColor="@color/success_green"
             android:contentDescription="Estado"
             android:layout_marginStart="8dp" />
 
