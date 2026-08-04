@@ -7,10 +7,14 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { forkJoin } from 'rxjs';
 import { ScheduleService } from '../../../core/services/schedule.service';
-import { DayOfWeek, TimeSlot, ScheduleEntry, TIME_SLOT_LABELS, DAYS_OF_WEEK } from '../../../core/models/schedule-entry.model';
-import { Activity } from '../../../core/models/activity.model';
+import {
+  DayOfWeek, TimeSlot, ScheduleEntry, ScheduleEntryRequest, TIME_SLOT_LABELS
+} from '../../../core/models/schedule-entry.model';
 import { EntryCardComponent } from '../entry-card/entry-card.component';
-import { ActivityPickerDialogComponent } from '../activity-picker-dialog/activity-picker-dialog.component';
+import {
+  ActivityPickerDialogComponent, ResultadoSelectorActividad
+} from '../activity-picker-dialog/activity-picker-dialog.component';
+import { EntrySettingsDialogComponent } from '../entry-settings-dialog/entry-settings-dialog.component';
 import { fechaISOLocal } from '../../../core/utils/fecha.util';
 
 @Component({
@@ -93,32 +97,38 @@ export class TimeSlotColumnComponent implements OnChanges {
     const dialogRef = this.dialog.open(ActivityPickerDialogComponent, {
       width: '480px',
       maxWidth: '96vw',
-      maxHeight: '90vh'
+      // Alto fijo, con aire arriba y abajo: si dependiera del contenido, el
+      // diálogo cambiaría de tamaño cada vez que se filtra el catálogo.
+      height: '86vh',
+      panelClass: 'picker-dialog-panel',
+      // El día y la franja de esta columna quedan marcados en el diálogo.
+      data: { day: this.day, slot: this.slot }
     });
 
-    dialogRef.afterClosed().subscribe((result?: {
-      activity: Activity; agregarATodosLosDias: boolean;
-      durationMinutes?: number; pausable?: boolean; requireFullTimer?: boolean;
-    }) => {
+    dialogRef.afterClosed().subscribe((result?: ResultadoSelectorActividad) => {
       if (!result?.activity) return;
 
-      const { activity, agregarATodosLosDias, durationMinutes, pausable, requireFullTimer } = result;
-      const days = agregarATodosLosDias ? DAYS_OF_WEEK : [this.day];
+      const { activity, dias, franjas, durationMinutes, pausable, requireFullTimer } = result;
 
-      const requests = days.map(day =>
-        this.scheduleService.addEntry(this.childId, {
-          activityId: activity.id,
-          dayOfWeek: day,
-          timeSlot: this.slot,
-          durationMinutes,
-          pausable: pausable ?? true,
-          requireFullTimer: requireFullTimer ?? false
-        })
+      // Una entrada por cada combinación de día y franja elegidos.
+      const requests = dias.flatMap(day =>
+        franjas.map(slot =>
+          this.scheduleService.addEntry(this.childId, {
+            activityId: activity.id,
+            dayOfWeek: day,
+            timeSlot: slot,
+            durationMinutes,
+            pausable: pausable ?? true,
+            requireFullTimer: requireFullTimer ?? false
+          })
+        )
       );
 
       forkJoin(requests).subscribe({
         next: () => {
-          const msg = agregarATodosLosDias ? 'Actividad agregada a todos los días' : 'Actividad agregada';
+          const msg = requests.length === 1
+            ? 'Actividad agregada'
+            : `Se agregaron ${requests.length} actividades`;
           this.snackBar.open(msg, 'Ok', { duration: 2500 });
           this.scheduleChanged.emit();
         },
@@ -130,6 +140,26 @@ export class TimeSlotColumnComponent implements OnChanges {
   estaCompletadaHoy(entry: ScheduleEntry): boolean {
     const today = fechaISOLocal();
     return entry.completedDates?.includes(today) ?? false;
+  }
+
+  /** Edita una entrada ya cargada: notas y temporizador. El resto no cambia. */
+  alEditarEntrada(entry: ScheduleEntry): void {
+    const dialogRef = this.dialog.open(EntrySettingsDialogComponent, {
+      width: '420px',
+      maxWidth: '95vw',
+      data: { entry }
+    });
+
+    dialogRef.afterClosed().subscribe((cambios?: Partial<ScheduleEntryRequest>) => {
+      if (!cambios) return;
+      this.scheduleService.updateEntry(this.childId, entry.id, cambios).subscribe({
+        next: () => {
+          this.snackBar.open('Actividad actualizada', 'Ok', { duration: 2000 });
+          this.scheduleChanged.emit();
+        },
+        error: () => this.snackBar.open('Error al actualizar', 'Cerrar', { duration: 3000 })
+      });
+    });
   }
 
   alEliminarEntrada(entry: ScheduleEntry): void {

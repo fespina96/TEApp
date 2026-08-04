@@ -20,7 +20,15 @@
     <mat-icon matSuffix>search</mat-icon>
   </mat-form-field>
 
-  <div class="category-filters">
+  <button type="button" class="plegable-header"
+          (click)="mostrarCategorias = !mostrarCategorias"
+          [attr.aria-expanded]="mostrarCategorias">
+    <mat-icon>{{ mostrarCategorias ? 'expand_less' : 'expand_more' }}</mat-icon>
+    <span class="plegable-titulo">Categoría</span>
+    <span class="plegable-resumen">{{ resumenCategoria }}</span>
+  </button>
+
+  <div class="category-filters" *ngIf="mostrarCategorias">
     <button mat-stroked-button
             [class.active]="categoriaSeleccionada === null"
             (click)="seleccionarCategoria(null)"
@@ -48,10 +56,14 @@
       </div>
       <button class="activity-option"
               *ngFor="let activity of terapeutaFiltradas"
+              [class.seleccionada]="actividadSeleccionada?.id === activity.id"
               (click)="seleccionarActividad(activity)"
+              [attr.aria-pressed]="actividadSeleccionada?.id === activity.id"
               [attr.aria-label]="'Seleccionar ' + activity.name">
         <app-activity-chip [activity]="activity"></app-activity-chip>
-        <mat-icon class="select-icon">chevron_right</mat-icon>
+        <mat-icon class="select-icon">
+          {{ actividadSeleccionada?.id === activity.id ? 'check_circle' : 'radio_button_unchecked' }}
+        </mat-icon>
       </button>
     </ng-container>
 
@@ -63,10 +75,14 @@
       </div>
       <button class="activity-option"
               *ngFor="let activity of predefiniadasFiltradas"
+              [class.seleccionada]="actividadSeleccionada?.id === activity.id"
               (click)="seleccionarActividad(activity)"
+              [attr.aria-pressed]="actividadSeleccionada?.id === activity.id"
               [attr.aria-label]="'Seleccionar ' + activity.name">
         <app-activity-chip [activity]="activity"></app-activity-chip>
-        <mat-icon class="select-icon">chevron_right</mat-icon>
+        <mat-icon class="select-icon">
+          {{ actividadSeleccionada?.id === activity.id ? 'check_circle' : 'radio_button_unchecked' }}
+        </mat-icon>
       </button>
     </ng-container>
 
@@ -78,10 +94,14 @@
       </div>
       <button class="activity-option"
               *ngFor="let activity of personalizadasFiltradas"
+              [class.seleccionada]="actividadSeleccionada?.id === activity.id"
               (click)="seleccionarActividad(activity)"
+              [attr.aria-pressed]="actividadSeleccionada?.id === activity.id"
               [attr.aria-label]="'Seleccionar ' + activity.name">
         <app-activity-chip [activity]="activity"></app-activity-chip>
-        <mat-icon class="select-icon">chevron_right</mat-icon>
+        <mat-icon class="select-icon">
+          {{ actividadSeleccionada?.id === activity.id ? 'check_circle' : 'radio_button_unchecked' }}
+        </mat-icon>
       </button>
     </ng-container>
 
@@ -246,26 +266,72 @@
 
 </mat-dialog-content>
 
-<!-- Sección temporizador (siempre visible) -->
-<div class="timer-section">
-  <div class="timer-section-header">
-    <mat-icon>timer</mat-icon>
-    <span>Temporizador (opcional)</span>
+<!-- Dónde se agrega: días y momentos del día, los dos de selección múltiple -->
+<div class="destino-section">
+  <button type="button" class="plegable-header"
+          (click)="mostrarDias = !mostrarDias"
+          [attr.aria-expanded]="mostrarDias">
+    <mat-icon>{{ mostrarDias ? 'expand_less' : 'expand_more' }}</mat-icon>
+    <span class="plegable-titulo">Días</span>
+    <span class="plegable-resumen">{{ resumenDias }}</span>
+  </button>
+
+  <div class="destino-chips" *ngIf="mostrarDias">
+    <button mat-stroked-button
+            *ngFor="let dia of dias"
+            [class.active]="diasElegidos.has(dia)"
+            (click)="alternarDia(dia)"
+            class="filter-btn">
+      {{ diaLabels[dia] }}
+    </button>
   </div>
-  <div class="timer-duration-row">
+
+  <button type="button" class="plegable-header"
+          (click)="mostrarFranjas = !mostrarFranjas"
+          [attr.aria-expanded]="mostrarFranjas">
+    <mat-icon>{{ mostrarFranjas ? 'expand_less' : 'expand_more' }}</mat-icon>
+    <span class="plegable-titulo">Momento del día</span>
+    <span class="plegable-resumen">{{ resumenFranjas }}</span>
+  </button>
+
+  <div class="destino-chips" *ngIf="mostrarFranjas">
+    <button mat-stroked-button
+            *ngFor="let franja of franjas"
+            [class.active]="franjasElegidas.has(franja)"
+            (click)="alternarFranja(franja)"
+            class="filter-btn">
+      {{ franjaLabels[franja] }}
+    </button>
+  </div>
+
+  <p class="destino-resumen" *ngIf="destinoValido">
+    Se {{ cantidadEntradas === 1 ? 'agrega 1 actividad' : 'agregan ' + cantidadEntradas + ' actividades' }} a la agenda.
+  </p>
+  <p class="destino-error" *ngIf="!destinoValido">
+    Elegí al menos un día y un momento del día.
+  </p>
+</div>
+
+<!-- Temporizador: plegado por defecto, las opciones aparecen al activarlo -->
+<div class="timer-section">
+  <mat-slide-toggle [(ngModel)]="usaTemporizador" (change)="alCambiarTemporizador()"
+                    color="primary" class="timer-switch">
+    <mat-icon>timer</mat-icon>
+    <span>Temporizador</span>
+  </mat-slide-toggle>
+
+  <div class="timer-opciones" *ngIf="usaTemporizador">
     <mat-form-field appearance="outline" class="duration-field">
       <mat-label>Duración (min)</mat-label>
       <input matInput type="number" [(ngModel)]="duracionEntrada" min="1" max="180"
              placeholder="Ej: 15">
     </mat-form-field>
-  </div>
-  <div class="timer-pausable-row">
+
     <mat-slide-toggle [(ngModel)]="entradaPausable" color="primary"
                       [disabled]="!duracionEntrada">
       Pausable
     </mat-slide-toggle>
-  </div>
-  <div class="timer-pausable-row">
+
     <mat-slide-toggle [(ngModel)]="entradaRequiereTemporizador" color="primary"
                       [disabled]="!duracionEntrada">
       Debe esperar que termine el conteo
@@ -275,16 +341,20 @@
 
 <!-- Acciones -->
 <mat-dialog-actions class="picker-actions">
-  <mat-slide-toggle [(ngModel)]="agregarATodosLosDias" color="primary" class="all-days-toggle">
-    Agregar a todos los días
-  </mat-slide-toggle>
-
   <button mat-button [mat-dialog-close]="undefined">Cancelar</button>
+
+  <button mat-flat-button color="primary"
+          *ngIf="pestanaActiva === 'catalog'"
+          (click)="agregarSeleccionada()"
+          [disabled]="!actividadSeleccionada || !destinoValido">
+    <mat-icon>add</mat-icon>
+    Agregar
+  </button>
 
   <button mat-flat-button color="primary"
           *ngIf="pestanaActiva === 'new'"
           type="submit" form="newActivityForm"
-          [disabled]="newForm.invalid || guardando">
+          [disabled]="newForm.invalid || guardando || !destinoValido">
     <mat-spinner diameter="16" *ngIf="guardando"></mat-spinner>
     <mat-icon *ngIf="!guardando">add</mat-icon>
     {{ guardando ? 'Guardando...' : 'Crear y agregar' }}

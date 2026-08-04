@@ -39,6 +39,13 @@ import { ScheduleEntry } from '../../../core/models/schedule-entry.model';
         <span *ngIf="entry.notes" class="entry-note">{{ entry.notes }}</span>
       </div>
 
+      <button mat-icon-button class="edit-btn"
+              (click)="edit.emit(entry)"
+              [matTooltip]="'Editar ' + entry.activity.name"
+              aria-label="Editar la actividad de la agenda">
+        <mat-icon>edit</mat-icon>
+      </button>
+
       <button mat-icon-button class="delete-btn"
               (click)="delete.emit(entry)"
               [matTooltip]="'Quitar ' + entry.activity.name"
@@ -104,7 +111,9 @@ import { ScheduleEntry } from '../../../core/models/schedule-entry.model';
       .activity-image {
         width: 100%;
         height: 72px;
-        object-fit: cover;
+        /* contain y no cover: los pictogramas de ARASAAC son cuadrados y en una
+           caja apaisada cover les recorta la cabeza y los pies */
+        object-fit: contain;
         border-radius: 8px;
         margin-top: 2px;
         display: block;
@@ -121,6 +130,7 @@ import { ScheduleEntry } from '../../../core/models/schedule-entry.model';
         .entry-note { font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80px; }
       }
 
+      .edit-btn,
       .delete-btn {
         flex-shrink: 0;
         width: 28px !important;
@@ -131,13 +141,16 @@ import { ScheduleEntry } from '../../../core/models/schedule-entry.model';
         justify-content: center !important;
         padding: 0 !important;
         mat-icon { font-size: 16px; height: 16px; width: 16px; color: rgba(0,0,0,0.35); }
-        &:hover mat-icon { color: #c0392b; }
       }
+
+      .edit-btn:hover mat-icon   { color: var(--color-primary); }
+      .delete-btn:hover mat-icon { color: #c0392b; }
     }
   `]
 })
 export class EntryCardComponent {
   @Input({ required: true }) entry!: ScheduleEntry;
   @Input() isCompletedToday = false;
+  @Output() edit = new EventEmitter<ScheduleEntry>();
   @Output() delete = new EventEmitter<ScheduleEntry>();
 }

@@ -200,3 +200,25 @@ html, body {
     border-radius: var(--radius-lg) !important;
   }
 }
+
+// ── Selector de actividades ──────────────────────────────────────────────
+// Alto fijo para que el diálogo no cambie de tamaño al filtrar el catálogo.
+// Sólo el contenido scrollea; encabezado, destino, temporizador y acciones
+// quedan siempre a la vista.
+.picker-dialog-panel {
+  .mat-mdc-dialog-container,
+  .mat-mdc-dialog-inner-container,
+  .mat-mdc-dialog-surface {
+    height: 100%;
+  }
+
+  .mat-mdc-dialog-surface {
+    display: flex;
+    flex-direction: column;
+  }
+
+  // Material le pone un tope propio que pelearía con el alto del diálogo.
+  .mat-mdc-dialog-content {
+    max-height: none;
+  }
+}

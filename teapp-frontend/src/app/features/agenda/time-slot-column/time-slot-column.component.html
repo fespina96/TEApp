@@ -24,6 +24,7 @@
       <app-entry-card
         [entry]="entry"
         [isCompletedToday]="estaCompletadaHoy(entry)"
+        (edit)="alEditarEntrada($event)"
         (delete)="alEliminarEntrada($event)"
         class="entry-card-wrapper">
       </app-entry-card>

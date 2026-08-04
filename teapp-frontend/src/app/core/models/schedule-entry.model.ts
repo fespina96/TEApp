@@ -15,6 +15,17 @@ export const DAY_LABELS: Record<DayOfWeek, string> = {
   SUNDAY:    'Domingo'
 };
 
+/** Abreviaturas para los selectores, donde no entra el nombre completo. */
+export const DAY_SHORT_LABELS: Record<DayOfWeek, string> = {
+  MONDAY:    'Lun',
+  TUESDAY:   'Mar',
+  WEDNESDAY: 'Mié',
+  THURSDAY:  'Jue',
+  FRIDAY:    'Vie',
+  SATURDAY:  'Sáb',
+  SUNDAY:    'Dom'
+};
+
 export const DAYS_OF_WEEK: DayOfWeek[] = [
   'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'
 ];
