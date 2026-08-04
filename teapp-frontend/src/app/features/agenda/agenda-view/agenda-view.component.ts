@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Observable, map } from 'rxjs';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,6 +14,7 @@ import { ScheduleService } from '../../../core/services/schedule.service';
 import { ChildService } from '../../../core/services/child.service';
 import { SpeechService } from '../../../core/services/speech.service';
 import { WeatherService, WeatherInfo } from '../../../core/services/weather.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Child } from '../../../core/models/child.model';
 import {
   DayOfWeek, TimeSlot, WeeklySchedule, ScheduleEntry,
@@ -24,6 +26,7 @@ import { VisualTimerDialogComponent } from '../../../shared/components/visual-ti
 import { StepViewerDialogComponent } from '../../../shared/components/step-viewer-dialog/step-viewer-dialog.component';
 import { ActivityService } from '../../../core/services/activity.service';
 import { fechaISOLocal } from '../../../core/utils/fecha.util';
+import { PuedeSalirDelModoParticipante } from '../../../core/guards/salida-modo-participante.guard';
 
 @Component({
   selector: 'app-agenda-view',
@@ -38,7 +41,7 @@ import { fechaISOLocal } from '../../../core/utils/fecha.util';
   templateUrl: './agenda-view.component.html',
   styleUrl: './agenda-view.component.scss'
 })
-export class AgendaViewComponent implements OnInit {
+export class AgendaViewComponent implements OnInit, PuedeSalirDelModoParticipante {
   participante: Child | null = null;
   agenda: WeeklySchedule | null = null;
   cargando = true;
@@ -66,8 +69,17 @@ export class AgendaViewComponent implements OnInit {
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     public speech: SpeechService,
-    private weatherService: WeatherService
+    private weatherService: WeatherService,
+    private authService: AuthService
   ) {}
+
+  /**
+   * El terapeuta llega acá desde su panel de supervisión, no desde el de padres:
+   * mandarlo al de padres lo sacaba de su propia sección.
+   */
+  get rutaInicio(): string {
+    return this.authService.isTherapist() ? '/app/therapist' : '/app/dashboard';
+  }
 
   ngOnInit(): void {
     this.idParticipante = this.route.snapshot.paramMap.get('childId')!;
@@ -146,18 +158,66 @@ export class AgendaViewComponent implements OnInit {
   }
 
   salirModoNino(): void {
-    this.dialog.open(KidExitDialogComponent, { width: '360px', disableClose: true })
-      .afterClosed().subscribe((confirmado: boolean) => {
+    this.pedirContrasenaDeSalida().subscribe();
+  }
+
+  /**
+   * Lo consulta el guard de la ruta. Sin esto, el botón atrás del navegador dejaba
+   * el modo participante sin pedir nada, que es justo lo que el modo evita.
+   */
+  puedeSalir(): boolean | Observable<boolean> {
+    return this.modoNino ? this.pedirContrasenaDeSalida() : true;
+  }
+
+  /** Abre el diálogo y, si la contraseña es correcta, desactiva el modo. */
+  private pedirContrasenaDeSalida(): Observable<boolean> {
+    return this.dialog.open(KidExitDialogComponent, { width: '360px', disableClose: true })
+      .afterClosed()
+      .pipe(map((confirmado: boolean) => {
         if (confirmado) this.modoNino = false;
-      });
+        return !!confirmado;
+      }));
+  }
+
+  /**
+   * La rutina se deshace desde el final: sólo se puede destildar la última
+   * actividad completada del día. Si no, quedarían huecos raros, como una
+   * merienda hecha con el desayuno sin hacer.
+   */
+  sePuedeDestildar(entrada: ScheduleEntry): boolean {
+    if (!this.estaCompletadaHoy(entrada)) return false;
+    const completadas = this.todasEntradasHoy.filter(e => this.estaCompletadaHoy(e));
+    return completadas[completadas.length - 1]?.id === entrada.id;
+  }
+
+  /** La rutina se hace en orden: sólo se puede completar la que toca ahora. */
+  sePuedeTildar(entrada: ScheduleEntry): boolean {
+    if (this.estaCompletadaHoy(entrada)) return false;
+    return this.entradaActual?.id === entrada.id;
+  }
+
+  /** Ni se puede tildar ni destildar todavía: se muestra apagada. */
+  estaTrabada(entrada: ScheduleEntry): boolean {
+    return this.estaCompletadaHoy(entrada)
+      ? !this.sePuedeDestildar(entrada)
+      : !this.sePuedeTildar(entrada);
   }
 
   // Si la actividad tiene pasos o temporizador, se muestran antes de marcarla completada.
   alternarCompletada(entrada: ScheduleEntry): void {
     const fechaHoy = this.fechaHoyISO();
     if (this.estaCompletadaHoy(entrada)) {
+      if (!this.sePuedeDestildar(entrada)) {
+        this.snackBar.open('Destildá primero la última actividad completada', 'Ok', { duration: 3000 });
+        return;
+      }
       this.scheduleService.unmarkCompleted(this.idParticipante, entrada.id, fechaHoy)
         .subscribe({ next: () => this.cargarAgenda() });
+      return;
+    }
+
+    if (!this.sePuedeTildar(entrada)) {
+      this.snackBar.open('Primero hay que terminar la actividad anterior', 'Ok', { duration: 3000 });
       return;
     }
 

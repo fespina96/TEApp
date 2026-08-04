@@ -98,24 +98,17 @@
   padding: 8px 14px;
   flex-shrink: 0;
 
-  .kid-weather-emoji { font-size: 1.8rem; line-height: 1; }
-
-  .kid-weather-info {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.2;
+  .kid-weather-picto {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    display: block;
   }
 
-  .kid-weather-temp {
-    font-size: 1.1rem;
-    font-weight: 800;
+  .kid-weather-frase {
+    font-size: 1rem;
+    font-weight: 700;
     color: var(--color-text-primary);
-  }
-
-  .kid-weather-label {
-    font-size: 0.72rem;
-    color: var(--color-text-secondary);
-    font-weight: 500;
   }
 }
 
@@ -133,9 +126,26 @@
 
 .now-next-arrow {
   display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: 10px;
   flex-shrink: 0;
-  mat-icon { font-size: 2rem; width: 2rem; height: 2rem; color: var(--color-text-secondary); opacity: 0.5; }
+
+  > mat-icon { font-size: 2rem; width: 2rem; height: 2rem; color: var(--color-text-secondary); opacity: 0.5; }
+
+  // El boton de completar vive aca y no sobre la tarjeta: tocar el pictograma
+  // no debe marcar nada, porque se toca para mirarlo.
+  .btn-listo {
+    background: var(--color-soft-green) !important;
+    color: var(--color-text-primary) !important;
+    border-radius: var(--radius-lg) !important;
+    font-weight: 700;
+    padding: 0 14px !important;
+    white-space: nowrap;
+
+    mat-icon { font-size: 18px; width: 18px; height: 18px; margin-right: 2px; }
+  }
 }
 
 .now-next-card {
@@ -154,10 +164,7 @@
   background: white;
   box-shadow: 0 4px 20px rgba(168, 216, 234, 0.45);
   border: 2px solid var(--color-sky-blue);
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-
-  &:active { transform: scale(0.97); }
+  cursor: default;
 }
 
 .next-card {
@@ -282,6 +289,15 @@
 
     .kid-entry-name { text-decoration: line-through; color: var(--color-text-secondary); }
     .kid-check-icon { color: #6BBF59; }
+  }
+
+  // Fuera de turno: o todavía no llegó (hay una anterior sin hacer) o ya no se
+  // puede deshacer (hay una posterior completada). La rutina se recorre en orden
+  // en los dos sentidos. Va después de .kid-entry-done, que si no le pisa la opacidad.
+  &.kid-entry-trabada {
+    cursor: default;
+    opacity: 0.55;
+    &:active { transform: none; }
   }
 
   .kid-entry-image {
@@ -415,6 +431,7 @@
     width: 52px;
     height: 52px;
     border-radius: 50%;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -422,6 +439,14 @@
     font-weight: 800;
     color: var(--color-text-primary);
     border: 3px solid var(--color-border);
+    flex-shrink: 0;
+
+    .child-avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
   }
 
   .child-name {

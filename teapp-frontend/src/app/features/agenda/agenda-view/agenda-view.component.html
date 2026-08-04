@@ -33,13 +33,10 @@
             <p class="kid-subtitle">Estas son tus actividades de hoy 🌟</p>
           </div>
 
-          <!-- Widget clima -->
+          <!-- Clima: pictograma y frase, sin cifras -->
           <div class="kid-weather" *ngIf="clima">
-            <span class="kid-weather-emoji">{{ clima.emoji }}</span>
-            <div class="kid-weather-info">
-              <span class="kid-weather-temp">{{ clima.temp }}°C</span>
-              <span class="kid-weather-label">{{ clima.label }}</span>
-            </div>
+            <img [src]="clima.pictogramaUrl" class="kid-weather-picto" alt="">
+            <span class="kid-weather-frase">{{ clima.frase }}</span>
           </div>
 
           <button mat-stroked-button class="btn-exit-kid" (click)="salirModoNino()">
@@ -50,7 +47,7 @@
 
         <!-- Ahora → Después -->
         <div class="now-next" *ngIf="entradaActual">
-          <div class="now-next-card now-card" (click)="alternarCompletada(entradaActual)">
+          <div class="now-next-card now-card">
             <span class="now-next-label">Ahora</span>
             <div class="now-next-icon" [style.background-color]="entradaActual.activity.color">
               <img *ngIf="entradaActual.activity.pictogramUrl || entradaActual.activity.imageBase64"
@@ -65,6 +62,10 @@
 
           <div class="now-next-arrow">
             <mat-icon>arrow_forward</mat-icon>
+            <button mat-flat-button class="btn-listo" (click)="alternarCompletada(entradaActual)">
+              <mat-icon>check</mat-icon>
+              Listo
+            </button>
           </div>
 
           <div class="now-next-card next-card" *ngIf="entradaSiguiente">
@@ -102,6 +103,7 @@
             <div class="kid-entries">
               <div class="kid-entry" *ngFor="let entrada of obtenerEntradasHoy(slot)"
                    [class.kid-entry-done]="estaCompletadaHoy(entrada)"
+                   [class.kid-entry-trabada]="estaTrabada(entrada)"
                    [class.kid-entry-special]="entrada.activity.category === 'SPECIAL_EVENT'"
                    (click)="alternarCompletada(entrada)">
                 <div *ngIf="entrada.activity.category === 'SPECIAL_EVENT'" class="kid-special-label">
@@ -150,14 +152,16 @@
       <!-- Cabecera del niño -->
       <header class="agenda-header">
         <div class="back-btn">
-          <a mat-icon-button routerLink="/app/dashboard" aria-label="Volver al inicio">
+          <a mat-icon-button [routerLink]="rutaInicio" aria-label="Volver al inicio">
             <mat-icon>arrow_back</mat-icon>
           </a>
         </div>
 
         <div class="child-info">
           <div class="child-avatar" [style.background-color]="participante.avatarColor">
-            {{ inicialesParticipante }}
+            <img *ngIf="participante.avatarBase64" [src]="participante.avatarBase64"
+                 class="child-avatar-img" alt="">
+            <span *ngIf="!participante.avatarBase64">{{ inicialesParticipante }}</span>
           </div>
           <div>
             <h1 class="child-name">Agenda de {{ participante.name }}</h1>
