@@ -10,11 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -88,6 +92,7 @@ public class ActivityStepsActivity extends AppCompatActivity {
                                    retrofit2.Response<List<ActivityStep>> response) {
                 binding.progressBar.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
+                    pasos.clear();
                     for (ActivityStep s : response.body()) {
                         pasos.add(new StepDraft(s.title,
                                 s.description != null ? s.description : "",
@@ -106,7 +111,6 @@ public class ActivityStepsActivity extends AppCompatActivity {
 
     private void agregarPaso() {
         pasos.add(new StepDraft("", "", null, null));
-        adapter.notifyItemInserted(pasos.size() - 1);
         actualizarVista();
         binding.rvSteps.smoothScrollToPosition(pasos.size() - 1);
     }
@@ -170,32 +174,97 @@ public class ActivityStepsActivity extends AppCompatActivity {
         actualizarVista();
     }
 
+    /**
+     * Abre el buscador de pictogramas para un paso. Antes este botón hacía la
+     * búsqueda con el título del paso y se quedaba con el primer resultado sin
+     * preguntar: si no era el que servía, no había forma de cambiarlo.
+     */
     void abrirArasaac(int idx) {
         pendingImageIdx = idx;
-        String termino = pasos.get(idx).titulo.isEmpty() ? "manos" : pasos.get(idx).titulo;
+
+        View vista = LayoutInflater.from(this).inflate(R.layout.dialog_arasaac_picker, null);
+        android.widget.EditText etBuscar = vista.findViewById(R.id.et_buscar);
+        android.widget.Button btnBuscar  = vista.findViewById(R.id.btn_buscar);
+        ProgressBar progreso            = vista.findViewById(R.id.progress_arasaac);
+        TextView tvSinResultados        = vista.findViewById(R.id.tv_sin_resultados);
+        RecyclerView rv                 = vista.findViewById(R.id.rv_arasaac);
+
+        List<ActivityFormActivity.ArasaacItem> resultados = new ArrayList<>();
+
+        AlertDialog dialogo = new AlertDialog.Builder(this)
+                .setTitle(R.string.elegir_pictograma)
+                .setView(vista)
+                .setNegativeButton(R.string.cancelar, null)
+                .create();
+
+        ActivityFormActivity.ArasaacAdapter adaptador =
+                new ActivityFormActivity.ArasaacAdapter(resultados, item -> {
+                    if (pendingImageIdx >= 0 && pendingImageIdx < pasos.size()) {
+                        pasos.get(pendingImageIdx).pictogramUrl =
+                                "https://static.arasaac.org/pictograms/" + item.id + "/" + item.id + "_500.png";
+                        pasos.get(pendingImageIdx).imageBase64 = null;
+                        adapter.notifyItemChanged(pendingImageIdx);
+                    }
+                    dialogo.dismiss();
+                });
+        rv.setLayoutManager(new GridLayoutManager(this, 4));
+        rv.setAdapter(adaptador);
+
+        Runnable buscar = () -> {
+            String termino = etBuscar.getText().toString().trim();
+            if (termino.isEmpty()) return;
+            progreso.setVisibility(View.VISIBLE);
+            tvSinResultados.setVisibility(View.GONE);
+            buscarPictogramas(termino, encontrados -> {
+                progreso.setVisibility(View.GONE);
+                resultados.clear();
+                resultados.addAll(encontrados);
+                adaptador.notifyDataSetChanged();
+                tvSinResultados.setVisibility(encontrados.isEmpty() ? View.VISIBLE : View.GONE);
+            });
+        };
+
+        btnBuscar.setOnClickListener(v -> buscar.run());
+        etBuscar.setOnEditorActionListener((tv, actionId, event) -> { buscar.run(); return true; });
+
+        // El título del paso suele ser un buen punto de partida, pero se puede cambiar.
+        String sugerencia = pasos.get(idx).titulo.trim();
+        etBuscar.setText(sugerencia);
+        dialogo.show();
+        if (!sugerencia.isEmpty()) buscar.run();
+    }
+
+    /** Consulta la API de ARASAAC y devuelve los resultados en el hilo principal. */
+    private void buscarPictogramas(String termino,
+                                   java.util.function.Consumer<List<ActivityFormActivity.ArasaacItem>> alTerminar) {
         String url = "https://api.arasaac.org/v1/pictograms/es/search/" + Uri.encode(termino);
         Request req = new Request.Builder().url(url).build();
         http.newCall(req).enqueue(new Callback() {
             @Override public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> Toast.makeText(ActivityStepsActivity.this,
-                        R.string.error_red, Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> {
+                    alTerminar.accept(new ArrayList<>());
+                    Toast.makeText(ActivityStepsActivity.this, R.string.error_red, Toast.LENGTH_SHORT).show();
+                });
             }
             @Override public void onResponse(Call call, Response response) throws IOException {
+                List<ActivityFormActivity.ArasaacItem> items = new ArrayList<>();
                 try {
-                    String body = response.body().string();
-                    JSONArray arr = new JSONArray(body);
-                    if (arr.length() > 0) {
-                        int id = arr.getJSONObject(0).getInt("_id");
-                        String picUrl = "https://static.arasaac.org/pictograms/" + id + "/" + id + "_500.png";
-                        runOnUiThread(() -> {
-                            if (pendingImageIdx >= 0 && pendingImageIdx < pasos.size()) {
-                                pasos.get(pendingImageIdx).pictogramUrl = picUrl;
-                                pasos.get(pendingImageIdx).imageBase64  = null;
-                                adapter.notifyItemChanged(pendingImageIdx);
-                            }
-                        });
+                    JSONArray arr = new JSONArray(response.body().string());
+                    for (int i = 0; i < Math.min(arr.length(), 24); i++) {
+                        JSONObject obj = arr.getJSONObject(i);
+                        String palabra = "";
+                        if (obj.has("keywords") && obj.getJSONArray("keywords").length() > 0) {
+                            palabra = obj.getJSONArray("keywords").getJSONObject(0).getString("keyword");
+                        }
+                        items.add(new ActivityFormActivity.ArasaacItem(obj.getInt("_id"), palabra));
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception e) {
+                    // Una respuesta que no se puede leer no es lo mismo que una
+                    // búsqueda sin resultados: conviene decirlo.
+                    runOnUiThread(() -> Toast.makeText(ActivityStepsActivity.this,
+                            R.string.error_red, Toast.LENGTH_SHORT).show());
+                }
+                runOnUiThread(() -> alTerminar.accept(items));
             }
         });
     }
@@ -230,7 +299,13 @@ public class ActivityStepsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Refresca la lista y el cartel de "sin pasos". Antes sólo tocaba el cartel,
+     * así que los pasos traídos del servidor entraban en la lista pero el
+     * RecyclerView nunca se enteraba y la pantalla se veía vacía.
+     */
     private void actualizarVista() {
+        adapter.notifyDataSetChanged();
         binding.tvVacio.setVisibility(pasos.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
