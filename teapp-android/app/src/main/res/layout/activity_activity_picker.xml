@@ -6,61 +6,179 @@
     android:orientation="vertical"
     android:background="@color/background">
 
-    <!-- Selector de franja -->
+    <!-- Primero los días, después el momento del día: es el orden en que se decide -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="12dp"
+        android:text="@string/rotulo_dias"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/on_background" />
+
+    <!-- Sin scroll horizontal a propósito: los siete días tienen que verse de una,
+         si no queda alguno marcado fuera de la vista y se agregan días de más -->
     <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chip_group_dias"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp"
-        style="@style/Widget.MaterialComponents.ChipGroup">
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="4dp"
+        app:singleSelection="false"
+        app:chipSpacingHorizontal="6dp"
+        app:chipSpacingVertical="2dp">
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/chip_manana"
+            android:id="@+id/chip_lun"
+            style="@style/ChipSeleccion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="☀️ Mañana"
-            style="@style/Widget.MaterialComponents.Chip.Choice" />
+            android:text="@string/dia_lun" />
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/chip_tarde"
+            android:id="@+id/chip_mar"
+            style="@style/ChipSeleccion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🌤️ Tarde"
-            style="@style/Widget.MaterialComponents.Chip.Choice" />
+            android:text="@string/dia_mar" />
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/chip_noche"
+            android:id="@+id/chip_mie"
+            style="@style/ChipSeleccion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🌙 Noche"
-            style="@style/Widget.MaterialComponents.Chip.Choice" />
+            android:text="@string/dia_mie" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_jue"
+            style="@style/ChipSeleccion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dia_jue" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_vie"
+            style="@style/ChipSeleccion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dia_vie" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_sab"
+            style="@style/ChipSeleccion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dia_sab" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_dom"
+            style="@style/ChipSeleccion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dia_dom" />
 
     </com.google.android.material.chip.ChipGroup>
 
-    <com.google.android.material.card.MaterialCardView
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/rotulo_franja"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/on_background" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chip_group_franja"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="8dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="0dp"
-        app:strokeWidth="1dp"
-        app:strokeColor="@color/primary"
-        app:cardBackgroundColor="@color/background">
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="8dp"
+        app:singleSelection="false"
+        app:chipSpacingHorizontal="6dp">
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switch_todos_los_dias"
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_manana"
+            style="@style/ChipSeleccion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/manana" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_tarde"
+            style="@style/ChipSeleccion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tarde" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_noche"
+            style="@style/ChipSeleccion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/noche" />
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border" />
+
+    <!-- Buscador y filtro por categoría, igual que el catálogo y que la web -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_buscar"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginTop="8dp"
+        app:hintEnabled="false"
+        app:boxBackgroundColor="@color/surface"
+        app:endIconMode="clear_text">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_buscar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:text="@string/agregar_todos_los_dias"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:hint="@string/buscar_actividad"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
+            android:importantForAutofill="no" />
 
-    </com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="4dp"
+        android:scrollbars="horizontal"
+        android:scrollbarSize="2dp"
+        android:fadeScrollbars="false"
+        android:requiresFadingEdge="horizontal"
+        android:fadingEdgeLength="24dp">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chip_group_categorias"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleLine="true"
+            app:singleSelection="true"
+            app:selectionRequired="false"
+            app:chipSpacingHorizontal="6dp" />
+
+    </HorizontalScrollView>
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -72,8 +190,20 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:padding="8dp"
         android:clipToPadding="false" />
+
+    <!-- Tocar una actividad solo la marca: se agrega desde aca -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_agregar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:enabled="false"
+        android:text="@string/agregar"
+        app:icon="@drawable/ic_add"
+        app:iconGravity="textStart" />
 
 </LinearLayout>
