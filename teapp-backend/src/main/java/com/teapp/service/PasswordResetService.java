@@ -54,7 +54,9 @@ public class PasswordResetService {
      */
     @Transactional
     public void requestReset(String email) {
-        Optional<User> usuarioOpcional = userRepository.findByEmail(email);
+        // Se busca en minúsculas, igual que se guarda al registrarse.
+        Optional<User> usuarioOpcional = userRepository.findByEmail(
+                email == null ? null : email.trim().toLowerCase(java.util.Locale.ROOT));
         if (usuarioOpcional.isEmpty()) {
             // Silencioso por seguridad: no revelamos si el email existe
             log.info("Reset solicitado para email inexistente: {}", email);

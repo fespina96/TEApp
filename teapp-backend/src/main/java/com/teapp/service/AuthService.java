@@ -41,8 +41,9 @@ public class AuthService {
      */
     @Transactional
     public AuthResponse register(RegisterRequest solicitud) {
-        if (userRepository.existsByEmail(solicitud.email())) {
-            throw new IllegalArgumentException("Ya existe una cuenta con el email: " + solicitud.email());
+        String email = normalizarEmail(solicitud.email());
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("Ya existe una cuenta con el email: " + email);
         }
 
         UserRole rol = solicitud.role() != null ? solicitud.role() : UserRole.PARENT;
@@ -52,7 +53,7 @@ public class AuthService {
         }
 
         User usuario = User.builder()
-                .email(solicitud.email())
+                .email(email)
                 .password(passwordEncoder.encode(solicitud.password()))
                 .fullName(solicitud.fullName())
                 .dateOfBirth(solicitud.dateOfBirth())
@@ -82,12 +83,13 @@ public class AuthService {
      * @throws org.springframework.security.core.AuthenticationException si las credenciales son incorrectas
      */
     public AuthResponse login(LoginRequest solicitud) {
+        String email = normalizarEmail(solicitud.email());
         authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(solicitud.email(), solicitud.password())
+            new UsernamePasswordAuthenticationToken(email, solicitud.password())
         );
 
-        User usuario = userRepository.findByEmail(solicitud.email())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario", solicitud.email()));
+        User usuario = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario", email));
 
         UserDetails detallesUsuario = new org.springframework.security.core.userdetails.User(
                 usuario.getEmail(), usuario.getPassword(), java.util.List.of()
@@ -117,5 +119,14 @@ public class AuthService {
             codigo.append(caracteres.charAt(RANDOM.nextInt(caracteres.length())));
         }
         return codigo.toString();
+    }
+
+    /**
+     * El email identifica la cuenta, así que se guarda y se busca siempre en
+     * minúsculas: si no, "Ana@x.com" y "ana@x.com" serían dos cuentas distintas
+     * y quien escribiera su email de otra forma no podría entrar.
+     */
+    private String normalizarEmail(String email) {
+        return email == null ? null : email.trim().toLowerCase(java.util.Locale.ROOT);
     }
 }

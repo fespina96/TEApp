@@ -72,6 +72,37 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("register: el email se guarda en minúsculas y sin espacios")
+    void register_normalizaElEmail() {
+        when(userRepository.existsByEmail("Padre@Test.com ".trim().toLowerCase())).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenAnswer(inv -> {
+            User u = inv.getArgument(0);
+            u.setId(userId);
+            return u;
+        });
+
+        RegisterRequest req = new RegisterRequest("  Padre@Test.com  ", "Pass1234", "Juan García",
+                java.time.LocalDate.of(1990, 1, 15), UserRole.PARENT);
+        AuthResponse resp = authService.register(req);
+
+        assertThat(resp.email()).isEqualTo("padre@test.com");
+        verify(userRepository).existsByEmail("padre@test.com");
+    }
+
+    @Test
+    @DisplayName("register: un email que ya existe con otras mayúsculas se rechaza")
+    void register_emailDuplicadoConOtrasMayusculas() {
+        when(userRepository.existsByEmail("padre@test.com")).thenReturn(true);
+
+        RegisterRequest req = new RegisterRequest("PADRE@TEST.COM", "Pass1234", "Otro",
+                java.time.LocalDate.of(1990, 1, 15), UserRole.PARENT);
+
+        assertThatThrownBy(() -> authService.register(req))
+                .isInstanceOf(IllegalArgumentException.class);
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
     @DisplayName("register: email duplicado → lanza IllegalArgumentException")
     void register_duplicateEmail_throwsException() {
         when(userRepository.existsByEmail("duplicado@test.com")).thenReturn(true);
