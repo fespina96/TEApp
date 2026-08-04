@@ -16,11 +16,11 @@
     <!-- Tabs pill-style -->
     <div class="tab-switcher">
       <button type="button" class="tab-btn" [class.active]="pestanaActiva === 'login'"
-              (click)="pestanaActiva = 'login'; mensajeError = ''">
+              (click)="pestanaActiva = 'login'; mensajeError = ''; mensajeExito = ''">
         Iniciar sesión
       </button>
       <button type="button" class="tab-btn" [class.active]="pestanaActiva === 'register'"
-              (click)="pestanaActiva = 'register'; mensajeError = ''">
+              (click)="pestanaActiva = 'register'; mensajeError = ''; mensajeExito = ''">
         Crear cuenta
       </button>
     </div>
@@ -58,6 +58,7 @@
         </mat-checkbox>
       </div>
 
+      <p class="exito-msg" *ngIf="mensajeExito">{{ mensajeExito }}</p>
       <p class="error-msg" *ngIf="mensajeError">{{ mensajeError }}</p>
 
       <button mat-flat-button type="submit" class="submit-btn"
@@ -68,7 +69,7 @@
 
       <p class="switch-hint">
         ¿No tenés cuenta?
-        <button type="button" class="link-btn" (click)="pestanaActiva = 'register'; mensajeError = ''">Crear cuenta</button>
+        <button type="button" class="link-btn" (click)="pestanaActiva = 'register'; mensajeError = ''; mensajeExito = ''">Crear cuenta</button>
       </p>
     </form>
 
@@ -151,7 +152,7 @@
 
       <p class="switch-hint">
         ¿Ya tenés cuenta?
-        <button type="button" class="link-btn" (click)="pestanaActiva = 'login'; mensajeError = ''">Iniciar sesión</button>
+        <button type="button" class="link-btn" (click)="pestanaActiva = 'login'; mensajeError = ''; mensajeExito = ''">Iniciar sesión</button>
       </p>
     </form>
 

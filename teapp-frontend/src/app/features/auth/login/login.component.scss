@@ -217,6 +217,17 @@
   font-size: 0.82rem;
 }
 
+.exito-msg {
+  color: #1E6B3A;
+  font-size: 0.85rem;
+  text-align: center;
+  margin: 4px 0 0;
+  padding: 8px 12px;
+  background: #E8F8E8;
+  border: 1px solid #A8DDB5;
+  border-radius: var(--radius-sm);
+}
+
 .error-msg {
   color: #c0392b;
   font-size: 0.85rem;

@@ -39,6 +39,7 @@ export class LoginComponent {
   registerForm: FormGroup;
   cargando = false;
   mensajeError = '';
+  mensajeExito = '';
   ocultarContrasena = true;
   ocultarConfirmacion = true;
   rolSeleccionado: 'PARENT' | 'THERAPIST' = 'PARENT';
@@ -76,6 +77,7 @@ export class LoginComponent {
     if (this.loginForm.invalid) return;
     this.cargando = true;
     this.mensajeError = '';
+    this.mensajeExito = '';
 
     const { rememberMe, ...credenciales } = this.loginForm.value;
     this.authService.login(credenciales, rememberMe).subscribe({
@@ -100,15 +102,22 @@ export class LoginComponent {
     if (this.registerForm.invalid) return;
     this.cargando = true;
     this.mensajeError = '';
+    this.mensajeExito = '';
 
     const { confirmPassword, dateOfBirth, ...datosRegistro } = this.registerForm.value;
     const fechaNacimiento = dateOfBirth instanceof Date
       ? fechaISOLocal(dateOfBirth)
       : dateOfBirth;
     this.authService.register({ ...datosRegistro, dateOfBirth: fechaNacimiento, role: this.rolSeleccionado }).subscribe({
-      next: (respuesta) => {
-        const destino = respuesta.role === 'THERAPIST' ? '/app/therapist' : '/app/dashboard';
-        this.router.navigate([destino]);
+      next: () => {
+        // No se entra automáticamente: se vuelve al login con el email ya puesto.
+        const email = this.registerForm.value.email;
+        this.registerForm.reset();
+        this.loginForm.patchValue({ email });
+        this.pestanaActiva = 'login';
+        this.mensajeError = '';
+        this.mensajeExito = 'Cuenta creada correctamente. Ingresá con tu email y contraseña.';
+        this.cargando = false;
       },
       error: (err) => {
         this.mensajeError = err.error?.message || 'Error al registrarse. Intenta de nuevo.';

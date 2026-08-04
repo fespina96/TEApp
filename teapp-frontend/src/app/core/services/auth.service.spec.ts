@@ -145,9 +145,11 @@ describe('AuthService', () => {
     req.flush(therapistResp);
   });
 
-  it('register: siempre persiste la sesión en localStorage', () => {
+  it('register: no inicia sesión, el usuario tiene que entrar con sus credenciales', () => {
     service.register({ email: 'tera@test.com', password: 'Pass1234', fullName: 'Dra. Pérez', dateOfBirth: '1985-06-20', role: 'THERAPIST' }).subscribe(() => {
-      expect(localStorage.getItem('teapp_token')).toBe('mock.jwt.token');
+      expect(localStorage.getItem('teapp_token')).toBeNull();
+      expect(sessionStorage.getItem('teapp_token')).toBeNull();
+      expect(service.isAuthenticated()).toBeFalse();
     });
     httpMock.expectOne(`${environment.apiUrl}/auth/register`).flush(mockAuthResponse);
   });

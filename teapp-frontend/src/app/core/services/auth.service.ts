@@ -27,11 +27,13 @@ export class AuthService {
     );
   }
 
-  // El registro siempre persiste la sesión (rememberMe = true).
+  /**
+   * Crea la cuenta pero no inicia sesión: el usuario vuelve al login y entra con
+   * el email y la contraseña que acaba de elegir. Así confirma que los recuerda
+   * antes de empezar a usar la aplicación.
+   */
   register(request: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, request).pipe(
-      tap(response => this.storeSession(response, true))
-    );
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, request);
   }
 
   logout(): void {
