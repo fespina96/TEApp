@@ -35,6 +35,70 @@
       </mat-select>
     </mat-form-field>
 
+    <!-- Imagen: subida propia o pictograma de ARASAAC -->
+    <div class="field-label">Imagen (opcional)</div>
+
+    <div class="image-mode-tabs">
+      <button type="button" class="img-mode-btn" [class.active]="modoImagen === 'upload'"
+              (click)="modoImagen = 'upload'">
+        <mat-icon>upload</mat-icon> Subir imagen
+      </button>
+      <button type="button" class="img-mode-btn" [class.active]="modoImagen === 'arasaac'"
+              (click)="modoImagen = 'arasaac'">
+        <mat-icon>image_search</mat-icon> Pictograma ARASAAC
+      </button>
+    </div>
+
+    <!-- Subir una imagen propia -->
+    <div class="image-upload-area" *ngIf="modoImagen === 'upload' && !imagenElegida">
+      <label class="upload-placeholder">
+        <mat-icon>add_photo_alternate</mat-icon>
+        <span>Elegir una imagen</span>
+        <input type="file" accept="image/*" hidden (change)="alSeleccionarImagen($event)">
+      </label>
+    </div>
+
+    <!-- Buscador de ARASAAC -->
+    <div class="arasaac-panel" *ngIf="modoImagen === 'arasaac'">
+      <div class="arasaac-search-row">
+        <input class="arasaac-input" type="text" [(ngModel)]="busquedaArasaac"
+               [ngModelOptions]="{ standalone: true }"
+               (keyup.enter)="buscarArasaac()" placeholder="Ej: cepillo de dientes">
+        <button mat-flat-button type="button" (click)="buscarArasaac()"
+                [disabled]="buscandoArasaac || !busquedaArasaac.trim()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </div>
+
+      <div class="arasaac-loading" *ngIf="buscandoArasaac">
+        <mat-spinner diameter="28"></mat-spinner>
+      </div>
+
+      <div class="arasaac-grid" *ngIf="!buscandoArasaac && resultadosArasaac.length > 0">
+        <button type="button" class="arasaac-thumb"
+                *ngFor="let picto of resultadosArasaac"
+                [class.selected]="urlPictograma === arasaac.imageUrl(picto._id)"
+                (click)="elegirPictograma(picto)"
+                [attr.aria-label]="picto.keyword">
+          <img [src]="arasaac.thumbUrl(picto._id)" [alt]="picto.keyword">
+        </button>
+      </div>
+
+      <p class="arasaac-vacio"
+         *ngIf="!buscandoArasaac && busquedaArasaac.trim() && resultadosArasaac.length === 0">
+        No se encontraron pictogramas para esa búsqueda.
+      </p>
+    </div>
+
+    <!-- Lo elegido, venga de donde venga -->
+    <div class="image-preview-wrap" *ngIf="imagenElegida">
+      <img [src]="imagenElegida" class="activity-img-preview" alt="">
+      <button mat-icon-button type="button" class="remove-img-btn"
+              (click)="quitarImagen()" matTooltip="Quitar imagen">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
     <!-- Temporizador -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Duración (minutos, opcional)</mat-label>
@@ -53,7 +117,8 @@
 
     <!-- Preview del chip -->
     <div class="chip-preview" [style.background-color]="form.get('color')?.value">
-      <mat-icon *ngIf="form.get('iconName')?.value">{{ form.get('iconName')?.value }}</mat-icon>
+      <img *ngIf="imagenElegida" [src]="imagenElegida" class="chip-preview-img" alt="">
+      <mat-icon *ngIf="!imagenElegida && form.get('iconName')?.value">{{ form.get('iconName')?.value }}</mat-icon>
       <span>{{ form.get('name')?.value || 'Vista previa' }}</span>
     </div>
 

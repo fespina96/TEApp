@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit, Optional } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -9,7 +9,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivityService } from '../../../core/services/activity.service';
+import { ArasaacService, ArasaacPictogram } from '../../../core/services/arasaac.service';
 import { Activity, ActivityCategory, CATEGORY_LABELS, CATEGORY_COLORS } from '../../../core/models/activity.model';
 
 interface ActivityFormData {
@@ -21,10 +24,11 @@ interface ActivityFormData {
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
+    FormsModule, ReactiveFormsModule,
     MatDialogModule, MatFormFieldModule, MatInputModule,
     MatSelectModule, MatButtonModule, MatIconModule,
-    MatSlideToggleModule, MatSnackBarModule
+    MatSlideToggleModule, MatSnackBarModule,
+    MatProgressSpinnerModule, MatTooltipModule
   ],
   templateUrl: './activity-form.component.html',
   styleUrl: './activity-form.component.scss'
@@ -33,6 +37,15 @@ export class ActivityFormComponent implements OnInit {
   form: FormGroup;
   modoEdicion = false;
   cargando = false;
+
+  // Imagen de la actividad: subida propia o pictograma de ARASAAC
+  modoImagen: 'upload' | 'arasaac' = 'arasaac';
+  /** Lo que se muestra y se envía: un data URI o la URL del pictograma. */
+  imagenElegida: string | null = null;
+  esPictograma = false;
+  busquedaArasaac = '';
+  resultadosArasaac: ArasaacPictogram[] = [];
+  buscandoArasaac = false;
 
   readonly categoryLabels = CATEGORY_LABELS;
   readonly categories: ActivityCategory[] = [
@@ -52,6 +65,7 @@ export class ActivityFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private activityService: ActivityService,
+    public arasaac: ArasaacService,
     private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<ActivityFormComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: ActivityFormData
@@ -77,6 +91,10 @@ export class ActivityFormComponent implements OnInit {
         durationMinutes: a.durationMinutes ?? null,
         pausable: a.pausable ?? true
       });
+      // La actividad puede traer un pictograma o una imagen propia, nunca las dos.
+      this.imagenElegida = a.pictogramUrl ?? a.imageBase64 ?? null;
+      this.esPictograma  = !!a.pictogramUrl;
+      this.modoImagen    = a.imageBase64 && !a.pictogramUrl ? 'upload' : 'arasaac';
     }
     // Actualizar color al cambiar categoría
     this.form.get('category')?.valueChanges.subscribe((cat: ActivityCategory) => {
@@ -86,10 +104,57 @@ export class ActivityFormComponent implements OnInit {
     });
   }
 
+  alSeleccionarImagen(event: Event): void {
+    const archivo = (event.target as HTMLInputElement).files?.[0];
+    if (!archivo) return;
+    const lector = new FileReader();
+    lector.onload = () => {
+      this.imagenElegida = lector.result as string;
+      this.esPictograma = false;
+    };
+    lector.readAsDataURL(archivo);
+  }
+
+  buscarArasaac(): void {
+    const termino = this.busquedaArasaac.trim();
+    if (!termino) return;
+    this.buscandoArasaac = true;
+    this.resultadosArasaac = [];
+    this.arasaac.search(termino).subscribe({
+      next: (resultados) => {
+        this.resultadosArasaac = resultados;
+        this.buscandoArasaac = false;
+      },
+      error: () => {
+        this.buscandoArasaac = false;
+        this.snackBar.open('No se pudo buscar en ARASAAC', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+
+  elegirPictograma(picto: ArasaacPictogram): void {
+    this.imagenElegida = this.arasaac.imageUrl(picto._id);
+    this.esPictograma = true;
+  }
+
+  quitarImagen(): void {
+    this.imagenElegida = null;
+    this.esPictograma = false;
+  }
+
+  /** URL del pictograma en un campo, imagen propia en el otro: el backend los guarda por separado. */
+  get urlPictograma(): string | null {
+    return this.esPictograma ? this.imagenElegida : null;
+  }
+
   enviar(): void {
     if (this.form.invalid) return;
     this.cargando = true;
-    const request = this.form.value;
+    const request = {
+      ...this.form.value,
+      pictogramUrl: this.esPictograma ? this.imagenElegida ?? undefined : undefined,
+      imageBase64:  this.esPictograma ? undefined : this.imagenElegida ?? undefined
+    };
 
     const op = this.modoEdicion && this.data.activity
       ? this.activityService.update(this.data.activity.id, request)

@@ -31,3 +31,151 @@
   color: var(--color-text-primary) !important;
   border-radius: var(--radius-md) !important;
 }
+
+// ── Imagen de la actividad ───────────────────────────────────────────────
+// Mismo aspecto que el selector de la agenda, para que no se sientan dos
+// formularios distintos.
+.field-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+}
+
+.image-mode-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+
+  .img-mode-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-card-bg);
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    transition: all 0.15s;
+
+    mat-icon { font-size: 14px; width: 14px; height: 14px; }
+
+    &.active {
+      background: var(--color-sky-blue);
+      border-color: var(--color-sky-blue);
+      color: var(--color-text-primary);
+    }
+    &:hover:not(.active) { border-color: var(--color-primary); }
+  }
+}
+
+.image-upload-area {
+  margin-bottom: 16px;
+
+  .upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    height: 90px;
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    color: var(--color-text-muted);
+    font-size: 0.82rem;
+    transition: border-color 0.15s, color 0.15s;
+
+    mat-icon { font-size: 1.6rem; width: 1.6rem; height: 1.6rem; }
+    &:hover { border-color: var(--color-primary); color: var(--color-primary); }
+  }
+}
+
+.arasaac-panel {
+  margin-bottom: 16px;
+
+  .arasaac-search-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+
+    .arasaac-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      outline: none;
+      &:focus { border-color: var(--color-primary); }
+    }
+  }
+
+  .arasaac-loading { display: flex; justify-content: center; padding: 12px; }
+
+  .arasaac-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    max-height: 220px;
+    overflow-y: auto;
+
+    .arasaac-thumb {
+      border: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      padding: 2px;
+      background: none;
+      cursor: pointer;
+
+      img { width: 100%; aspect-ratio: 1; object-fit: contain; display: block; }
+
+      &.selected { border-color: var(--color-teal); }
+      &:hover:not(.selected) { border-color: var(--color-border); }
+    }
+  }
+
+  .arasaac-vacio {
+    margin: 8px 0 0;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    text-align: center;
+  }
+}
+
+.image-preview-wrap {
+  position: relative;
+  width: 100%;
+  height: 110px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 16px;
+
+  .activity-img-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .remove-img-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.45) !important;
+    --mdc-icon-button-state-layer-size: 28px;
+    width: 28px !important;
+    height: 28px !important;
+    mat-icon { font-size: 14px; color: white; }
+  }
+}
+
+.chip-preview-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
