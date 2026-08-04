@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -182,5 +183,15 @@ class GlobalExceptionHandlerIntegrationTest {
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON).content(cuerpo))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("Ruta inexistente → 404 y no 500")
+    void rutaInexistente_devuelve404() throws Exception {
+        String token = registrarYObtenerToken("ruta.mala@test.com");
+
+        mockMvc.perform(get("/api/v1/therapists/parents")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNotFound());
     }
 }
