@@ -162,8 +162,8 @@ export class AgendaViewComponent implements OnInit, PuedeSalirDelModoParticipant
   }
 
   /**
-   * Lo consulta el guard de la ruta. Sin esto, el botón atrás del navegador dejaba
-   * el modo participante sin pedir nada, que es justo lo que el modo evita.
+   * Lo consulta el guard de la ruta, que cubre también la salida con el botón
+   * atrás del navegador.
    */
   puedeSalir(): boolean | Observable<boolean> {
     return this.modoNino ? this.pedirContrasenaDeSalida() : true;

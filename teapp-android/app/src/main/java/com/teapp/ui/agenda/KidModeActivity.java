@@ -90,9 +90,9 @@ public class KidModeActivity extends AppCompatActivity {
         childId = getIntent().getStringExtra(Constants.EXTRA_CHILD_ID);
         child   = (Child) getIntent().getSerializableExtra(Constants.EXTRA_CHILD);
 
-        // Header
+        // Cabecera
         if (child != null) {
-            binding.tvKidNombre.setText("¡Hola, " + child.name + "! 🌟");
+            binding.tvKidNombre.setText("¡Hola, " + child.name + "!");
             AvatarUtils.mostrarAvatar(binding.tvKidInitials, binding.ivKidAvatar,
                     child.avatarBase64, child.avatarColor, child.getInitials());
         }
@@ -272,7 +272,7 @@ public class KidModeActivity extends AppCompatActivity {
 
         // No se lee sola: se escucha al tocar el botón de la tarjeta.
 
-        // Timer
+        // Temporizador
         if (ahora.durationMinutes != null && ahora.durationMinutes > 0 && !ahora.isCompletedToday()) {
             duracionTotalMs = ahora.durationMinutes * 60 * 1000L;
             // El botón de pausa sólo se ofrece si el padre lo habilitó para esta actividad.
@@ -402,7 +402,7 @@ public class KidModeActivity extends AppCompatActivity {
                 });
     }
 
-    // Timer
+    // Temporizador
 
     private void togglePausa() {
         if (!pausado) {
@@ -636,7 +636,7 @@ public class KidModeActivity extends AppCompatActivity {
                         e.activity != null ? e.activity.color : null);
             }
 
-            // Check: los mismos iconos que la web
+            // Tilde: los mismos iconos que la web
             h.ivCheck.setText(e.isCompletedToday() ? "check_circle" : "radio_button_unchecked");
 
             // Las que aún no llegaron en la rutina se ven apagadas. El toque se mantiene

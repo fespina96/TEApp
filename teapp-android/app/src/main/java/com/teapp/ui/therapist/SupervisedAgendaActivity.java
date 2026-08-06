@@ -78,12 +78,7 @@ public class SupervisedAgendaActivity extends AppCompatActivity
         cargarAgenda();
     }
 
-    /**
-     * El hijo directo del SwipeRefreshLayout es el ViewPager2, que al ser horizontal nunca
-     * se desplaza en vertical: sin esto el gesto de recarga se come cualquier arrastre hacia
-     * abajo y la agenda no se puede volver a subir. El adaptador deja en estado RESUMED
-     * únicamente la página que se está viendo.
-     */
+    /** La única página en estado RESUMED es la que se está viendo. */
     private AgendaDayFragment diaVisible() {
         for (Fragment f : getSupportFragmentManager().getFragments()) {
             if (f instanceof AgendaDayFragment && f.isResumed()) return (AgendaDayFragment) f;
@@ -152,9 +147,10 @@ public class SupervisedAgendaActivity extends AppCompatActivity
     @Override public boolean permiteReordenar() { return false; }
     @Override public boolean permiteEditar()    { return false; }
 
-    @Override public void onEntrySelected(ScheduleEntry entry) { /* solo lectura */ }
-    @Override public void onEntryDelete(ScheduleEntry entry)   { /* solo lectura */ }
-    @Override public void onEntrySettings(ScheduleEntry entry) { /* solo lectura */ }
+    // El terapeuta consulta esta agenda sin modificarla: los tres gestos no hacen nada.
+    @Override public void onEntrySelected(ScheduleEntry entry) {}
+    @Override public void onEntryDelete(ScheduleEntry entry)   {}
+    @Override public void onEntrySettings(ScheduleEntry entry) {}
 
     @Override
     public boolean onSupportNavigateUp() { finish(); return true; }

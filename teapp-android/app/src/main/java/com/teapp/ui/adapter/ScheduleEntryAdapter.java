@@ -89,7 +89,7 @@ public class ScheduleEntryAdapter extends RecyclerView.Adapter<ScheduleEntryAdap
                     entry.activity != null ? entry.activity.color : null);
         }
 
-        // Duration
+        // Duración
         if (entry.durationMinutes != null && entry.durationMinutes > 0) {
             h.tvDuration.setText(entry.durationMinutes + " min");
             h.tvDuration.setVisibility(View.VISIBLE);
@@ -97,7 +97,7 @@ public class ScheduleEntryAdapter extends RecyclerView.Adapter<ScheduleEntryAdap
             h.tvDuration.setVisibility(View.GONE);
         }
 
-        // Completed state
+        // Estado de completada
         boolean completed = entry.isCompletedToday();
         h.ivCompleted.setVisibility(completed ? View.VISIBLE : View.GONE);
         h.card.setAlpha(completed ? 0.65f : 1f);

@@ -11,9 +11,9 @@ import com.bumptech.glide.Glide;
 /**
  * Pinta los avatares circulares de participantes y usuarios.
  *
- * Existe porque el error era fácil de repetir: llamar a setBackgroundColor() sobre
- * una vista cuyo fondo es @drawable/circle_avatar reemplaza el óvalo por un color
- * plano, y el avatar deja de ser redondo. Hay que teñir el drawable, no pisarlo.
+ * El color hay que aplicarlo tiñendo @drawable/circle_avatar, no con
+ * setBackgroundColor(): eso reemplaza el óvalo por un color plano y el avatar
+ * deja de ser redondo.
  */
 public final class AvatarUtils {
 

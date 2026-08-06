@@ -10,10 +10,8 @@ export interface PuedeSalirDelModoParticipante {
  * Impide abandonar la agenda mientras el modo participante está activo sin
  * verificar la contraseña del adulto.
  *
- * El botón "Salir" ya la pedía, pero el botón atrás del navegador se saltaba esa
- * verificación y el modo dejaba de ser una barrera: cualquiera podía volver a la
- * vista del adulto con un gesto. La comprobación tiene que estar en la
- * navegación, no en un botón.
+ * La comprobación va en la navegación y no en el botón "Salir", porque el botón
+ * atrás del navegador es otra forma de irse y tiene que pedir lo mismo.
  */
 export const salidaModoParticipanteGuard: CanDeactivateFn<PuedeSalirDelModoParticipante> =
   (componente) => componente.puedeSalir();
