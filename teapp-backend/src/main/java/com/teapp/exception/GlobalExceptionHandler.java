@@ -8,6 +8,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -76,15 +77,26 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Una ruta que no existe es un 404, no un fallo del servidor. Sin esto caía en
-     * el manejador general y respondía 500, que hacía ver un error de integración
-     * —un cliente pidiendo una URL equivocada— como si el backend estuviera roto.
+     * Una ruta que no existe es un 404, no un fallo del servidor. Va antes que el
+     * manejador general para que un cliente pidiendo mal no se confunda con un
+     * backend caído.
      */
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponse> handleRutaInexistente(NoResourceFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(HttpStatus.NOT_FOUND.value(),
                         "No existe el recurso: " + ex.getResourcePath(), LocalDateTime.now()));
+    }
+
+    /**
+     * Un identificador de la URL que no tiene el formato esperado —un UUID que no
+     * lo es— es un pedido mal armado, no un fallo del servidor.
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleParametroMalFormado(MethodArgumentTypeMismatchException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                        "El valor de '" + ex.getName() + "' no tiene el formato esperado", LocalDateTime.now()));
     }
 
     @ExceptionHandler(Exception.class)

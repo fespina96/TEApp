@@ -194,4 +194,19 @@ class GlobalExceptionHandlerIntegrationTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    @DisplayName("Identificador que no es un UUID → 400, y uno inexistente → 404")
+    void identificadorMalFormado_devuelve400() throws Exception {
+        String token = registrarYObtenerToken("uuid.malo@test.com");
+
+        mockMvc.perform(get("/api/v1/children/inventada/schedule")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
+
+        mockMvc.perform(get("/api/v1/children/00000000-0000-0000-0000-000000000000/schedule")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNotFound());
+    }
 }
