@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { AuthService } from '../../../core/services/auth.service';
-import { fechaISOLocal } from '../../../core/utils/fecha.util';
+import { fechaISOLocal, fechaMaximaNacimiento } from '../../../core/utils/fecha.util';
 
 @Component({
   selector: 'app-login',
@@ -43,7 +43,7 @@ export class LoginComponent {
   ocultarContrasena = true;
   ocultarConfirmacion = true;
   rolSeleccionado: 'PARENT' | 'THERAPIST' = 'PARENT';
-  fechaMaxima = new Date();
+  fechaMaxima = fechaMaximaNacimiento();
   pestanaActiva: 'login' | 'register' = 'login';
 
   constructor(

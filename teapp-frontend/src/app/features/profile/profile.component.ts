@@ -20,7 +20,7 @@ import { User } from '../../core/models/user.model';
 import { AvatarPickerDialogComponent } from '../../shared/components/avatar-picker-dialog/avatar-picker-dialog.component';
 import { ChangePasswordDialogComponent } from '../../shared/components/change-password-dialog/change-password-dialog.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { fechaISOLocal } from '../../core/utils/fecha.util';
+import { fechaISOLocal, fechaMaximaNacimiento } from '../../core/utils/fecha.util';
 
 @Component({
   selector: 'app-profile',
@@ -41,7 +41,7 @@ export class ProfileComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   form!: FormGroup;
   guardando = false;
-  fechaMaxima = new Date();
+  fechaMaxima = fechaMaximaNacimiento();
   cargando = true;
 
   constructor(

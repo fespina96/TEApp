@@ -19,6 +19,7 @@ import com.teapp.model.LoginRequest;
 import com.teapp.model.RegisterRequest;
 import com.teapp.ui.dashboard.DashboardActivity;
 import com.teapp.ui.therapist.TherapistDashboardActivity;
+import com.teapp.util.ApiError;
 import com.teapp.util.PrefsManager;
 
 import retrofit2.Call;
@@ -44,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         prefs = new PrefsManager(this);
         api   = ApiClient.getInstance(this).getApi();
 
-        // Pill tabs
+        // Solapas
         binding.tabLogin.setOnClickListener(v -> setTab(false));
         binding.tabRegister.setOnClickListener(v -> setTab(true));
 
@@ -56,12 +57,14 @@ public class LoginActivity extends AppCompatActivity {
             DatePickerDialog selector = new DatePickerDialog(this, (dp, y, m, d) -> {
                 fechaNacApiFormat = String.format("%04d-%02d-%02d", y, m + 1, d);
                 binding.etFechaNac.setText(String.format("%02d/%02d/%04d", d, m + 1, y));
-                // La fecha se completa desde el diálogo, no escribiendo, así que hay
-                // que reevaluar a mano: si no, el botón se quedaba deshabilitado.
+                // La fecha se completa desde el diálogo y no escribiendo, así que
+                // ningún TextWatcher la ve: hay que reevaluar a mano.
                 actualizarEstadoDelBoton();
             }, c.get(Calendar.YEAR) - 25, c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-            // Una fecha de nacimiento no puede ser futura.
-            selector.getDatePicker().setMaxDate(System.currentTimeMillis());
+            // El backend exige una fecha de nacimiento anterior a hoy.
+            Calendar ayer = Calendar.getInstance();
+            ayer.add(Calendar.DAY_OF_MONTH, -1);
+            selector.getDatePicker().setMaxDate(ayer.getTimeInMillis());
             selector.show();
         });
 
@@ -77,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void setTab(boolean registro) {
         modoRegistro = registro;
-        // Estilo pill tabs
+        // Estilo de la solapa activa
         if (registro) {
             binding.tabLogin.setBackground(null);
             binding.tabLogin.setTextColor(getResources().getColor(R.color.text_secondary));
@@ -219,21 +222,6 @@ public class LoginActivity extends AppCompatActivity {
         };
     }
 
-    /**
-     * Extrae el campo "message" del cuerpo de error del backend, que explica el
-     * motivo concreto del rechazo. Si no se puede leer, usa el texto por defecto.
-     */
-    private String mensajeDeError(Response<?> response, String porDefecto) {
-        if (response.errorBody() == null) return porDefecto;
-        try {
-            String cuerpo = response.errorBody().string();
-            String mensaje = new org.json.JSONObject(cuerpo).optString("message", "");
-            return mensaje.isEmpty() ? porDefecto : mensaje;
-        } catch (Exception e) {
-            return porDefecto;
-        }
-    }
-
     private final Callback<AuthResponse> authCallback = new Callback<AuthResponse>() {
         @Override
         public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
@@ -251,7 +239,7 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             } else {
                 Toast.makeText(LoginActivity.this,
-                        mensajeDeError(response, "Credenciales incorrectas."),
+                        ApiError.mensaje(response, "Credenciales incorrectas."),
                         Toast.LENGTH_LONG).show();
             }
         }
@@ -274,7 +262,7 @@ public class LoginActivity extends AppCompatActivity {
                 setLoading(false);
                 if (!response.isSuccessful()) {
                     Toast.makeText(LoginActivity.this,
-                            mensajeDeError(response, "Error al registrarse. Verificá los datos."),
+                            ApiError.mensaje(response, "Error al registrarse. Verificá los datos."),
                             Toast.LENGTH_LONG).show();
                     return;
                 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { concatMap, of } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,7 +13,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ChildService } from '../../../core/services/child.service';
 import { AVATAR_COLORS } from '../../../core/models/child.model';
-import { fechaISOLocal } from '../../../core/utils/fecha.util';
+import { fechaISOLocal, fechaMaximaNacimiento } from '../../../core/utils/fecha.util';
+import { recolorearAvatar } from '../../../core/utils/avatar-emoji.util';
 
 // El modo (crear vs editar) se detecta según la presencia del parámetro de ruta idParticipante.
 @Component({
@@ -39,8 +41,11 @@ export class ChildFormComponent implements OnInit {
   modoEdicion = false;
   idParticipante: string | null = null;
   cargando = false;
-  fechaMaxima = new Date();
+  fechaMaxima = fechaMaximaNacimiento();
   coloresAvatar = AVATAR_COLORS;
+  avatarBase64?: string;
+
+  private avatarOriginal?: string;
 
   constructor(
     private fb: FormBuilder,
@@ -58,14 +63,15 @@ export class ChildFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // El parámetro se llama childId en app.routes.ts; leerlo con otro nombre
-    // devolvía null y el formulario se abría siempre en modo alta.
+    // El nombre del parámetro tiene que coincidir con el de app.routes.ts.
     this.idParticipante = this.route.snapshot.paramMap.get('childId');
     this.modoEdicion = !!this.idParticipante;
 
     if (this.modoEdicion && this.idParticipante) {
       this.childService.getById(this.idParticipante).subscribe({
         next: (child) => {
+          this.avatarBase64 = child.avatarBase64;
+          this.avatarOriginal = child.avatarBase64;
           this.form.patchValue({
             name:        child.name,
             dateOfBirth: new Date(child.dateOfBirth),
@@ -81,8 +87,14 @@ export class ChildFormComponent implements OnInit {
     }
   }
 
+  /**
+   * El color del perfil es el fondo del avatar. En los del catálogo ese color va
+   * dentro del SVG, así que hay que regenerarlo para que el cambio se vea y se
+   * guarde; una foto subida se deja como está.
+   */
   seleccionarColor(color: string): void {
     this.form.patchValue({ avatarColor: color });
+    this.avatarBase64 = recolorearAvatar(this.avatarBase64, color);
   }
 
   enviar(): void {
@@ -101,7 +113,13 @@ export class ChildFormComponent implements OnInit {
       ? this.childService.update(this.idParticipante, request)
       : this.childService.create(request);
 
-    operation.subscribe({
+    // El avatar viaja por su propio endpoint, así que si cambió de color se
+    // guarda a continuación del perfil.
+    operation.pipe(
+      concatMap((child) => this.avatarBase64 && this.avatarBase64 !== this.avatarOriginal
+        ? this.childService.updateAvatar(child.id, this.avatarBase64)
+        : of(void 0))
+    ).subscribe({
       next: () => {
         const msg = this.modoEdicion ? 'Perfil actualizado' : 'Perfil creado';
         this.snackBar.open(msg, 'Ok', { duration: 3000 });
