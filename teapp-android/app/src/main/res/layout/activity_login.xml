@@ -69,10 +69,10 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Agenda semanal para niños"
-                            android:textSize="13sp"
+                            android:layout_marginTop="2dp"
+                            android:text="Agenda semanal para personas con TEA"
                             android:textColor="@color/text_secondary"
-                            android:layout_marginTop="2dp" />
+                            android:textSize="13sp" />
 
                     </LinearLayout>
 

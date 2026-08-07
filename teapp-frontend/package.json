@@ -39,5 +39,9 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.4.2"
+  },
+  "allowScripts": {
+    "@compodoc/compodoc@1.2.1": true,
+    "esbuild@0.21.5": true
   }
 }
