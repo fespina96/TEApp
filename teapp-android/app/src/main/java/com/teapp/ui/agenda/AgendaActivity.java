@@ -93,8 +93,7 @@ public class AgendaActivity extends AppCompatActivity
 
     /**
      * Se recarga acá y no en onCreate porque al volver del modo participante las
-     * completitudes cambiaron: si no, la agenda seguía mostrando el estado viejo
-     * y las actividades recién marcadas aparecían sin tilde.
+     * completitudes cambiaron, y onCreate no vuelve a ejecutarse.
      */
     @Override
     protected void onResume() {

@@ -116,7 +116,7 @@ public class ActivityStepsActivity extends AppCompatActivity {
     }
 
     private void guardar() {
-        // Sync text fields from adapter views
+        // Toma el texto que quedó escrito en las vistas del adaptador
         for (int i = 0; i < pasos.size(); i++) {
             if (pasos.get(i).titulo.trim().isEmpty()) {
                 Toast.makeText(this, "Todos los pasos deben tener título.", Toast.LENGTH_SHORT).show();
@@ -175,9 +175,8 @@ public class ActivityStepsActivity extends AppCompatActivity {
     }
 
     /**
-     * Abre el buscador de pictogramas para un paso. Antes este botón hacía la
-     * búsqueda con el título del paso y se quedaba con el primer resultado sin
-     * preguntar: si no era el que servía, no había forma de cambiarlo.
+     * Abre el buscador de pictogramas para un paso. La búsqueda arranca con el
+     * título del paso, pero el pictograma lo elige el usuario entre los resultados.
      */
     void abrirArasaac(int idx) {
         pendingImageIdx = idx;
@@ -300,9 +299,8 @@ public class ActivityStepsActivity extends AppCompatActivity {
     }
 
     /**
-     * Refresca la lista y el cartel de "sin pasos". Antes sólo tocaba el cartel,
-     * así que los pasos traídos del servidor entraban en la lista pero el
-     * RecyclerView nunca se enteraba y la pantalla se veía vacía.
+     * Refresca la lista y el cartel de "sin pasos". El adaptador no observa la
+     * lista, así que hay que notificarlo en todos los caminos que la modifican.
      */
     private void actualizarVista() {
         adapter.notifyDataSetChanged();

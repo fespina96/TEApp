@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { avatarEmojiADataUrl, leerAvatarEmoji } from '../../../core/utils/avatar-emoji.util';
 
 export interface AvatarPickerData {
   name: string;
@@ -75,7 +76,7 @@ const CATALOGO: { emoji: string; bg: string }[] = [
             <div class="catalog-grid">
               <button *ngFor="let item of catalogo" type="button"
                       class="catalog-item"
-                      [class.selected]="vistaPrevia === dataUrlDeEmoji(item.emoji, item.bg)"
+                      [class.selected]="emojiElegido === item.emoji"
                       [style.background-color]="item.bg"
                       (click)="seleccionarDelCatalogo(item.emoji, item.bg)"
                       [matTooltip]="item.emoji">
@@ -179,6 +180,12 @@ export class AvatarPickerDialogComponent {
   catalogo = CATALOGO;
   vistaPrevia: string | undefined;
   avatarInicial: string | undefined;
+  /**
+   * Marca cuál del catálogo está elegido. Se compara por emoji y no por el data
+   * URI completo porque el mismo avatar puede venir guardado desde Android, con
+   * el SVG escrito de otra forma pero equivalente.
+   */
+  emojiElegido: string | null = null;
 
   constructor(
     private dialogRef: MatDialogRef<AvatarPickerDialogComponent>,
@@ -186,6 +193,7 @@ export class AvatarPickerDialogComponent {
   ) {
     this.vistaPrevia = data.currentAvatar ?? undefined;
     this.avatarInicial = this.vistaPrevia;
+    this.emojiElegido = leerAvatarEmoji(this.vistaPrevia)?.emoji ?? null;
   }
 
   alSeleccionarArchivo(event: Event): void {
@@ -202,6 +210,7 @@ export class AvatarPickerDialogComponent {
         canvas.height = img.height * ratio;
         canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
         this.vistaPrevia = canvas.toDataURL('image/jpeg', 0.85);
+        this.emojiElegido = null;
       };
       img.src = reader.result as string;
     };
@@ -209,19 +218,13 @@ export class AvatarPickerDialogComponent {
   }
 
   seleccionarDelCatalogo(emoji: string, bg: string): void {
-    this.vistaPrevia = this.dataUrlDeEmoji(emoji, bg);
-  }
-
-  dataUrlDeEmoji(emoji: string, bg: string): string {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-      <circle cx="50" cy="50" r="50" fill="${bg}"/>
-      <text x="50" y="68" font-size="52" text-anchor="middle">${emoji}</text>
-    </svg>`;
-    return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
+    this.vistaPrevia = avatarEmojiADataUrl(emoji, bg);
+    this.emojiElegido = emoji;
   }
 
   quitarAvatar(): void {
     this.vistaPrevia = undefined;
+    this.emojiElegido = null;
   }
 
   cancelar(): void {

@@ -14,7 +14,8 @@
       <!-- Preview del avatar -->
       <div class="avatar-preview"
            [style.background-color]="form.get('avatarColor')?.value">
-        {{ form.get('name')?.value?.charAt(0)?.toUpperCase() || '?' }}
+        <img *ngIf="avatarBase64" [src]="avatarBase64" class="avatar-preview-img" alt="Avatar del participante">
+        <span *ngIf="!avatarBase64">{{ form.get('name')?.value?.charAt(0)?.toUpperCase() || '?' }}</span>
       </div>
 
       <!-- Nombre -->

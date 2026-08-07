@@ -72,7 +72,7 @@ public class DashboardActivity extends AppCompatActivity implements ChildAdapter
         connectionChecker = new ConnectionChecker(this);
 
         String nombre = prefs.getUserName();
-        binding.tvUsuario.setText("¡Hola, " + (nombre.isEmpty() ? "!" : nombre + "! 👋"));
+        binding.tvUsuario.setText("¡Hola, " + (nombre.isEmpty() ? "!" : nombre + "!"));
         mostrarAvatarUsuario(prefs.getUserAvatar(), nombre);
 
         adapter = new ChildAdapter(participantes, this);

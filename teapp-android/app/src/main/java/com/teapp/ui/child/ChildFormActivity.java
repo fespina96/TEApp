@@ -7,17 +7,12 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.teapp.R;
 import com.teapp.api.ApiClient;
 import com.teapp.api.ApiService;
@@ -25,6 +20,7 @@ import com.teapp.databinding.ActivityChildFormBinding;
 import com.teapp.model.Child;
 import com.teapp.model.ChildRequest;
 import com.teapp.ui.common.AvatarCatalogo;
+import com.teapp.util.ApiError;
 import com.teapp.util.AvatarEmoji;
 import com.teapp.util.AvatarUtils;
 import com.teapp.util.Constants;
@@ -80,27 +76,15 @@ public class ChildFormActivity extends AppCompatActivity {
             binding.etNotas.setText(participanteExistente.notes);
             colorSeleccionado = participanteExistente.avatarColor != null
                     ? participanteExistente.avatarColor : colorSeleccionado;
-            // Cargar avatar existente. Los del catálogo son un SVG que Glide no
-            // sabe decodificar, así que se dibujan aparte.
-            AvatarEmoji.Contenido delCatalogo = AvatarEmoji.leer(participanteExistente.avatarBase64);
-            if (delCatalogo != null) {
-                mostrarEmojiEnAvatar(delCatalogo.emoji, delCatalogo.colorHex);
-                binding.imgAvatar.setVisibility(View.GONE);
-            } else if (participanteExistente.avatarBase64 != null && !participanteExistente.avatarBase64.isEmpty()) {
-                Glide.with(this).load(participanteExistente.avatarBase64).circleCrop()
-                        .into(binding.imgAvatar);
-            } else {
-                String inicial = participanteExistente.name != null && !participanteExistente.name.isEmpty()
-                        ? String.valueOf(participanteExistente.name.charAt(0)).toUpperCase() : "?";
-                mostrarInicialEnAvatar(inicial, colorSeleccionado);
-            }
         }
 
         configurarSelectorFecha();
         configurarSelectorColor();
+        binding.etNombre.addTextChangedListener(observadorDelNombre());
         binding.btnElegirAvatar.setOnClickListener(v -> abrirCatalogoAvatares());
         binding.btnCambiarFoto.setOnClickListener(v -> abrirGaleria());
         binding.btnGuardar.setOnClickListener(v -> onSubmit());
+        refrescarVistaPrevia();
     }
 
     /** Elegir uno de los avatares predefinidos, como en la web. */
@@ -108,18 +92,50 @@ public class ChildFormActivity extends AppCompatActivity {
         AvatarCatalogo.mostrar(this, elegido -> {
             avatarBase64Nueva = AvatarEmoji.aDataUri(elegido[0], elegido[1]);
             colorSeleccionado = elegido[1];
-            binding.imgAvatar.setVisibility(View.GONE);
-            mostrarEmojiEnAvatar(elegido[0], elegido[1]);
             marcarColorSeleccionado();
+            refrescarVistaPrevia();
         });
     }
 
-    /** Dibuja el emoji elegido en la vista previa del formulario. */
-    private void mostrarEmojiEnAvatar(String emoji, String color) {
-        binding.tvAvatarEmoji.setText(emoji);
-        AvatarUtils.pintarCirculo(binding.tvAvatarEmoji, color);
-        binding.tvAvatarEmoji.setVisibility(View.VISIBLE);
-        binding.imgAvatar.setVisibility(View.GONE);
+    /** El avatar que hay que dibujar: el recién elegido, o el que ya tenía guardado. */
+    private String avatarActual() {
+        if (avatarBase64Nueva != null) return avatarBase64Nueva;
+        return participanteExistente != null ? participanteExistente.avatarBase64 : null;
+    }
+
+    private String inicialDelNombre() {
+        String nombre = binding.etNombre.getText().toString().trim();
+        return nombre.isEmpty() ? "?" : nombre.substring(0, 1).toUpperCase();
+    }
+
+    /** Redibuja la vista previa con lo que corresponda: emoji, foto o inicial. */
+    private void refrescarVistaPrevia() {
+        AvatarUtils.mostrarAvatar(binding.tvAvatarEmoji, binding.imgAvatar,
+                avatarActual(), colorSeleccionado, inicialDelNombre());
+    }
+
+    /**
+     * El color del perfil es el fondo del avatar, así que al cambiarlo tiene que
+     * cambiar también la vista previa. En los avatares del catálogo el color va
+     * dentro del SVG, de modo que hay que regenerarlo para que el cambio se guarde.
+     */
+    private void aplicarColorAlAvatar() {
+        AvatarEmoji.Contenido delCatalogo = AvatarEmoji.leer(avatarActual());
+        if (delCatalogo != null) {
+            avatarBase64Nueva = AvatarEmoji.aDataUri(delCatalogo.emoji, colorSeleccionado);
+        }
+        refrescarVistaPrevia();
+    }
+
+    /** La inicial de la vista previa acompaña a lo que se va escribiendo. */
+    private android.text.TextWatcher observadorDelNombre() {
+        return new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void afterTextChanged(android.text.Editable s) {
+                if (avatarActual() == null) refrescarVistaPrevia();
+            }
+        };
     }
 
     private void abrirGaleria() {
@@ -141,10 +157,7 @@ public class ChildFormActivity extends AppCompatActivity {
                 scaled.compress(Bitmap.CompressFormat.JPEG, 75, baos);
                 byte[] bytes = baos.toByteArray();
                 avatarBase64Nueva = "data:image/jpeg;base64," + Base64.encodeToString(bytes, Base64.NO_WRAP);
-                // Si venía mostrándose un avatar del catálogo, tapa la foto: se oculta.
-                binding.tvAvatarEmoji.setVisibility(View.GONE);
-                binding.imgAvatar.setVisibility(View.VISIBLE);
-                Glide.with(this).load(avatarBase64Nueva).circleCrop().into(binding.imgAvatar);
+                refrescarVistaPrevia();
             } catch (Exception e) {
                 Toast.makeText(this, "Error al cargar la imagen.", Toast.LENGTH_SHORT).show();
             }
@@ -157,12 +170,6 @@ public class ChildFormActivity extends AppCompatActivity {
         if (w <= maxSide && h <= maxSide) return original;
         float ratio = (float) maxSide / Math.max(w, h);
         return Bitmap.createScaledBitmap(original, (int)(w * ratio), (int)(h * ratio), true);
-    }
-
-    private void mostrarInicialEnAvatar(String inicial, String color) {
-        binding.tvAvatarEmoji.setVisibility(View.GONE);
-        binding.imgAvatar.setVisibility(View.VISIBLE);
-        AvatarUtils.pintarCirculo(binding.imgAvatar, color);
     }
 
     private void configurarSelectorFecha() {
@@ -183,8 +190,10 @@ public class ChildFormActivity extends AppCompatActivity {
                 fechaApiFormat = String.format("%04d-%02d-%02d", y, m + 1, d);
                 binding.etFecha.setText(String.format("%02d/%02d/%04d", d, m + 1, y));
             }, anoInicial, mesInicial, diaInicial);
-            // Una fecha de nacimiento no puede ser futura.
-            selector.getDatePicker().setMaxDate(System.currentTimeMillis());
+            // El backend exige una fecha de nacimiento anterior a hoy.
+            Calendar ayer = Calendar.getInstance();
+            ayer.add(Calendar.DAY_OF_MONTH, -1);
+            selector.getDatePicker().setMaxDate(ayer.getTimeInMillis());
             selector.show();
         });
     }
@@ -211,15 +220,14 @@ public class ChildFormActivity extends AppCompatActivity {
             muestrasDeColor[i].setOnClickListener(v -> {
                 colorSeleccionado = COLORES[idx];
                 marcarColorSeleccionado();
-                if (avatarBase64Nueva == null) mostrarInicialEnAvatar("?", colorSeleccionado);
+                aplicarColorAlAvatar();
             });
         }
         marcarColorSeleccionado();
     }
 
     /**
-     * La elegida lleva borde y un tilde encima. Antes la única señal era que la
-     * muestra se ensanchaba un poco, que pasaba desapercibido.
+     * La muestra elegida lleva borde y un tilde encima.
      */
     private void marcarColorSeleccionado() {
         if (muestrasDeColor == null) return;
@@ -255,7 +263,8 @@ public class ChildFormActivity extends AppCompatActivity {
                     }
                 } else {
                     setLoading(false);
-                    Toast.makeText(ChildFormActivity.this, "Error al guardar.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChildFormActivity.this,
+                            ApiError.mensaje(response, "Error al guardar."), Toast.LENGTH_LONG).show();
                 }
             }
             @Override

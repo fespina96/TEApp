@@ -11,3 +11,15 @@ export function fechaISOLocal(fecha: Date = new Date()): string {
   const dia = String(fecha.getDate()).padStart(2, '0');
   return `${anio}-${mes}-${dia}`;
 }
+
+/**
+ * Tope para los selectores de fecha de nacimiento: ayer.
+ *
+ * El backend valida esos campos con @Past, que rechaza la fecha de hoy, así que
+ * el calendario tampoco la ofrece.
+ */
+export function fechaMaximaNacimiento(): Date {
+  const ayer = new Date();
+  ayer.setDate(ayer.getDate() - 1);
+  return ayer;
+}

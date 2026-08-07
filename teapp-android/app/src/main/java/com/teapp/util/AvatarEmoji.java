@@ -8,8 +8,7 @@ import java.util.regex.Pattern;
 
 /**
  * Los avatares del catálogo se guardan como un SVG en data URI: un círculo de
- * color con un emoji encima. Glide no sabe decodificar SVG, así que en Android
- * esos avatares no se veían.
+ * color con un emoji encima. Glide no sabe decodificar SVG.
  *
  * En vez de sumar una librería de SVG, acá se leen las dos piezas que interesan
  * —el emoji y el color— y la vista los dibuja de forma nativa. El formato lo

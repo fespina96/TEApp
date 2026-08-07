@@ -74,7 +74,7 @@ public class ActivityCatalogActivity extends AppCompatActivity implements Activi
             chip.setChipBackgroundColorResource(R.color.primary_variant);
             chip.setOnCheckedChangeListener((btn, checked) -> {
                 categoriaSeleccionada = checked ? key : null;
-                // Deselect other chips
+                // Desmarca los demás chips
                 if (checked) {
                     for (int j = 0; j < binding.chipGroupCategorias.getChildCount(); j++) {
                         View v = binding.chipGroupCategorias.getChildAt(j);

@@ -64,7 +64,7 @@ public class TherapistDashboardActivity extends AppCompatActivity {
         connectionChecker = new ConnectionChecker(this);
         if (getSupportActionBar() != null) getSupportActionBar().hide();
 
-        // Header
+        // Cabecera
         String nombre = prefs.getUserName();
         binding.tvUsuario.setText(nombre);
         String inicial = (!nombre.isEmpty()) ? String.valueOf(nombre.charAt(0)).toUpperCase() : "T";
@@ -99,7 +99,6 @@ public class TherapistDashboardActivity extends AppCompatActivity {
         binding.rvParticipantes.setLayoutManager(new LinearLayoutManager(this));
         binding.rvParticipantes.setAdapter(childAdapter);
 
-        connectionChecker.check();
         cargarPadres();
     }
 
@@ -213,8 +212,7 @@ public class TherapistDashboardActivity extends AppCompatActivity {
 
         static class VH extends RecyclerView.ViewHolder {
             TextView tvName, tvInitials;
-            // btn_agenda es un Button en item_child.xml; declararlo como ImageButton
-            // hacía que findViewById reventara con ClassCastException al dibujar.
+            // En item_child.xml, btn_agenda es un Button y los otros dos ImageButton.
             android.widget.Button btnAgenda;
             android.widget.ImageButton btnEdit, btnDelete;
             VH(View v) {
